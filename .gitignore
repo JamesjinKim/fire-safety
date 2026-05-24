@@ -1,5 +1,8 @@
 .DS_Store
 
+# Reference/sample PDFs are kept locally only.
+*.pdf
+
 # Local agent/tool state
 .bkit/
 .claude/
