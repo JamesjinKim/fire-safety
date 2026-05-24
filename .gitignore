@@ -1,0 +1,19 @@
+.DS_Store
+
+# Local agent/tool state
+.bkit/
+.claude/
+docs/.bkit-memory.json
+docs/.pdca-status.json
+docs/.pdca-snapshots/
+
+# Dependency/build outputs for future app work
+node_modules/
+.next/
+dist/
+coverage/
+
+# Local environment files
+.env
+.env.*
+!.env.example

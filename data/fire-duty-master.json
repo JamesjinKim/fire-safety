@@ -1,0 +1,118 @@
+{
+  "_meta": {
+    "version": "0.1.0",
+    "compiled": "2026-05-21",
+    "domain": "소방안전점검",
+    "scope": "소방시설법 + 시행령 + 시행규칙 + 화재예방법 (타겟: 아파트·빌딩·상가 1~3급)",
+    "sources": [
+      "법제처 국가법령정보센터 (law.go.kr)",
+      "reference/소방시설법 및 화재예방법령집.pdf"
+    ],
+    "effectiveBasis": "시행 2024-12-01",
+    "updatePolicy": "수동 갱신 (PoC 단계). 법 개정 시 PDF/법제처에서 추출·검증 후 JSON 수정. 자동 모니터링은 운영 단계 과제.",
+    "hallucinationRule": "legalRef·penaltyOnMissing·retention 등은 출처 확인 전 추정 금지. 미확인 값은 'TODO: 검증필요' 명시.",
+    "categoryEnum": ["A_체제", "B_계획", "C_교육훈련", "G_점검", "K_사고"],
+    "formStrictnessEnum": ["법령강제", "고시", "자율"],
+    "fieldSchema": {
+      "docId": "snake_case 고유 식별자",
+      "title": "한글 정식 명칭",
+      "category": "categoryEnum 중 하나",
+      "legalRef": "법령약칭:조 형식 배열",
+      "formStrictness": "formStrictnessEnum 중 하나",
+      "formSource": "양식 출처 (별지 서식 번호 등) — optional",
+      "frequency": "점검·작성 주기",
+      "applicableScope": "적용 대상물 범위",
+      "submitTo": "제출처 — optional",
+      "submitDeadline": "제출 기한 — optional",
+      "retention": "보존 기간 — optional",
+      "penaltyOnMissing": "미이행 벌칙 조문 — optional",
+      "source": "검증 출처. 미확인 시 'TODO: 검증필요'"
+    }
+  },
+  "documents": [
+    {
+      "docId": "self_inspection_report_operational",
+      "title": "소방시설등 자체점검 결과보고서(작동점검)",
+      "category": "G_점검",
+      "legalRef": ["소방시설법:22", "소방시설법시행규칙:20", "소방시설법시행규칙:23"],
+      "formStrictness": "법령강제",
+      "formSource": "TODO: 검증필요 (시행규칙 별지 서식 번호)",
+      "frequency": "연 1회 (작동점검)",
+      "applicableScope": "특정소방대상물 (관계인 자체점검 의무)",
+      "submitTo": "소방본부장 또는 소방서장",
+      "submitDeadline": "자체점검이 끝난 날부터 (TODO: 정확한 일수 — 시행규칙 §23 본문 정밀확인)",
+      "retention": "TODO: 검증필요",
+      "penaltyOnMissing": "소방시설법:61 (300만원 이하 과태료, 세부 별표10 — TODO: 해당 호 확인)",
+      "source": "reference PDF 법 제22조(자체점검) · 시행규칙 제20조(구분·대상, 별표3·별표4) — 시행 2024.12.1"
+    },
+    {
+      "docId": "self_inspection_report_comprehensive",
+      "title": "소방시설등 자체점검 결과보고서(종합점검)",
+      "category": "G_점검",
+      "legalRef": ["소방시설법:22", "소방시설법시행규칙:20"],
+      "formStrictness": "법령강제",
+      "formSource": "TODO: 검증필요",
+      "frequency": "연 1회 (종합점검 대상물)",
+      "applicableScope": "종합점검 대상 특정소방대상물 (TODO: 별표3 대상 기준 확인)",
+      "submitTo": "소방본부장 또는 소방서장",
+      "submitDeadline": "TODO: 검증필요",
+      "retention": "TODO: 검증필요",
+      "penaltyOnMissing": "소방시설법:61 (TODO: 해당 호)",
+      "source": "reference PDF 법 제22조 · 시행규칙 제20조 — 시행 2024.12.1"
+    },
+    {
+      "docId": "self_inspection_exemption_deferral_request",
+      "title": "소방시설등 자체점검 면제 또는 연기 신청서",
+      "category": "G_점검",
+      "legalRef": ["소방시설법시행령:33", "소방시설법시행규칙:22"],
+      "formStrictness": "법령강제",
+      "formSource": "시행규칙 별지 면제·연기신청서 (TODO: 별지 번호)",
+      "frequency": "수시 (사유 발생 시)",
+      "applicableScope": "재난 발생·소유권 변동·부도/도산 등 사유 발생 대상물 (시행령 §33)",
+      "submitTo": "소방본부장 또는 소방서장",
+      "source": "reference PDF 시행령 제33조(면제·연기 사유) · 시행규칙 제22조(신청 절차) — 시행 2024.12.1"
+    },
+    {
+      "docId": "fire_safety_manager_appointment_report",
+      "title": "소방안전관리자 선임 신고서",
+      "category": "A_체제",
+      "legalRef": ["화재예방법:24", "화재예방법시행규칙:14"],
+      "formStrictness": "법령강제",
+      "formSource": "TODO: 검증필요 (별지 서식)",
+      "frequency": "선임 시 (선임 후 14일 이내 신고 — TODO: 일수 정밀확인)",
+      "applicableScope": "소방안전관리대상물 (자격·인원기준 별표4)",
+      "submitTo": "소방본부장 또는 소방서장",
+      "retention": "TODO: 검증필요",
+      "penaltyOnMissing": "TODO: 검증필요 (화재예방법 벌칙)",
+      "source": "reference PDF 화재예방법 제24조(선임, 자격·인원기준 별표4) — 시행 2024.12.1. 신고 절차 시행규칙 조문 TODO 정밀확인"
+    },
+    {
+      "docId": "fire_drill_education_result_record",
+      "title": "소방훈련·교육 실시 결과 기록부",
+      "category": "C_교육훈련",
+      "legalRef": ["화재예방법:37", "화재예방법시행규칙:36"],
+      "formStrictness": "법령강제",
+      "formSource": "TODO: 검증필요 (시행규칙 별지 서식)",
+      "frequency": "연 1회 이상 (소방본부장·서장 요청 시 2회 범위 추가)",
+      "applicableScope": "소방안전관리대상물의 관계인 (근무자·거주자 대상 훈련·교육)",
+      "submitTo": "TODO: 검증필요 (작성·비치 의무 여부 포함)",
+      "retention": "TODO: 검증필요",
+      "penaltyOnMissing": "TODO: 검증필요",
+      "source": "reference PDF 화재예방법 제37조 · 시행규칙 제36조(연 1회 이상 실시) — 시행 2024.12.1"
+    },
+    {
+      "docId": "fire_safety_plan",
+      "title": "소방계획서",
+      "category": "B_계획",
+      "legalRef": ["화재예방법:24", "화재예방법시행령:27"],
+      "formStrictness": "법령강제",
+      "formSource": "TODO: 검증필요",
+      "frequency": "연 1회 (변경 시 갱신 — TODO: 주기 정밀확인)",
+      "applicableScope": "소방안전관리대상물 (소방안전관리자 업무 — 법 §24제5항)",
+      "submitTo": "소방본부장 또는 소방서장 (TODO: 제출/비치 구분 확인)",
+      "retention": "TODO: 검증필요",
+      "penaltyOnMissing": "TODO: 검증필요",
+      "source": "reference PDF 화재예방법 제24조제5항(소방안전관리자 업무: 소방계획 수립·운영) — 시행 2024.12.1. 시행령 조문·세부사항 TODO 정밀확인"
+    }
+  ]
+}

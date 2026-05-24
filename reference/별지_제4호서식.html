@@ -1,0 +1,1870 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>소방시설 자체점검 및 점검표 시스템</title>
+  <meta name="description" content="소방시설 자체점검사항 등에 관한 고시 [별지 제4호서식] 작동 및 종합점검 보고서 및 32종 세부 점검표 디지털화 시스템">
+  
+  <!-- Google Fonts (Outfit & Noto Sans KR) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      /* Palette (Fire Safety Orange/Red theme) */
+      --primary: hsl(12, 85%, 50%);
+      --primary-hover: hsl(12, 90%, 42%);
+      --primary-light: hsl(12, 100%, 96%);
+      --primary-border: hsl(12, 90%, 90%);
+      
+      --accent-green: hsl(142, 70%, 45%);
+      --accent-green-bg: hsl(142, 70%, 95%);
+      --accent-red: hsl(354, 76%, 50%);
+      --accent-red-bg: hsl(354, 76%, 95%);
+      --accent-gray: hsl(210, 16%, 82%);
+      --accent-gray-bg: hsl(210, 16%, 95%);
+      
+      /* Neutral Colors - Light Mode */
+      --bg-app: hsl(210, 20%, 98%);
+      --bg-card: hsl(0, 0%, 100%);
+      --bg-sidebar: hsl(220, 20%, 96%);
+      --text-main: hsl(222, 47%, 11%);
+      --text-muted: hsl(215, 16%, 47%);
+      --text-light: hsl(215, 20%, 65%);
+      --border-color: hsl(214, 32%, 91%);
+      --border-glow: hsla(12, 85%, 50%, 0.15);
+      
+      --shadow-sm: 0 2px 8px -2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 12px 24px -4px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 20px 40px -8px rgba(15, 23, 42, 0.12);
+      
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --border-radius: 12px;
+      --font-outfit: 'Outfit', 'Noto Sans KR', sans-serif;
+    }
+    
+    body.dark-mode {
+      /* Neutral Colors - Dark Mode */
+      --bg-app: hsl(222, 47%, 9%);
+      --bg-card: hsl(222, 47%, 13%);
+      --bg-sidebar: hsl(222, 47%, 11%);
+      --text-main: hsl(210, 40%, 98%);
+      --text-muted: hsl(215, 20%, 65%);
+      --text-light: hsl(215, 16%, 47%);
+      --border-color: hsl(222, 30%, 20%);
+      
+      --primary-light: hsl(12, 90%, 15%);
+      --primary-border: hsl(12, 80%, 20%);
+      
+      --accent-green-bg: hsl(142, 70%, 12%);
+      --accent-red-bg: hsl(354, 76%, 12%);
+      --accent-gray-bg: hsl(210, 10%, 20%);
+      
+      --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.5);
+      --shadow-md: 0 12px 24px -4px rgba(0, 0, 0, 0.6);
+      --shadow-lg: 0 20px 40px -8px rgba(0, 0, 0, 0.7);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: var(--bg-app);
+      color: var(--text-main);
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    
+    /* Layout */
+    .sidebar {
+      width: 320px;
+      background-color: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      transition: var(--transition);
+    }
+    
+    .sidebar-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--primary) 0%, hsl(350, 85%, 55%) 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-family: var(--font-outfit);
+      font-weight: 800;
+      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(254, 76, 50, 0.25);
+    }
+    
+    .logo-text {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, var(--text-main) 0%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .sidebar-search {
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .search-wrapper {
+      position: relative;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 10px 14px 10px 36px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background-color: var(--bg-card);
+      color: var(--text-main);
+      font-size: 13px;
+      transition: var(--transition);
+      outline: none;
+    }
+    
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--border-glow);
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      width: 16px;
+      height: 16px;
+      pointer-events: none;
+    }
+    
+    .sidebar-nav {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+    
+    .nav-group-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      margin-top: 12px;
+    }
+    
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .nav-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      gap: 10px;
+    }
+    
+    .nav-item:hover {
+      background-color: var(--border-color);
+      color: var(--text-main);
+    }
+    
+    .nav-item.active {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      font-weight: 700;
+      border-left: 3px solid var(--primary);
+    }
+    
+    .nav-item-badge {
+      margin-left: auto;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+      background-color: var(--border-color);
+      color: var(--text-muted);
+    }
+    
+    .nav-item.active .nav-item-badge {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    /* Main Content */
+    .main-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    
+    .topbar {
+      height: 70px;
+      background-color: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      position: sticky;
+      top: 0;
+      z-index: 9;
+      transition: var(--transition);
+    }
+    
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .toggle-sidebar-btn {
+      display: none;
+      background: none;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      color: var(--text-main);
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+    
+    .toggle-sidebar-btn:hover {
+      background-color: var(--bg-app);
+    }
+    
+    .topbar-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+      color: var(--text-main);
+      outline: none;
+    }
+    
+    .btn:hover {
+      background-color: var(--bg-app);
+      border-color: var(--text-muted);
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      border-color: var(--primary-hover);
+    }
+    
+    .btn-icon-only {
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      border-radius: 8px;
+    }
+    
+    .content-area {
+      flex: 1;
+      padding: 32px;
+      overflow-y: auto;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    
+    /* Cards & Panels */
+    .panel-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-sm);
+      padding: 32px;
+      margin-bottom: 24px;
+      transition: var(--transition);
+      position: relative;
+    }
+    
+    .panel-header {
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .panel-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    
+    .panel-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    
+    /* Form elements */
+    .form-section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 24px 0 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .form-section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background-color: var(--border-color);
+    }
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    
+    .form-grid-full {
+      grid-column: 1 / -1;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    
+    .form-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background-color: var(--bg-card);
+      color: var(--text-main);
+      font-size: 13px;
+      transition: var(--transition);
+      outline: none;
+    }
+    
+    .form-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--border-glow);
+    }
+    
+    /* Standard Korean form check boxes */
+    .facility-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    
+    .facility-card {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: var(--transition);
+      background-color: var(--bg-card);
+    }
+    
+    .facility-card:hover {
+      border-color: var(--primary-border);
+      background-color: var(--primary-light);
+    }
+    
+    .facility-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .checkbox-custom {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--text-light);
+      border-radius: 4px;
+      cursor: pointer;
+      display: grid;
+      place-content: center;
+      transition: var(--transition);
+      background-color: var(--bg-card);
+    }
+    
+    .checkbox-custom:checked {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+    
+    .checkbox-custom:checked::before {
+      content: "";
+      width: 10px;
+      height: 6px;
+      border-left: 2px solid white;
+      border-bottom: 2px solid white;
+      transform: rotate(-45deg) translate(1px, -1px);
+    }
+    
+    .facility-name {
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      user-select: none;
+    }
+    
+    .tristate-group {
+      display: flex;
+      gap: 4px;
+      margin-left: 28px;
+    }
+    
+    .tristate-btn {
+      flex: 1;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-card);
+      cursor: pointer;
+      text-align: center;
+      transition: var(--transition);
+      color: var(--text-muted);
+    }
+    
+    .tristate-btn.active-o {
+      background-color: var(--accent-green-bg);
+      border-color: var(--accent-green);
+      color: var(--accent-green);
+    }
+    
+    .tristate-btn.active-x {
+      background-color: var(--accent-red-bg);
+      border-color: var(--accent-red);
+      color: var(--accent-red);
+    }
+    
+    .tristate-btn.active-slash {
+      background-color: var(--accent-gray-bg);
+      border-color: var(--text-muted);
+      color: var(--text-muted);
+    }
+    
+    /* Table styling */
+    .table-container {
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+    }
+    
+    .form-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: left;
+    }
+    
+    .form-table th {
+      background-color: var(--bg-sidebar);
+      color: var(--text-muted);
+      font-weight: 700;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .form-table td {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: middle;
+    }
+    
+    .form-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    /* Sub-tabs for 세부현황 */
+    .subtabs {
+      display: flex;
+      overflow-x: auto;
+      gap: 6px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 24px;
+      padding-bottom: 2px;
+    }
+    
+    .subtab-btn {
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: var(--transition);
+      border-bottom: 2px solid transparent;
+    }
+    
+    .subtab-btn:hover {
+      color: var(--text-main);
+    }
+    
+    .subtab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    
+    /* Checklist Table Styles */
+    .checklist-header-summary {
+      background-color: var(--primary-light);
+      border: 1px solid var(--primary-border);
+      border-radius: 8px;
+      padding: 16px 24px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .summary-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    
+    .summary-stats {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    
+    .stat-badge {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+    
+    .stat-badge.o { background-color: var(--accent-green-bg); color: var(--accent-green); }
+    .stat-badge.x { background-color: var(--accent-red-bg); color: var(--accent-red); }
+    .stat-badge.slash { background-color: var(--accent-gray-bg); color: var(--text-muted); }
+    
+    .checklist-section-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin: 24px 0 12px 0;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .badge-comp {
+      font-size: 9px;
+      font-weight: 700;
+      background-color: var(--primary);
+      color: white;
+      padding: 1px 4px;
+      border-radius: 3px;
+      letter-spacing: 0.5px;
+    }
+    
+    /* Footer navigation */
+    .bottom-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+    }
+    
+    /* Print Controls Bar */
+    .print-controls-bar {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      padding: 10px 20px;
+      border-radius: 50px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      display: none;
+      align-items: center;
+      gap: 12px;
+      z-index: 99999;
+      transition: var(--transition);
+    }
+    
+    body.dark-mode .print-controls-bar {
+      background-color: rgba(30, 41, 59, 0.9);
+      border-color: rgba(71, 85, 105, 0.8);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+    
+    .print-mode .print-controls-bar {
+      display: flex;
+    }
+    
+    @media print {
+      .print-controls-bar {
+        display: none !important;
+      }
+    }
+    
+    /* Print Styles Layout */
+    .print-sheet {
+      display: none;
+      background-color: white;
+      color: black;
+      width: 210mm;
+      min-height: 297mm;
+      padding: 20mm;
+      margin: 0 auto 20px auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border: 1px solid #ddd;
+      page-break-after: always;
+      position: relative;
+    }
+    
+    /* Form Standard style for Print Mode */
+    .print-mode {
+      background-color: #f0f2f5;
+    }
+    
+    .print-mode .sidebar,
+    .print-mode .topbar,
+    .print-mode .content-area,
+    .print-mode .bottom-nav {
+      display: none !important;
+    }
+    
+    .print-mode {
+      display: block !important;
+    }
+
+    .print-mode .print-layout-container {
+      display: block !important;
+      padding: 20px;
+      width: 100%;
+    }
+
+    .print-mode .print-sheet {
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+    
+    .print-mode .print-sheet {
+      display: block !important;
+    }
+    
+    /* Standard Korean Form Styles for Printing */
+    .standard-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Batang', serif; /* Or clean sans-serif */
+      font-size: 10pt;
+      margin-top: 10px;
+      color: black;
+    }
+    
+    .standard-table th, .standard-table td {
+      border: 1px solid black;
+      padding: 6px 8px;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 9pt;
+      height: 28px;
+    }
+    
+    .standard-table th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+    
+    .form-title-h1 {
+      font-size: 18pt;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+    }
+    
+    .page-indicator {
+      position: absolute;
+      bottom: 8mm;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 9pt;
+      color: black;
+    }
+    
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background-color: var(--text-main);
+      color: var(--bg-card);
+      padding: 12px 24px;
+      border-radius: 8px;
+      box-shadow: var(--shadow-lg);
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: var(--transition);
+      pointer-events: none;
+    }
+    
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    /* Toggle Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+    
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--accent-gray);
+      transition: .4s;
+      border-radius: 24px;
+    }
+    
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+      background-color: var(--primary);
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+    
+    /* Responsive */
+    @media (max-width: 992px) {
+      .sidebar {
+        position: fixed;
+        left: -320px;
+        top: 0;
+        bottom: 0;
+      }
+      
+      body.sidebar-open .sidebar {
+        left: 0;
+      }
+      
+      .toggle-sidebar-btn {
+        display: flex;
+      }
+    }
+    
+    @media print {
+      @page {
+        size: A4;
+        margin: 0;
+      }
+      body {
+        background-color: white !important;
+        color: black !important;
+        display: block !important;
+      }
+      .print-layout-container {
+        padding: 0 !important;
+      }
+      .print-sheet {
+        box-shadow: none !important;
+        border: none !important;
+        margin: 0 !important;
+        padding: 15mm !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a href="#" class="sidebar-logo">
+        <div class="logo-icon">🔥</div>
+        <div class="logo-text">소방 자체점검</div>
+      </a>
+    </div>
+    <div class="sidebar-search">
+      <div class="search-wrapper">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input type="text" class="search-input" placeholder="섹션 검색...">
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-group-title">점검표 (7쪽)</div>
+      <ul class="nav-list">
+        <li><a class="nav-item active" href="#sec1">1쪽 소방시설등 점검결과</a></li>
+        <li><a class="nav-item" href="#sec2">2쪽 다중이용업소·점검인력</a></li>
+        <li><a class="nav-item" href="#sec3">3쪽 소화기구·수계(공통)</a></li>
+        <li><a class="nav-item" href="#sec4">4쪽 수계(공통계속)·개별</a></li>
+        <li><a class="nav-item" href="#sec5">5쪽 가스계·경보설비</a></li>
+        <li><a class="nav-item" href="#sec6">6쪽 피난구조·소화용수·활동</a></li>
+        <li><a class="nav-item" href="#sec7">7쪽 소화활동설비(계속)</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="main-container">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="toggle-sidebar-btn" onclick="document.querySelector('.sidebar').classList.toggle('hidden')">☰</button>
+        <h1 class="topbar-title">소방시설등 점검표 [별지 제4호서식]</h1>
+      </div>
+      <div class="topbar-right">
+        <button class="btn" onclick="toggleDarkMode()">🌙 테마</button>
+        <button class="btn btn-primary" onclick="togglePrintLayout()">🖨 인쇄 모드</button>
+      </div>
+    </div>
+
+    <!-- Print layout container -->
+    <div class="print-layout-container" id="print-layout-container"></div>
+
+    <div class="content-area">
+
+      <!-- ===== 1쪽 ===== -->
+      <div class="panel-card" id="sec1">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">소방시설등 작동점검[ ] / 종합점검(최초점검[ ] 그 밖의 점검[ ]) 점검표</div>
+            <div class="panel-subtitle">소방시설 자체점검사항 등에 관한 고시 [별지 제4호서식] (7쪽 중 1쪽)</div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">※ 소방시설, 다중이용업란의 [ ]란에는 해당 시설에 √ 표를 한다. 점검결과란은 양호○, 불량×, 해당없는 항목은 /표시를 한다.</p>
+
+        <div class="form-section-title">□ 특정소방대상물</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">건물명(상호)</label>
+            <input type="text" class="form-input" id="building-name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">대상물 구분</label>
+            <input type="text" class="form-input" id="building-type">
+          </div>
+          <div class="form-group form-grid-full">
+            <label class="form-label">소 재 지</label>
+            <input type="text" class="form-input" id="building-address">
+          </div>
+        </div>
+
+        <div class="form-section-title" style="margin-top:28px;">□ 소방시설등 점검결과</div>
+        <table class="form-table">
+          <thead>
+            <tr>
+              <th style="width:80px;">구분</th>
+              <th>해당설비</th>
+              <th style="width:80px;">점검결과</th>
+              <th style="width:80px;">구분</th>
+              <th>해당설비</th>
+              <th style="width:80px;">점검결과</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="19" style="font-weight:700;text-align:center;">소화<br>설비</td>
+              <td><label><input type="checkbox"> 소화기구 및 자동소화장치</label><br>
+                <div style="padding-left:16px;font-size:12px;">
+                  <label><input type="checkbox"> 소화기구(소화기, 자확, 간이)</label><br>
+                  <label><input type="checkbox"> 주거용주방자동소화장치</label><br>
+                  <label><input type="checkbox"> 상업용주방자동소화장치</label><br>
+                  <label><input type="checkbox"> 캐비닛형자동소화장치</label><br>
+                  <label><input type="checkbox"> 가스·분말·고체자동소화장치</label>
+                </div>
+              </td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td rowspan="8" style="font-weight:700;text-align:center;">피난<br>구조<br>설비</td>
+              <td><label><input type="checkbox"> 피난기구</label><br>
+                <div style="padding-left:16px;font-size:12px;">
+                  <label><input type="checkbox"> 공기안전매트·피난사다리<br>(간이)완강기·미끄럼대·구조대</label><br>
+                  <label><input type="checkbox"> 다수인피난장비</label><br>
+                  <label><input type="checkbox"> 승강식피난기</label><br>
+                  하향식피난구용내림식사다리
+                </div>
+              </td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 옥내소화전설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 인명구조기구</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 스프링클러설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 유도등</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 간이스프링클러설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 유도표지</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 화재조기진압용스프링클러설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 피난유도선</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 물분무소화설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 비상조명등</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 미분무소화설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 휴대용비상조명등</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 포소화설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td rowspan="2" style="font-weight:700;text-align:center;">소화<br>용수<br>설비</td>
+              <td><label><input type="checkbox"> 상수도소화용수설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 이산화탄소소화설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 소화수조 및 저수조</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 할론소화설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td rowspan="7" style="font-weight:700;text-align:center;">소화<br>활동<br>설비</td>
+              <td><label><input type="checkbox"> 거실제연설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 할로겐화합물 및 불활성기체소화설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 부속실 등 제연설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 분말소화설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 연결송수관설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 강화액소화전설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 연결살수설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 고체에어로졸소화전설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 비상콘센트설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 옥외소화전설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 무선통신보조설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td rowspan="9" style="font-weight:700;text-align:center;">경보<br>설비</td>
+              <td><label><input type="checkbox"> 단독경보형감지기</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 연소방지설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 비상경보설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td rowspan="3" style="font-weight:700;text-align:center;">기타</td>
+              <td><label><input type="checkbox"> 방화문, 자동방화셔터</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 자동화재탐지설비 및 시각경보기</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 비상구, 피난통로</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 화재알림설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 방 염</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 비상방송설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td rowspan="5" style="font-weight:700;text-align:center;">비고</td>
+              <td colspan="2"><textarea class="form-input" rows="5" style="resize:vertical;"></textarea></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 통합감시시설</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 자동화재속보설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 누전경보기</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 가스누설경보기</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ===== 2쪽 ===== -->
+      <div class="panel-card" id="sec2">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">다중이용업소 안전시설등 점검결과 및 점검업체 현황</div>
+            <div class="panel-subtitle">(7쪽 중 2쪽)</div>
+          </div>
+        </div>
+
+        <div class="form-section-title">□ 다중이용업소 안전시설등 점검결과</div>
+        <table class="form-table">
+          <thead>
+            <tr>
+              <th style="width:80px;">구분</th>
+              <th>해당설비</th>
+              <th style="width:80px;">점검결과</th>
+              <th style="width:80px;">구분</th>
+              <th>해당설비</th>
+              <th style="width:80px;">점검결과</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="2" style="font-weight:700;text-align:center;">소화<br>설비</td>
+              <td><label><input type="checkbox"> 소화기 또는 자동확산소화기</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td rowspan="2" style="font-weight:700;text-align:center;">비상구</td>
+              <td><label><input type="checkbox"> 방화문</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 간이스프링클러설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 비상구(비상탈출구)</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td rowspan="2" style="font-weight:700;text-align:center;">경보<br>설비</td>
+              <td><label><input type="checkbox"> 비상경보설비 또는 자동화재탐지설비</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td rowspan="6" style="font-weight:700;text-align:center;">기타</td>
+              <td><label><input type="checkbox"> 영업장 내부 피난통로</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 가스누설경보기</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 영상음향차단장치</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td rowspan="4" style="font-weight:700;text-align:center;">피난<br>구조<br>설비</td>
+              <td><label><input type="checkbox"> 피난기구</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 누전차단기</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 피난유도선</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 창 문</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 유도등, 유도표지 또는 비상조명등</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 피난안내도·피난안내영상물</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 휴대용비상조명등</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+              <td><label><input type="checkbox"> 방염대상물품</label></td>
+              <td><input type="text" class="form-input" style="width:70px;" placeholder="○/×/"></td>
+            </tr>
+            <tr>
+              <td colspan="2" style="font-weight:700;">비고</td>
+              <td colspan="4"><textarea class="form-input" rows="2" style="resize:vertical;width:100%;"></textarea></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="form-section-title" style="margin-top:28px;">□ 점검업체(점검인력) 현황</div>
+        <table class="form-table">
+          <thead>
+            <tr>
+              <th style="width:90px;">구분</th>
+              <th>성명</th>
+              <th>자격구분</th>
+              <th>자격번호</th>
+              <th>점검참여일(기간)</th>
+              <th>서명</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:700;text-align:center;">주인력</td>
+              <td><input type="text" class="form-input"></td>
+              <td><input type="text" class="form-input"></td>
+              <td><input type="text" class="form-input"></td>
+              <td><input type="text" class="form-input"></td>
+              <td><input type="text" class="form-input" placeholder="(서명)"></td>
+            </tr>
+            <tr><td style="text-align:center;">보조인력</td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input" placeholder="(서명)"></td></tr>
+            <tr><td style="text-align:center;">보조인력</td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input" placeholder="(서명)"></td></tr>
+            <tr><td style="text-align:center;">보조인력</td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input" placeholder="(서명)"></td></tr>
+            <tr><td style="text-align:center;">보조인력</td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input" placeholder="(서명)"></td></tr>
+            <tr><td style="text-align:center;">보조인력</td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input" placeholder="(서명)"></td></tr>
+            <tr><td style="text-align:center;">보조인력</td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input" placeholder="(서명)"></td></tr>
+          </tbody>
+        </table>
+        <div class="form-grid" style="margin-top:16px;">
+          <div class="form-group">
+            <label class="form-label">점검기간(일자): 년 월 일부터</label>
+            <input type="date" class="form-input" id="check-start">
+          </div>
+          <div class="form-group">
+            <label class="form-label">년 월 일까지 (총 점검일수)</label>
+            <input type="date" class="form-input" id="check-end">
+          </div>
+          <div class="form-group">
+            <label class="form-label">소방시설관리업체(등록번호)</label>
+            <input type="text" class="form-input" placeholder="제0000-00호">
+          </div>
+          <div class="form-group">
+            <label class="form-label">대 표 자</label>
+            <input type="text" class="form-input" placeholder="(인)">
+          </div>
+        </div>
+
+        <div class="form-section-title" style="margin-top:28px;">점검번호 구분</div>
+        <table class="form-table">
+          <tbody>
+            <tr>
+              <td style="font-weight:700;width:120px;">대분류<br>(설비구분)</td>
+              <td>소화기구 및 자동소화장치치를 '1'번으로 하여 설비별 순차적으로 번호를 부여하여 다중이용업소 '32'번까지로 함</td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;">중분류<br>(단위구분)</td>
+              <td>각 설비별 점검단위에 따라 'A'부터 알파벳 순서대로 부여함</td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;">소분류<br>(점검항목)</td>
+              <td>각 설비별 점검단위 내의 점검항목에 따라 '001'부터 순서대로 부여함</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="form-section-title" style="margin-top:20px;">작성 및 유의사항</div>
+        <div style="background:var(--accent-gray-bg);border:1px solid var(--border-color);border-radius:8px;padding:16px;font-size:13px;line-height:1.8;">
+          1. 소방시설등 (작동, 종합)점검결과보고서의 '각 설비별 점검결과'에는 본 서식의 점검번호를 기재한다.<br>
+          2. 자체점검결과(보고서 및 점검표)를 2년간 보관하여야 한다.
+        </div>
+      </div>
+
+      <!-- ===== 3쪽: 세부현황 + 수계(공통) ===== -->
+      <div class="panel-card" id="sec3">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">소방시설등의 세부현황</div>
+            <div class="panel-subtitle">(7쪽 중 3쪽) ※ [ ]에는 해당 시설에 √ 표를 하고, 수량을 기입하며, 설비현황에 대하여 기입란이 부족한 경우 서식을 추가하여 작성할 수 있습니다.</div>
+          </div>
+        </div>
+
+        <div class="form-section-title">1. 소화기구, 자동소화장치</div>
+        <table class="form-table">
+          <thead>
+            <tr>
+              <th rowspan="2" style="width:80px;">구분</th>
+              <th colspan="2">[ ] 소화기</th>
+              <th colspan="2">[ ] 간이소화용구</th>
+              <th>[ ] 자동확산소화기</th>
+              <th>[ ] 자동소화장치</th>
+              <th>비 고</th>
+            </tr>
+            <tr>
+              <th>[ ] 분말</th><th>[ ] 기타</th>
+              <th>[ ] 투척용</th><th>[ ] 기타</th>
+              <th></th><th></th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="font-weight:700;">합계</td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td></tr>
+            <tr><td>동명</td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td></tr>
+            <tr><td></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td></tr>
+            <tr><td></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td></tr>
+            <tr><td></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td></tr>
+            <tr><td></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td></tr>
+            <tr><td></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td></tr>
+            <tr><td></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td><td><input type="text" class="form-input"></td></tr>
+          </tbody>
+        </table>
+
+        <div class="form-section-title" style="margin-top:28px;">2. 수계소화설비(공통사항)</div>
+        <table class="form-table">
+          <tbody>
+            <tr>
+              <td rowspan="2" style="font-weight:700;width:80px;text-align:center;">수원</td>
+              <td style="font-weight:700;width:100px;">주된수원</td>
+              <td>
+                <div style="font-size:12px;line-height:2;">
+                  ○ 설비의 종류: <label><input type="checkbox"> 옥내소화전설비</label> <label><input type="checkbox"> 옥외소화전설비</label> <label><input type="checkbox"> 스프링클러설비</label><br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox"> 간이스프링클러설비</label> <label><input type="checkbox"> 화재조기진압용스프링클러설비</label><br>
+                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox"> 물분무소화설비</label> <label><input type="checkbox"> 미분무소화설비</label> <label><input type="checkbox"> 포소화설비</label><br>
+                  ○ 설치장소: 동명(<input type="text" class="form-input" style="width:80px;">) <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:30px;">)층, 실명(<input type="text" class="form-input" style="width:100px;">)<br>
+                  ○ 흡입방식: <label><input type="checkbox"> 정압</label>, <label><input type="checkbox"> 부압</label>, ○ 유효수량: (<input type="text" class="form-input" style="width:60px;">)㎥
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;">보조수원</td>
+              <td style="font-size:12px;">
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:80px;">) 실명(<input type="text" class="form-input" style="width:100px;">), ○ 유효수량: (<input type="text" class="form-input" style="width:60px;">)㎥
+              </td>
+            </tr>
+            <tr>
+              <td rowspan="3" style="font-weight:700;text-align:center;">가압<br>송수<br>장치</td>
+              <td><label><input type="checkbox"> 고가수조</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 설비의 종류: <label><input type="checkbox"> 옥내소화전설비</label> <label><input type="checkbox"> 옥외소화전설비</label> <label><input type="checkbox"> 스프링클러설비</label> <label><input type="checkbox"> 간이스프링클러설비</label> <label><input type="checkbox"> 화재조기진압용스프링클러설비</label> <label><input type="checkbox"> 물분무소화설비</label> <label><input type="checkbox"> 미분무소화설비</label> <label><input type="checkbox"> 포소화설비</label><br>
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:80px;">) 실명(<input type="text" class="form-input" style="width:100px;">), ○ 유효낙차: (<input type="text" class="form-input" style="width:60px;">)m
+              </td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 압력수조</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 설비의 종류: <label><input type="checkbox"> 옥내소화전설비</label> <label><input type="checkbox"> 옥외소화전설비</label> <label><input type="checkbox"> 스프링클러설비</label> <label><input type="checkbox"> 간이스프링클러설비</label> <label><input type="checkbox"> 화재조기진압용스프링클러설비</label> <label><input type="checkbox"> 물분무소화설비</label> <label><input type="checkbox"> 미분무소화설비</label> <label><input type="checkbox"> 포소화설비</label><br>
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:80px;">) <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:30px;">)층, 실명(<input type="text" class="form-input" style="width:100px;">)<br>
+                ○ 수조용량: (<input type="text" class="form-input" style="width:60px;">)ℓ, 수조가압압력:(<input type="text" class="form-input" style="width:60px;">)MPa<br>
+                ○ 자동식공기가압축기 용량:(<input type="text" class="form-input" style="width:60px;">)㎥/min, 동 력:(<input type="text" class="form-input" style="width:60px;">)Kw
+              </td>
+            </tr>
+            <tr>
+              <td><label><input type="checkbox"> 가압수조</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 설비의 종류: <label><input type="checkbox"> 옥내소화전설비</label> <label><input type="checkbox"> 옥외소화전설비</label> <label><input type="checkbox"> 스프링클러설비</label> <label><input type="checkbox"> 간이스프링클러설비</label> <label><input type="checkbox"> 화재조기진압용스프링클러설비</label> <label><input type="checkbox"> 물분무소화설비</label> <label><input type="checkbox"> 미분무소화설비</label> <label><input type="checkbox"> 포소화설비</label><br>
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:80px;">) <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:30px;">)층, 실명(<input type="text" class="form-input" style="width:100px;">)<br>
+                ○ 수조용량: (<input type="text" class="form-input" style="width:60px;">)ℓ, 수조가압압력:(<input type="text" class="form-input" style="width:60px;">)MPa<br>
+                ○ 가압가스의 종류: <label><input type="checkbox"> 공기</label> <label><input type="checkbox"> 불연성가스(<input type="text" class="form-input" style="width:80px;">)</label>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ===== 4쪽 ===== -->
+      <div class="panel-card" id="sec4">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">수계소화설비(공통 계속) 및 수계소화설비(개별사항)</div>
+            <div class="panel-subtitle">(7쪽 중 4쪽)</div>
+          </div>
+        </div>
+
+        <table class="form-table">
+          <tbody>
+            <tr>
+              <td rowspan="4" style="font-weight:700;text-align:center;width:80px;">가압<br>송수<br>장치</td>
+              <td rowspan="4"><label><input type="checkbox"> 펌프방식</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 설비의 종류: <label><input type="checkbox"> 옥내소화전설비</label> <label><input type="checkbox"> 옥외소화전설비</label> <label><input type="checkbox"> 스프링클러설비</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox"> 간이스프링클러설비</label> <label><input type="checkbox"> 화재조기진압용스프링클러설비</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox"> 물분무소화설비</label> <label><input type="checkbox"> 미분무소화설비</label> <label><input type="checkbox"> 포소화설비</label><br>
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:80px;">) <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:30px;">)층, 실명(<input type="text" class="form-input" style="width:100px;">)<br>
+                ○ 주펌프 전양정:(<input type="text" class="form-input" style="width:50px;">)m, 토출량:(<input type="text" class="form-input" style="width:60px;">)ℓ/min<br>
+                &nbsp;&nbsp;&nbsp;<label><input type="checkbox"> 전동기</label> <label><input type="checkbox"> 내연기관(연료:<label><input type="checkbox"> 경유</label> <label><input type="checkbox"> 기타</label>)</label><br>
+                &nbsp;&nbsp;&nbsp;예비펌프 전양정:(<input type="text" class="form-input" style="width:50px;">)m, 토출량:(<input type="text" class="form-input" style="width:60px;">)ℓ/min<br>
+                &nbsp;&nbsp;&nbsp;<label><input type="checkbox"> 전동기</label> <label><input type="checkbox"> 내연기관(연료:<label><input type="checkbox"> 경유</label> <label><input type="checkbox"> 기타</label>)</label><br>
+                &nbsp;&nbsp;&nbsp;충압펌프 전양정:(<input type="text" class="form-input" style="width:50px;">)m, 토출량:(<input type="text" class="form-input" style="width:60px;">)ℓ/min<br>
+                ○ <label><input type="checkbox"> 물올림장치</label>(유효수량: (<input type="text" class="form-input" style="width:50px;">)ℓ, 급수배관: (<input type="text" class="form-input" style="width:50px;">)mm<br>
+                ○ 기동장치: <label><input type="checkbox"> 기동용수압개폐장치</label>, <label><input type="checkbox"> ON/OFF 방식</label><br>
+                &nbsp;&nbsp;&nbsp;<label><input type="checkbox"> 압력챔버</label>(용량:(<input type="text" class="form-input" style="width:50px;">)ℓ, 사용압력:(<input type="text" class="form-input" style="width:50px;">)MPa<br>
+                &nbsp;&nbsp;&nbsp;<label><input type="checkbox"> 기동용압력스위치</label>(<label><input type="checkbox"> 부르동관식</label> <label><input type="checkbox"> 전자식</label> <label><input type="checkbox"> 그 밖의 것</label>)<br>
+                ○ <label><input type="checkbox"> 감압장치</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:30px;">)층, 설치장소:(<input type="text" class="form-input" style="width:100px;">)
+              </td>
+            </tr>
+            <tr></tr><tr></tr><tr></tr>
+            <tr>
+              <td colspan="2" style="font-weight:700;">송수구</td>
+              <td style="font-size:12px;line-height:2;">
+                <label><input type="checkbox"> 옥내소화전설비</label> <label><input type="checkbox"> 옥외소화전설비</label> <label><input type="checkbox"> 스프링클러설비</label> <label><input type="checkbox"> 간이스프링클러설비</label><br>
+                <label><input type="checkbox"> 화재조기진압용스프링클러설비</label> <label><input type="checkbox"> 물분무소화설비</label> <label><input type="checkbox"> 미분무소화설비</label> <label><input type="checkbox"> 포소화설비</label><br>
+                ○ 설치장소:(<input type="text" class="form-input" style="width:120px;">), <label><input type="checkbox"> 쌍구형</label>(<input type="text" class="form-input" style="width:40px;">)개/<label><input type="checkbox"> 단구형</label>(<input type="text" class="form-input" style="width:40px;">)개
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="font-weight:700;">비상전원</td>
+              <td style="font-size:12px;line-height:2;">
+                <label><input type="checkbox"> 자가발전설비</label>(<label><input type="checkbox"> 소방전용</label> <label><input type="checkbox"> 소방부하겸용</label> <label><input type="checkbox"> 소방전원보존형</label> <label><input type="checkbox"> 기타(<input type="text" class="form-input" style="width:80px;">)</label>)<br>
+                <label><input type="checkbox"> 비상전원수전설비</label> <label><input type="checkbox"> 축전지설비</label> <label><input type="checkbox"> 전기저장장치</label><br>
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:80px;">) <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:30px;">)층, 실명(<input type="text" class="form-input" style="width:100px;">)
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="form-section-title" style="margin-top:24px;">3. 수계소화설비(개별사항)</div>
+        <table class="form-table">
+          <tbody>
+            <tr>
+              <td style="font-weight:700;width:120px;"><label><input type="checkbox"> 옥내소화전</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                ○ 설치개수가 가장 많은 층의 설치개수: (<input type="text" class="form-input" style="width:40px;">)개
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;"><label><input type="checkbox"> 옥외소화전</label></td>
+              <td style="font-size:12px;">○ 설치개수: (<input type="text" class="form-input" style="width:40px;">)개</td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;"><label><input type="checkbox"> 스프링클러설비</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 종류: <label><input type="checkbox"> 습식</label> <label><input type="checkbox"> 부압식</label> <label><input type="checkbox"> 준비작동식</label> <label><input type="checkbox"> 건식</label> <label><input type="checkbox"> 일제살수식</label><br>
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;"><label><input type="checkbox"> 간이스프링클러설비</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 종류: <label><input type="checkbox"> 펌프</label> <label><input type="checkbox"> 캐비닛</label> <label><input type="checkbox"> 상수도</label><br>
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;"><label><input type="checkbox"> 화재조기진압용</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;"><label><input type="checkbox"> 물분무소화설비</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;"><label><input type="checkbox"> 미분무소화설비</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;"><label><input type="checkbox"> 포소화설비</label></td>
+              <td style="font-size:12px;line-height:2;">
+                <label><input type="checkbox"> 포워터스프링클러설비</label> <label><input type="checkbox"> 포헤드설비</label> <label><input type="checkbox"> 고정포방출설비</label> <label><input type="checkbox"> 기타(<input type="text" class="form-input" style="width:80px;">)</label><br>
+                ○ 소화약제: <label><input type="checkbox"> 단백포</label> <label><input type="checkbox"> 합성계면활성제포</label> <label><input type="checkbox"> 수성막포</label> <label><input type="checkbox"> 내알코올포</label><br>
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ===== 5쪽 ===== -->
+      <div class="panel-card" id="sec5">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">4. 가스계소화설비(개별사항) &amp; 5. 경보설비</div>
+            <div class="panel-subtitle">(7쪽 중 5쪽)</div>
+          </div>
+        </div>
+
+        <div class="form-section-title">4. 가스계소화설비(개별사항)</div>
+        <table class="form-table">
+          <tbody>
+            <tr>
+              <td style="font-weight:700;width:120px;font-size:12px;">
+                <label><input type="checkbox"> 이산화탄소</label><br>
+                <label><input type="checkbox"> 할론</label><br>
+                <label><input type="checkbox"> 할로겐화합물<br>및 불활성기체</label><br>
+                <label><input type="checkbox"> 분말</label><br>
+                <label><input type="checkbox"> 강화액</label><br>
+                <label><input type="checkbox"> 고체에어로졸</label>
+              </td>
+              <td style="font-size:12px;line-height:2;">
+                <label><input type="checkbox"> 전역방출</label> / <label><input type="checkbox"> 국소방출</label> / <label><input type="checkbox"> 호스릴</label> / <label><input type="checkbox"> 고압식</label> <label><input type="checkbox"> 저압식</label> <label><input type="checkbox"> 축압식</label> <label><input type="checkbox"> 가압식</label><br>
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                ○ 저장용기 설치장소: <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:30px;">)층, <label><input type="checkbox"> 전용실</label> <label><input type="checkbox"> 기타(<input type="text" class="form-input" style="width:80px;">)</label><br>
+                ○ 수량: (<input type="text" class="form-input" style="width:40px;">)[<label><input type="checkbox"> kg</label>,<label><input type="checkbox"> ㎥</label>] (<input type="text" class="form-input" style="width:40px;">)ℓ (<input type="text" class="form-input" style="width:40px;">)개<br>
+                ○ 소화약제: <label><input type="checkbox"> 이산화탄소</label> <label><input type="checkbox"> 할론1301</label> <label><input type="checkbox"> 할론2402</label> <label><input type="checkbox"> 할론1211</label> <label><input type="checkbox"> 할론104</label><br>
+                <label><input type="checkbox"> FC-3-1-10</label> <label><input type="checkbox"> HCFC BLEND A</label> <label><input type="checkbox"> HCFC-124</label> <label><input type="checkbox"> HFC-125</label> <label><input type="checkbox"> HFC-227ea</label><br>
+                <label><input type="checkbox"> HFC-23</label> <label><input type="checkbox"> IG-541</label> <label><input type="checkbox"> IG-100</label> <label><input type="checkbox"> 기타(<input type="text" class="form-input" style="width:100px;">)</label><br>
+                <label><input type="checkbox"> 제1종분말</label> <label><input type="checkbox"> 제2종분말</label> <label><input type="checkbox"> 제3종분말</label> <label><input type="checkbox"> 제4종분말</label>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="form-section-title" style="margin-top:24px;">5. 경보설비</div>
+        <table class="form-table">
+          <tbody>
+            <tr>
+              <td style="font-weight:700;width:130px;"><label><input type="checkbox"> 단독경보형감지기</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                ○ 주전원 <label><input type="checkbox"> 상용전원</label> <label><input type="checkbox"> 건전지</label>
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;"><label><input type="checkbox"> 비상경보설비</label></td>
+              <td style="font-size:12px;line-height:2;">
+                <label><input type="checkbox"> 비상벨설비</label> <label><input type="checkbox"> 자동식사이렌설비</label><br>
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                ○ 조작장치 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:30px;">)층 실명(<input type="text" class="form-input" style="width:100px;">)
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;"><label><input type="checkbox"> 자동화재탐지설비</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 수신기 위치: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:30px;">)층 실명(<input type="text" class="form-input" style="width:100px;">)<br>
+                ○ 경보방식 <label><input type="checkbox"> 전층경보</label> <label><input type="checkbox"> 우선경보</label>, 시각경보기 <label><input type="checkbox"> 유</label> <label><input type="checkbox"> 무</label><br>
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                ○ 감지기종류 <label><input type="checkbox"> 열</label> <label><input type="checkbox"> 연기</label> <label><input type="checkbox"> 그 밖의 것</label>(<label><input type="checkbox"> 불꽃</label> <label><input type="checkbox"> 아날로그식</label> <label><input type="checkbox"> 복합형</label>)
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;"><label><input type="checkbox"> 비상방송설비</label></td>
+              <td style="font-size:12px;line-height:2;">
+                <label><input type="checkbox"> 전용</label> <label><input type="checkbox"> 겸용</label> / <label><input type="checkbox"> 전층경보</label> <label><input type="checkbox"> 우선경보</label><br>
+                ○ 증폭기 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:30px;">)층, 실명(<input type="text" class="form-input" style="width:100px;">)
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;"><label><input type="checkbox"> 자동화재속보설비</label></td>
+              <td style="font-size:12px;">
+                ○ 속보기 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:30px;">)층, 실명(<input type="text" class="form-input" style="width:100px;">)
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;"><label><input type="checkbox"> 통합감시시설</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 주수신기 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:30px;">)층, 실명(<input type="text" class="form-input" style="width:100px;">)<br>
+                ○ 부수신기 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:30px;">)층, 실명(<input type="text" class="form-input" style="width:100px;">)<br>
+                ○ 정보통신망 <label><input type="checkbox"> 광케이블</label> <label><input type="checkbox"> 기타(<input type="text" class="form-input" style="width:80px;">)</label> / 예비선로 <label><input type="checkbox"> 유</label> <label><input type="checkbox"> 무</label>
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;"><label><input type="checkbox"> 누전경보기</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 수신기 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:30px;">)층, 실명(<input type="text" class="form-input" style="width:100px;">)<br>
+                ○ 수신기 형식 <label><input type="checkbox"> 1급</label> <label><input type="checkbox"> 2급</label>, 차단기구 <label><input type="checkbox"> 무</label> <label><input type="checkbox"> 유</label>(설치장소: <input type="text" class="form-input" style="width:120px;">)
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;"><label><input type="checkbox"> 가스누설경보기</label></td>
+              <td style="font-size:12px;line-height:2;">
+                <label><input type="checkbox"> 단독형</label> <label><input type="checkbox"> 분리형</label>, 사용가스종류 <label><input type="checkbox"> LNG</label> <label><input type="checkbox"> LPG</label>, 경계구역 수:(<input type="text" class="form-input" style="width:40px;">)개<br>
+                ○ 수신기 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:30px;">)층, 실명(<input type="text" class="form-input" style="width:100px;">)<br>
+                ○ 차단기구 <label><input type="checkbox"> 무</label> <label><input type="checkbox"> 유</label>(설치장소: <input type="text" class="form-input" style="width:120px;">)
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ===== 6쪽 ===== -->
+      <div class="panel-card" id="sec6">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">6. 피난구조설비 / 7. 소화용수설비 / 8. 소화활동설비(거실)</div>
+            <div class="panel-subtitle">(7쪽 중 6쪽)</div>
+          </div>
+        </div>
+
+        <div class="form-section-title">6. 피난구조설비</div>
+        <table class="form-table">
+          <tbody>
+            <tr>
+              <td style="font-weight:700;width:130px;"><label><input type="checkbox"> 피난기구</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 종류: <label><input type="checkbox"> 피난사다리</label> <label><input type="checkbox"> 완강기</label> <label><input type="checkbox"> 다수인피난장비</label> <label><input type="checkbox"> 승강식피난기</label> <label><input type="checkbox"> 미끄럼대</label><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<label><input type="checkbox"> 피난교</label> <label><input type="checkbox"> 피난용트랩</label> <label><input type="checkbox"> 구조대</label> <label><input type="checkbox"> 간이완강기</label> <label><input type="checkbox"> 공기안전매트</label><br>
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;"><label><input type="checkbox"> 인명구조기구</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 종류: <label><input type="checkbox"> 방열복</label> <label><input type="checkbox"> 방화복</label> <label><input type="checkbox"> 공기호흡기</label> <label><input type="checkbox"> 인공소생기</label><br>
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                ○ 대상물의 용도: <label><input type="checkbox"> 5층이상 병원</label> <label><input type="checkbox"> 7층이상 관광호텔</label> <label><input type="checkbox"> 이산화탄소소화설비 설치</label><br>
+                <label><input type="checkbox"> 지하역사·백화점·대형점포·쇼핑센타·지하상가·영화상영관</label>
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;"><label><input type="checkbox"> 유도등</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 종류: <label><input type="checkbox"> 피난구</label> <label><input type="checkbox"> 통로</label> <label><input type="checkbox"> 객석유도등</label> <label><input type="checkbox"> 유도표지</label> <label><input type="checkbox"> 피난유도선</label><br>
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;"><label><input type="checkbox"> 비상조명등</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                ○ 비상전원 <label><input type="checkbox"> 자가발전설비</label> <label><input type="checkbox"> 축전지설비</label> <label><input type="checkbox"> 내장형</label>
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;"><label><input type="checkbox"> 휴대용비상조명등</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                ○ 전원 <label><input type="checkbox"> 건전지식</label> <label><input type="checkbox"> 충전식 배터리식</label>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="form-section-title" style="margin-top:24px;">7. 소화용수설비</div>
+        <table class="form-table">
+          <tbody>
+            <tr>
+              <td style="font-weight:700;width:130px;"><label><input type="checkbox"> 상수도소화수</label></td>
+              <td style="font-size:12px;">
+                ○ 설치장소:(<input type="text" class="form-input" style="width:150px;">), 소화전 호칭지름: (<input type="text" class="form-input" style="width:60px;">)mm
+              </td>
+            </tr>
+            <tr>
+              <td style="font-weight:700;"><label><input type="checkbox"> 소화수조</label></td>
+              <td style="font-size:12px;line-height:2;">
+                <label><input type="checkbox"> 전용</label> <label><input type="checkbox"> 겸용</label> / <label><input type="checkbox"> 흡수식</label> <label><input type="checkbox"> 가압식</label> / <label><input type="checkbox"> 일반수조</label> <label><input type="checkbox"> 그 밖의 것</label> / 유효수량:(<input type="text" class="form-input" style="width:50px;">)㎥<br>
+                ○ 가압송수장치 전양정:(<input type="text" class="form-input" style="width:50px;">)m, 토출량:(<input type="text" class="form-input" style="width:60px;">)ℓ/min, <label><input type="checkbox"> 전동기</label>/<label><input type="checkbox"> 내연기관</label>(연료:<label><input type="checkbox"> 경유</label> <label><input type="checkbox"> 기타</label>)<br>
+                ○ <label><input type="checkbox"> 물올림장치</label> 유효수량: (<input type="text" class="form-input" style="width:50px;">)ℓ, 급수배관: (<input type="text" class="form-input" style="width:50px;">)mm<br>
+                ○ 기동스위치 설치장소: <label><input type="checkbox"> 채수구 부근</label> <label><input type="checkbox"> 방재실</label> <label><input type="checkbox"> 기타(<input type="text" class="form-input" style="width:80px;">)</label><br>
+                ○ 채수구 구경: (<input type="text" class="form-input" style="width:50px;">)mm, 흡수관 투입구: 가로(<input type="text" class="form-input" style="width:40px;">)cm 세로(<input type="text" class="form-input" style="width:40px;">)cm / 직경(<input type="text" class="form-input" style="width:40px;">)cm
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="form-section-title" style="margin-top:24px;">8. 소화활동설비</div>
+        <table class="form-table">
+          <tbody>
+            <tr>
+              <td rowspan="2" style="font-weight:700;width:80px;text-align:center;"><label><input type="checkbox"> 제연설비</label></td>
+              <td style="font-weight:700;width:80px;"><label><input type="checkbox"> 거실</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                ○ 방식 <label><input type="checkbox"> 단독</label> <label><input type="checkbox"> 공동</label> <label><input type="checkbox"> 상호</label> <label><input type="checkbox"> 기타(<input type="text" class="form-input" style="width:80px;">)</label><br>
+                ○ 기동장치 <label><input type="checkbox"> 자동(감지기 연동)</label> <label><input type="checkbox"> 수동</label> <label><input type="checkbox"> 원격</label><br>
+                ○ 제연구획면적 최대:(<input type="text" class="form-input" style="width:50px;">)㎥ / 구조 <label><input type="checkbox"> 내화</label> <label><input type="checkbox"> 불연</label> <label><input type="checkbox"> 그 밖의 것:(<input type="text" class="form-input" style="width:80px;">)</label><br>
+                ○ 제연구역 출입문 <label><input type="checkbox"> 상시폐쇄(자동폐쇄장치)</label> <label><input type="checkbox"> 상시개방(감지기에 의한 닫힘)</label><br>
+                ○ 급기용송풍기 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:30px;">)층, 실명(<input type="text" class="form-input" style="width:80px;">)<br>
+                &nbsp;&nbsp;&nbsp;전동기(<input type="text" class="form-input" style="width:50px;">)kW, 풍량(<input type="text" class="form-input" style="width:50px;">)㎥/min, 정압(<input type="text" class="form-input" style="width:50px;">)mmAq<br>
+                ○ 배출용송풍기 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:30px;">)층, 실명(<input type="text" class="form-input" style="width:80px;">)<br>
+                &nbsp;&nbsp;&nbsp;전동기(<input type="text" class="form-input" style="width:50px;">)kW, 풍량(<input type="text" class="form-input" style="width:50px;">)㎥/min, 정압(<input type="text" class="form-input" style="width:50px;">)mmAq<br>
+                ○ 배출구 <label><input type="checkbox"> 천장면</label> <label><input type="checkbox"> 천장하부</label> <label><input type="checkbox"> 기타(<input type="text" class="form-input" style="width:60px;">)</label> / 외부배출구 <label><input type="checkbox"> 옥상</label> <label><input type="checkbox"> 기타(<input type="text" class="form-input" style="width:60px;">)</label><br>
+                &nbsp;&nbsp;&nbsp;풍도구조 <label><input type="checkbox"> 내화</label> <label><input type="checkbox"> 불연</label> <label><input type="checkbox"> 그 밖의 것(<input type="text" class="form-input" style="width:60px;">)</label> / 구획댐퍼 <label><input type="checkbox"> 유</label> <label><input type="checkbox"> 무</label><br>
+                ○ 유입공기배출 <label><input type="checkbox"> 자연배출</label> <label><input type="checkbox"> 기계배출</label> <label><input type="checkbox"> 배출구</label> <label><input type="checkbox"> 제연설비</label><br>
+                ○ 급기구 <label><input type="checkbox"> 강제유입</label> <label><input type="checkbox"> 자연유입</label> <label><input type="checkbox"> 인접구역유입</label><br>
+                &nbsp;&nbsp;&nbsp;풍도구조 <label><input type="checkbox"> 내화</label> <label><input type="checkbox"> 불연</label> <label><input type="checkbox"> 그 밖의 것(<input type="text" class="form-input" style="width:60px;">)</label> / 구획댐퍼 <label><input type="checkbox"> 유</label> <label><input type="checkbox"> 무</label>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ===== 7쪽 ===== -->
+      <div class="panel-card" id="sec7">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">소화활동설비 (계속)</div>
+            <div class="panel-subtitle">(7쪽 중 7쪽)</div>
+          </div>
+        </div>
+
+        <table class="form-table">
+          <tbody>
+            <tr>
+              <td style="font-weight:700;width:80px;text-align:center;"><label><input type="checkbox"> 제연설비</label></td>
+              <td style="font-weight:700;width:100px;"><label><input type="checkbox"> 부속실 등</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                ○ 방식 <label><input type="checkbox"> 단독</label> <label><input type="checkbox"> 공동</label> <label><input type="checkbox"> 상호</label> <label><input type="checkbox"> 기타(<input type="text" class="form-input" style="width:80px;">)</label><br>
+                ○ 급기가압방식 <label><input type="checkbox"> 단일</label> <label><input type="checkbox"> 그 밖의 방식</label><br>
+                ○ 급기 <label><input type="checkbox"> 전실</label> <label><input type="checkbox"> 비상용EV 승강장</label> <label><input type="checkbox"> 계단실</label> <label><input type="checkbox"> 비상용EV 승강장+계단실</label> <label><input type="checkbox"> 그밖의것</label><br>
+                ○ 급기방식 <label><input type="checkbox"> 전층급기</label> <label><input type="checkbox"> 지상층급기</label> <label><input type="checkbox"> 그 밖의 방식</label><br>
+                ○ 제연구역 면적 최대: (<input type="text" class="form-input" style="width:60px;">)㎥<br>
+                ○ 급기용송풍기 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:30px;">)층, 실명(<input type="text" class="form-input" style="width:80px;">)<br>
+                &nbsp;&nbsp;&nbsp;전동기(<input type="text" class="form-input" style="width:50px;">)kW, 풍량(<input type="text" class="form-input" style="width:50px;">)㎥/min, 정압(<input type="text" class="form-input" style="width:50px;">)mmAq<br>
+                ○ 과압방지장치 <label><input type="checkbox"> 유</label> <label><input type="checkbox"> 무</label> / <label><input type="checkbox"> 자동차압·과압조절형댐퍼</label> <label><input type="checkbox"> 플랩댐퍼</label> <label><input type="checkbox"> 기타</label><br>
+                ○ 유입공기배출 <label><input type="checkbox"> 자연배출</label> <label><input type="checkbox"> 기계배출</label> <label><input type="checkbox"> 옥내 출입구</label><br>
+                &nbsp;&nbsp;&nbsp;풍도구조 <label><input type="checkbox"> 내화</label> <label><input type="checkbox"> 불연</label> <label><input type="checkbox"> 그 밖의 것(<input type="text" class="form-input" style="width:60px;">)</label> / 구획댐퍼 <label><input type="checkbox"> 유</label> <label><input type="checkbox"> 무</label>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="font-weight:700;"><label><input type="checkbox"> 연결송수관설비</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                ○ 방수구 설치층: <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:30px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:30px;">)층<br>
+                ○ 송수구 설치장소: (<input type="text" class="form-input" style="width:120px;">), 구경: (<input type="text" class="form-input" style="width:50px;">)mm<br>
+                ○ 가압송수장치 <label><input type="checkbox"> 유</label>(설치장소: <input type="text" class="form-input" style="width:120px;">) <label><input type="checkbox"> 무</label>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="font-weight:700;"><label><input type="checkbox"> 연결살수설비</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                ○ 헤드의 종류 <label><input type="checkbox"> 개방형</label> <label><input type="checkbox"> 폐쇄형</label><br>
+                ○ 살수구역 수: (<input type="text" class="form-input" style="width:40px;">)개, 송수구 설치장소: (<input type="text" class="form-input" style="width:120px;">)
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="font-weight:700;"><label><input type="checkbox"> 비상콘센트설비</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                ○ 전원종류 <label><input type="checkbox"> 단상</label> <label><input type="checkbox"> 3상</label>, 설치개수: (<input type="text" class="form-input" style="width:40px;">)개
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="font-weight:700;"><label><input type="checkbox"> 무선통신보조설비</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 설치장소: 동명(<input type="text" class="form-input" style="width:70px;">) <label><input type="checkbox"> 전체층</label>/<label><input type="checkbox"> 일부층</label> <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층 ~ <label><input type="checkbox"> 지상</label>/<label><input type="checkbox"> 지하</label>(<input type="text" class="form-input" style="width:25px;">)층<br>
+                ○ 무선기기접속단자함 위치: (<input type="text" class="form-input" style="width:100px;">) 개수: (<input type="text" class="form-input" style="width:40px;">)개<br>
+                ○ 누설동축케이블 <label><input type="checkbox"> 유</label> <label><input type="checkbox"> 무</label> / 안테나 <label><input type="checkbox"> 유</label> <label><input type="checkbox"> 무</label>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="font-weight:700;"><label><input type="checkbox"> 연소방지설비</label></td>
+              <td style="font-size:12px;line-height:2;">
+                ○ 설치장소: (<input type="text" class="form-input" style="width:200px;">)<br>
+                ○ 살수헤드 구경 (<input type="text" class="form-input" style="width:50px;">)mm, 간격 (<input type="text" class="form-input" style="width:50px;">)m 이하
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top:16px;font-size:11px;color:var(--text-muted);text-align:right;">210mm×297mm [백상지(80g/㎡)]</div>
+      </div>
+
+    </div><!-- .content-area -->
+  </div><!-- .main-container -->
+
+  <script>
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    }
+
+    function showToast(msg) {
+      let t = document.getElementById('toast');
+      if (!t) {
+        t = document.createElement('div');
+        t.id = 'toast';
+        t.style.cssText = 'position:fixed;bottom:24px;right:24px;background:var(--primary);color:#fff;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;box-shadow:var(--shadow-lg);transition:opacity 0.3s;';
+        document.body.appendChild(t);
+      }
+      t.textContent = msg;
+      t.style.opacity = '1';
+      clearTimeout(t._tid);
+      t._tid = setTimeout(() => { t.style.opacity = '0'; }, 3500);
+    }
+
+    function togglePrintLayout() {
+      const isPrint = document.body.classList.contains('print-mode');
+      if (isPrint) {
+        document.body.classList.remove('print-mode');
+        document.getElementById('print-layout-container').style.display = 'none';
+        showToast('편집 모드로 복귀했습니다.');
+      } else {
+        generatePrintLayout();
+        document.body.classList.add('print-mode');
+        document.getElementById('print-layout-container').style.display = 'block';
+        showToast('인쇄용 레이아웃으로 전환했습니다. Ctrl+P(Cmd+P)로 인쇄/PDF 저장하세요. 버튼을 다시 누르면 편집 모드로 복귀합니다.');
+      }
+    }
+
+    function generatePrintLayout() {
+      const c = document.getElementById('print-layout-container');
+      c.innerHTML = '';
+
+      const pages = document.querySelectorAll('.content-area .panel-card');
+      pages.forEach((panel, i) => {
+        const sheet = document.createElement('div');
+        sheet.className = 'print-sheet';
+
+        const exitBtn = document.createElement('div');
+        exitBtn.style.cssText = 'text-align:right;margin-bottom:8px;';
+        exitBtn.innerHTML = '<button onclick="togglePrintLayout()" style="padding:6px 14px;border:1px solid #ccc;border-radius:6px;cursor:pointer;font-size:12px;">✕ 편집 복귀</button> <button onclick="window.print()" style="padding:6px 14px;background:#e84118;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px;">🖨 인쇄</button>';
+        sheet.appendChild(exitBtn);
+
+        const clone = panel.cloneNode(true);
+        // Remove any hidden state
+        clone.style.display = 'block';
+        clone.style.margin = '0';
+        clone.style.boxShadow = 'none';
+        clone.style.border = 'none';
+        clone.style.padding = '0';
+        sheet.appendChild(clone);
+
+        const pageNum = document.createElement('div');
+        pageNum.className = 'page-indicator';
+        pageNum.textContent = `(7쪽 중 ${i+1}쪽)`;
+        sheet.appendChild(pageNum);
+
+        c.appendChild(sheet);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (localStorage.getItem('darkMode') === 'true') document.body.classList.add('dark-mode');
+    });
+  </script>
+</body>
+</html>

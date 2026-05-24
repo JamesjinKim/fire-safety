@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>소방안전점검 MCP 전환 분석 및 기획 리포트</title>
+  <!-- Modern Typography (Outfit & Inter) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;500;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #0a0a0c;
+      --bg-card: rgba(20, 20, 25, 0.6);
+      --bg-card-hover: rgba(28, 28, 36, 0.8);
+      --border-color: rgba(239, 68, 68, 0.15);
+      --border-hover: rgba(251, 146, 60, 0.4);
+      --primary: #f97316; /* Fire Orange */
+      --primary-rgb: 249, 115, 22;
+      --secondary: #fbbf24; /* Amber */
+      --accent: #ef4444; /* Crimson Red */
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --text-dark: #1e1b4b;
+      --shadow-glow: 0 0 25px rgba(249, 115, 22, 0.15);
+      --shadow-card: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      --font-outfit: 'Outfit', 'Noto Sans KR', sans-serif;
+      --font-inter: 'Inter', 'Noto Sans KR', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-inter);
+      line-height: 1.6;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ambient Glow Backdrops */
+    body::before {
+      content: "";
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(239, 68, 68, 0.1) 0%, transparent 70%);
+      top: 10%;
+      left: -10%;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: "";
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(249, 115, 22, 0.08) 0%, transparent 70%);
+      bottom: 20%;
+      right: -10%;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Scrollbar Style */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-dark);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(249, 115, 22, 0.3);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(249, 115, 22, 0.6);
+    }
+
+    header {
+      padding: 80px 20px 40px;
+      text-align: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 16px;
+      background: linear-gradient(90deg, rgba(239, 68, 68, 0.2) 0%, rgba(249, 115, 22, 0.2) 100%);
+      border: 1px solid rgba(249, 115, 22, 0.3);
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--secondary);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 15px rgba(249, 115, 22, 0.1);
+      animation: pulse 2s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { transform: translateY(0); box-shadow: 0 0 10px rgba(249, 115, 22, 0.1); }
+      100% { transform: translateY(-2px); box-shadow: 0 0 20px rgba(249, 115, 22, 0.25); }
+    }
+
+    h1 {
+      font-family: var(--font-outfit);
+      font-size: 3.2rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #ffffff 30%, #f97316 70%, #ef4444 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .lead {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 800px;
+      margin: 0 auto 40px;
+      font-weight: 300;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+    }
+
+    /* Grid Layout */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+
+    .col-12 { grid-column: span 12; }
+    .col-8 { grid-column: span 8; }
+    .col-6 { grid-column: span 6; }
+    .col-4 { grid-column: span 4; }
+
+    @media (max-width: 991px) {
+      .col-8, .col-6, .col-4 { grid-column: span 12; }
+      h1 { font-size: 2.5rem; }
+    }
+
+    /* Glassmorphism Card Style */
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 35px;
+      box-shadow: var(--shadow-card);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--primary));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-glow), var(--shadow-card);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card-title {
+      font-family: var(--font-outfit);
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .card-title svg {
+      width: 24px;
+      height: 24px;
+      fill: var(--primary);
+    }
+
+    p {
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+      font-weight: 300;
+    }
+
+    strong {
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    /* Custom Bullet Lists */
+    ul.custom-list {
+      list-style: none;
+      margin: 15px 0;
+    }
+
+    ul.custom-list li {
+      position: relative;
+      padding-left: 24px;
+      margin-bottom: 12px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 300;
+    }
+
+    ul.custom-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      top: 2px;
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    /* Comparison Table Styles */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    th {
+      font-family: var(--font-outfit);
+      background-color: rgba(249, 115, 22, 0.1);
+      color: var(--secondary);
+      font-weight: 600;
+    }
+
+    td {
+      font-weight: 300;
+      color: var(--text-muted);
+    }
+
+    tr:hover td {
+      color: #ffffff;
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Interactive Component Containers */
+    .widget-container {
+      background: rgba(15, 15, 20, 0.8);
+      border-radius: 16px;
+      padding: 25px;
+      margin-top: 20px;
+      border: 1px dashed rgba(249, 115, 22, 0.3);
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    select, input[type="number"], textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: #ffffff;
+      font-size: 0.95rem;
+      font-family: var(--font-inter);
+      margin-bottom: 20px;
+      transition: all 0.3s;
+    }
+
+    select:focus, input[type="number"]:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 10px rgba(249, 115, 22, 0.2);
+    }
+
+    .form-group-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    button.btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+      border: none;
+      border-radius: 8px;
+      color: #ffffff;
+      font-family: var(--font-outfit);
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+      transition: all 0.3s;
+    }
+
+    button.btn:hover {
+      filter: brightness(1.15);
+      box-shadow: 0 6px 20px rgba(249, 115, 22, 0.45);
+      transform: translateY(-1px);
+    }
+
+    /* Result Box Style */
+    .result-box {
+      margin-top: 25px;
+      padding: 20px;
+      border-radius: 12px;
+      background: rgba(249, 115, 22, 0.05);
+      border: 1px solid rgba(249, 115, 22, 0.2);
+      display: none;
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-header {
+      font-family: var(--font-outfit);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--secondary);
+      margin-bottom: 12px;
+      border-bottom: 1px solid rgba(249, 115, 22, 0.2);
+      padding-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .result-content {
+      font-size: 0.9rem;
+      color: var(--text-main);
+    }
+
+    .badge-grade {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+    }
+
+    .badge-grade.special { background: #7c3aed; color: #ffffff; }
+    .badge-grade.g1 { background: var(--accent); color: #ffffff; }
+    .badge-grade.g2 { background: var(--primary); color: #ffffff; }
+    .badge-grade.g3 { background: #10b981; color: #ffffff; }
+
+    /* Interactive Defect List Styles */
+    .defect-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .defect-chip {
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 30px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      color: var(--text-muted);
+    }
+
+    .defect-chip:hover {
+      background: rgba(249, 115, 22, 0.1);
+      border-color: var(--primary);
+      color: #ffffff;
+    }
+
+    .defect-chip.active {
+      background: rgba(249, 115, 22, 0.2);
+      border-color: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(249, 115, 22, 0.15);
+    }
+
+    /* Output Editor Styles */
+    .code-editor {
+      background: #0f172a;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      font-family: 'Consolas', 'Courier New', Courier, monospace;
+      padding: 15px;
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      white-space: pre-wrap;
+      max-height: 250px;
+      overflow-y: auto;
+      border-left: 4px solid var(--primary);
+    }
+
+    .highlight-law {
+      color: #38bdf8;
+      font-weight: 500;
+    }
+
+    .highlight-remediation {
+      color: #34d399;
+      font-weight: 500;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 300;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="badge">AI MCP Development Plan</div>
+    <h1>소방안전점검 특화 MCP 설계 및 분석 보고서</h1>
+    <p class="lead">
+      샘플 건설안전 MCP(<strong style="color: var(--primary);">agent-safety-oss</strong>)를 기반으로 아파트·빌딩·상가의 현장 소방점검 기사를 보조하기 위한 소방안전점검 전용 MCP 서버 전환 기획서입니다.
+    </p>
+  </header>
+
+  <div class="container">
+    
+    <div class="grid">
+      <!-- 1. PDF 법령집 분석 -->
+      <div class="col-8 card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+          프로젝트 폴더 제공 PDF 법령집 정밀 분석
+        </div>
+        <p>
+          제공해주신 프로젝트 폴더 내 핵심 법령집 PDF(2종, 총 848페이지)에 대한 구조 및 점검 활용 방안입니다.
+        </p>
+        
+        <table>
+          <thead>
+            <tr>
+              <th>파일명</th>
+              <th>총 페이지</th>
+              <th>주요 수록 범위</th>
+              <th>현장 기사 및 MCP의 핵심 연계 포인트</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>소방기본법.pdf</strong></td>
+              <td>124페이지</td>
+              <td>
+                - 소방기본법<br>
+                - 동법 시행령 및 시행규칙<br>
+                - 비상소화장치의 설치 및 관리기준
+              </td>
+              <td>
+                - 비상소화장치(비상소화함 등)의 물리적 규격 및 관리 상태 지적사항 판단 근거.<br>
+                - 소방대상물 주변 소방차 진입 방해 등 벌칙 규정 맵핑.
+              </td>
+            </tr>
+            <tr>
+              <td><strong>소방시설법 및 화재예방법령집.pdf</strong></td>
+              <td>724페이지</td>
+              <td>
+                - <strong>소방시설 설치 및 관리에 관한 법률</strong> (소방시설법)<br>
+                - <strong>화재의 예방 및 안전관리에 관한 법률</strong> (화재예방법)<br>
+                - <strong>소방시설 자체점검사항 등에 관한 고시</strong> (p.503~)<br>
+                - 예방소방업무처리규정 외 고시 2종
+              </td>
+              <td>
+                - <strong style="color: var(--secondary);">자체점검사항 고시</strong>는 작동점검, 종합정밀점검의 법적 세부 점검 항목을 규정하는 핵심 아카이브.<br>
+                - 건물 규모에 따른 <strong>소방안전관리자 선임의무 및 소방계획서 작성 규정</strong> 추출.<br>
+                - 현장 불량 사항 적발 시 관련 법조항 매칭용.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <p style="margin-top: 15px;">
+          특히, <strong>소방시설 자체점검사항 고시</strong>의 본문과 세부 양식을 MCP 서버에 오프라인 임베디드 데이터로 적재하여, 기사가 자연어로 점검 지적사항을 입력할 때 관련 고시 내용 및 조치 방안을 실시간 연동하는 근거로 삼습니다.
+        </p>
+      </div>
+
+      <!-- 2. Target & User -->
+      <div class="col-4 card" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div class="card-title">
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-12-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            대상물 및 타겟 페르소나
+          </div>
+          
+          <h4 style="color: var(--secondary); margin-bottom: 8px; font-size: 0.95rem;">1. 타겟 소방대상물</h4>
+          <p style="font-size: 0.85rem; margin-bottom: 15px;">
+            <strong>아파트(공동주택)</strong>, <strong>일반 빌딩(업무/상업시설)</strong>, <strong>상가(판매/근린생활시설)</strong>. 이 건물들은 연면적과 층수에 따라 특급~3급 소방안전관리 대상물로 분류되며 매년 1회 이상 법정 작동/종합점검 의무가 있습니다.
+          </p>
+          
+          <h4 style="color: var(--secondary); margin-bottom: 8px; font-size: 0.95rem;">2. 핵심 사용자 페르소나</h4>
+          <p style="font-size: 0.85rem; margin-bottom: 15px;">
+            <strong>현장 소방점검 기사(대행업체 점검원)</strong>.<br>
+            현장에서 점검 단말기나 모바일을 통해 설비를 점검하며 불량 지적사항을 입력하고, 수많은 소방법 및 화재안전기준(NFTC/NFPC)을 찾아 대조한 뒤 보고서를 만들어야 하는 실무 노동을 수행합니다.
+          </p>
+        </div>
+        
+        <div style="background: rgba(249, 115, 22, 0.1); border: 1px solid rgba(249, 115, 22, 0.2); padding: 15px; border-radius: 12px; font-size: 0.8rem; color: var(--secondary); font-weight: 500;">
+          💡 MCP의 역할: 현장 점검 중 애매한 화재안전성능기준(NFTC)을 현장에서 음성이나 채팅으로 실시간 확인하고, 결함 발견 시 소방법령과 연계된 지적사항 조치 계획 초안을 즉시 완성해 주는 "인공지능 어시스턴트".
+        </div>
+      </div>
+
+      <!-- 3. 비교 분석 및 포크 전략 -->
+      <div class="col-12 card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24"><path d="M17 16l-4-4V5H3v14h14v-3zm0 2h3v-3h-3v3zM5 7h6v3H5V7zm0 5h6v3H5v-3zm0 5h6v2H5v-2zm16-6h-3V7h3v4z"/></svg>
+          기존 MCP (agent-safety-oss) 포크 및 재설계 전략
+        </div>
+        <p>
+          건설 안전 문서 작성용 온톨로지를 가진 <code>agent-safety-oss</code>의 아키텍처를 그대로 활용하면서도, <strong>소방점검용 Kinetic(도구) 및 Semantic(온톨로지) 레이어</strong>로 재설계하는 핵심 포크 포인트입니다.
+        </p>
+        
+        <table style="margin-top: 15px;">
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>기존 건설안전 MCP (agent-safety-oss)</th>
+              <th>전환 소방안전점검 MCP (Fork & Redesign)</th>
+              <th>구현할 신규 MCP 도구 (예시)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Semantic Layer<br>(온톨로지 객체)</strong></td>
+              <td>
+                - <code>WorkActivity</code> (작업)<br>
+                - <code>Hazard</code> (위험 요인)<br>
+                - <code>Control</code> (통제 대책)<br>
+                - <code>KOSHA Guide</code> (건설 표준안)
+              </td>
+              <td>
+                - <strong style="color: var(--secondary);">FireSafetySystem</strong> (소방시설 분류: 소화/경보/피난/소화용수/활동)<br>
+                - <strong style="color: var(--secondary);">ChecklistArticle</strong> (자체점검 고시 점검 세부항목)<br>
+                - <strong style="color: var(--secondary);">NFTC_NFPC</strong> (화재안전 기술/성능기준 조문)<br>
+                - <strong style="color: var(--secondary);">DefectRemediation</strong> (지적사항 및 조치방법)
+              </td>
+              <td>
+                - <code>list_fire_systems</code><br>
+                - <code>get_inspection_checklist</code><br>
+                - <code>query_nftc_standards</code>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Kinetic Layer<br>(실행 도구)</strong></td>
+              <td>
+                - <code>assess_my_obligations</code> (의무)<br>
+                - <code>generate_safety_document</code> (작성)<br>
+                - <code>review_safety_document</code> (검수)
+              </td>
+              <td>
+                - <strong style="color: var(--secondary);">assess_building_fire_obligations</strong> (건물 규모/용도별 자체점검 및 안전관리자의무 계산)<br>
+                - <strong style="color: var(--secondary);">generate_defect_remediation_plan</strong> (불량 지적사항 정비/조치 계획서 자동합성)<br>
+                - <strong style="color: var(--secondary);">verify_fire_safety_basis</strong> (작성된 조치안이 NFTC 기준에 부합하는지 검수)
+              </td>
+              <td>
+                - <code>assess_building_fire_obligations</code><br>
+                - <code>generate_defect_remediation_plan</code><br>
+                - <code>verify_fire_safety_basis</code>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 4. 인터랙티브 위젯: 소방안전등급 및 점검의무 계산기 -->
+      <div class="col-6 card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+          [PoC] 소방안전등급 및 필수 시설 계산기
+        </div>
+        <p>
+          대상물의 종류와 건축 규모를 입력하면, <strong>소방시설법령</strong>에 따라 자동으로 소방안전등급과 필수 소방시설 목록, 자체점검 의무를 시뮬레이션해 줍니다.
+        </p>
+        
+        <div class="widget-container">
+          <div class="form-group-row">
+            <div>
+              <label for="building-type">건물 종류</label>
+              <select id="building-type" onchange="calculateFireObligations()">
+                <option value="apartment">공동주택 (아파트)</option>
+                <option value="building">일반 빌딩 (업무/근린생활)</option>
+                <option value="arcade">상가 (판매/상업시설)</option>
+              </select>
+            </div>
+            <div>
+              <label for="building-floors">층수 (지상)</label>
+              <input type="number" id="building-floors" value="15" min="1" oninput="calculateFireObligations()">
+            </div>
+          </div>
+          
+          <div class="form-group-row">
+            <div>
+              <label for="building-area">연면적 (㎡)</label>
+              <input type="number" id="building-area" value="8500" min="1" oninput="calculateFireObligations()">
+            </div>
+            <div>
+              <label for="building-height">건물 높이 (m)</label>
+              <input type="number" id="building-height" value="45" min="1" oninput="calculateFireObligations()">
+            </div>
+          </div>
+          
+          <button class="btn" onclick="calculateFireObligations()">의무 및 필수설비 자동 계산</button>
+          
+          <div id="calculator-result" class="result-box">
+            <div class="result-header">
+              <span>진단 결과</span>
+              <span id="result-grade-badge" class="badge-grade g2">2급 대상물</span>
+            </div>
+            <div class="result-content" id="result-content-text">
+              <!-- JS Generated -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. 인터랙티브 위젯: 점검 기사 지적사항 및 조치계획 시뮬레이터 -->
+      <div class="col-6 card">
+        <div class="card-title">
+          <svg viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.1.4-4.7-1.5-6.6-2-2-5.2-2.4-7.6-.9l3.4 3.4L4.5 9.2 1.1 5.8c-1.5 2.4-1.1 5.6.9 7.6 1.9 1.9 4.5 2.4 6.6 1.5l9.1 9.1c.4.4 1 .4 1.4 0l3.6-3.6c.4-.4.4-1 0-1.4z"/></svg>
+          [PoC] 현장 지적사항(불량) 정비계획 시뮬레이터
+        </div>
+        <p>
+          현장 소방점검 중 발견된 불량 현상을 선택하거나 입력해 보세요. MCP가 자체점검 고시 및 화재안전기준(NFTC)을 추적하여 <strong>법적 위반 조항과 기술 조치 방안</strong>을 자동으로 설계해 줍니다.
+        </p>
+        
+        <div class="widget-container">
+          <label>대표 불량 현상 빠른 선택</label>
+          <div class="defect-options">
+            <div class="defect-chip active" onclick="selectDefect(this, 'detector')">감지기 선로 단선 / 전압 미달</div>
+            <div class="defect-chip" onclick="selectDefect(this, 'sprinkler')">스프링클러 헤드 살수장애 (차폐)</div>
+            <div class="defect-chip" onclick="selectDefect(this, 'indicator')">피난유도등 예비전원 미점등</div>
+            <div class="defect-chip" onclick="selectDefect(this, 'pump')">옥내소화전 주펌프 압력 체절압 미도달</div>
+          </div>
+          
+          <label for="custom-defect">또는 기사 입력 지적사항 (타이핑 또는 음성인식)</label>
+          <textarea id="custom-defect" rows="3" placeholder="예: 3층 복도 방화셔터 하단 물건 적치로 폐쇄 장애 발생">감지기 회로 단선으로 수신기 상에서 경보가 발생하지 않으며, 종단전원 테스트 시 0V 측정됨.</textarea>
+          
+          <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <button id="stt-btn" class="btn" style="flex: 1; background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);" onclick="startSTT()">🎤 실시간 음성인식 (STT)</button>
+            <button class="btn" style="flex: 1;" onclick="generateRemediation()">AI 조치안 합성</button>
+          </div>
+          <div style="text-align: center; margin-bottom: 20px;">
+            <a href="#" id="noise-test-btn" style="color: var(--accent); font-size: 0.8rem; font-weight: 500; text-decoration: none;" onclick="simulateNoiseEnv(event)">⚠️ 고소음 환경 시뮬레이션 (소음 92dB 감지 테스트)</a>
+          </div>
+          
+          <div id="simulator-result" class="result-box">
+            <div class="result-header">
+              <span>MCP 법정 서식 합성 결과</span>
+              <span style="font-size: 0.8rem; color: var(--text-muted);">JSON-LD 및 Markdown 포맷</span>
+            </div>
+            <div class="code-editor" id="editor-output">
+              <!-- Generated Output -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. 현장 실무자 니즈 조사 설문 폼 (Embedded Survey Form) -->
+      <div class="col-12 card" style="margin-top: 20px; border-color: rgba(251, 146, 60, 0.3);">
+        <div class="card-title" style="color: var(--secondary);">
+          <svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+          [실무자 배포용] 현장 소방점검 기사 AI 어시스턴트 도입 니즈 조사
+        </div>
+        <p>
+          위의 [소방 등급 계산기] 및 [정비계획 시뮬레이터(음성인식 포함)] 데모를 직접 테스트해 보신 후, 소방 기사님의 실제 업무 환경과 요구사항을 알려주세요. 제출하신 고귀한 의견은 차세대 소방안전 MCP의 완성도를 높이는 표준 스펙으로 반영됩니다.
+        </p>
+
+        <div class="widget-container" style="background: rgba(15, 15, 20, 0.9); margin-top: 15px;">
+          
+          <!-- Q1 -->
+          <div style="margin-bottom: 25px;">
+            <label style="color: var(--secondary); font-size: 0.95rem; text-transform: none; letter-spacing: normal; display: block; margin-bottom: 12px;">
+              Q1. 소화전 펌프 작동 점검이나 사다리 작업 등 양손이 자유롭지 못한 상황에서, <strong>'실시간 음성인식(STT)'</strong>을 통한 지적사항 자동 입력 기능이 실제 업무 강도를 줄여줄 것이라 생각하십니까?
+            </label>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <label style="flex: 1; min-width: 120px; text-align: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.3s; color: var(--text-muted); font-size: 0.85rem;">
+                <input type="radio" name="q1" value="5" style="margin-right: 5px;"> 5. 매우 그렇다
+              </label>
+              <label style="flex: 1; min-width: 120px; text-align: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.3s; color: var(--text-muted); font-size: 0.85rem;">
+                <input type="radio" name="q1" value="4" style="margin-right: 5px;"> 4. 그렇다
+              </label>
+              <label style="flex: 1; min-width: 120px; text-align: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.3s; color: var(--text-muted); font-size: 0.85rem;">
+                <input type="radio" name="q1" value="3" style="margin-right: 5px;" checked> 3. 보통이다
+              </label>
+              <label style="flex: 1; min-width: 120px; text-align: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.3s; color: var(--text-muted); font-size: 0.85rem;">
+                <input type="radio" name="q1" value="2" style="margin-right: 5px;"> 2. 아니다
+              </label>
+              <label style="flex: 1; min-width: 120px; text-align: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.3s; color: var(--text-muted); font-size: 0.85rem;">
+                <input type="radio" name="q1" value="1" style="margin-right: 5px;"> 1. 전혀 아니다
+              </label>
+            </div>
+          </div>
+
+          <!-- Q2 -->
+          <div style="margin-bottom: 25px;">
+            <label style="color: var(--secondary); font-size: 0.95rem; text-transform: none; letter-spacing: normal; display: block; margin-bottom: 12px;">
+              Q2. 기계실/펌프실 소음 시 <strong>'자동으로 소음을 감지하여 경고 피드백을 주고 퀵 숏컷(단축 터치) 화면으로 전환되는 폴백 설계'</strong>가 실제 현장 혼선을 방지하는 데 실용적이라고 보십니까?
+            </label>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <label style="flex: 1; min-width: 120px; text-align: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.3s; color: var(--text-muted); font-size: 0.85rem;">
+                <input type="radio" name="q2" value="5" style="margin-right: 5px;"> 5. 매우 그렇다
+              </label>
+              <label style="flex: 1; min-width: 120px; text-align: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.3s; color: var(--text-muted); font-size: 0.85rem;">
+                <input type="radio" name="q2" value="4" style="margin-right: 5px;"> 4. 그렇다
+              </label>
+              <label style="flex: 1; min-width: 120px; text-align: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.3s; color: var(--text-muted); font-size: 0.85rem;">
+                <input type="radio" name="q2" value="3" style="margin-right: 5px;" checked> 3. 보통이다
+              </label>
+              <label style="flex: 1; min-width: 120px; text-align: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.3s; color: var(--text-muted); font-size: 0.85rem;">
+                <input type="radio" name="q2" value="2" style="margin-right: 5px;"> 2. 아니다
+              </label>
+              <label style="flex: 1; min-width: 120px; text-align: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.3s; color: var(--text-muted); font-size: 0.85rem;">
+                <input type="radio" name="q2" value="1" style="margin-right: 5px;"> 1. 전혀 아니다
+              </label>
+            </div>
+          </div>
+
+          <!-- Q3 -->
+          <div style="margin-bottom: 25px;">
+            <label style="color: var(--secondary); font-size: 0.95rem; text-transform: none; letter-spacing: normal; display: block; margin-bottom: 12px;">
+              Q3. 현장 점검 시 가장 많이 발견되며, 원터치 <strong>'퀵 숏컷(단축 버튼)'</strong>으로 사전에 반드시 등록되어야 한다고 생각하시는 소방 불량 항목은 무엇입니까? (다중 선택 가능)
+            </label>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px;">
+              <label style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px 15px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center;">
+                <input type="checkbox" name="q3" value="감지기 선로 단선/오동작" style="margin-right: 8px;"> 자동화재탐지설비 감지기 회로 단선 및 오작동
+              </label>
+              <label style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px 15px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center;">
+                <input type="checkbox" name="q3" value="스프링클러 헤드 차폐/살수장애" style="margin-right: 8px;"> 스프링클러 헤드 인테리어 간섭 및 살수장애
+              </label>
+              <label style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px 15px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center;">
+                <input type="checkbox" name="q3" value="피난유도등 예비전원 축전지 불량" style="margin-right: 8px;"> 피난구/통로유도등 LED 상시 점등 및 비상예비전원 불량
+              </label>
+              <label style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px 15px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center;">
+                <input type="checkbox" name="q3" value="소방펌프 압력 스위치 기동 불량" style="margin-right: 8px;"> 소방 펌프 압력챔버 릴리프 밸브 누수 및 기동 스위치 편차 불량
+              </label>
+              <label style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px 15px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center;">
+                <input type="checkbox" name="q3" value="방화문/셔터 폐쇄 및 물건적치 장애" style="margin-right: 8px;"> 방화도어 도어클로저 고장 및 방화셔터 하단 물건적치 차단
+              </label>
+              <label style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); padding: 12px 15px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: center;">
+                <input type="checkbox" name="q3" value="소화기 압력 불량 및 보존연한 초과" style="margin-right: 8px;"> 소화기 지시압력계 저하 및 10년 내용연수 초과 노후화
+              </label>
+            </div>
+          </div>
+
+          <!-- Q4 -->
+          <div style="margin-bottom: 25px;">
+            <label style="color: var(--secondary); font-size: 0.95rem; text-transform: none; letter-spacing: normal; display: block; margin-bottom: 12px;">
+              Q4. 점검 완료 후 수많은 지적사항(불량)에 대해, 관련 <strong>소방법 조항 매핑과 NFTC 기술 조치 정비계획서(제출 보고서용 초안)가 즉각 자동 완성되는 기능</strong>이 전체 행정 업무 시간을 얼마나 단축시켜 줄 것으로 보십니까?
+            </label>
+            <select id="survey-q4">
+              <option value="90%이상">상당함 (전체 행정 작성 시간의 90% 이상 단축)</option>
+              <option value="50%~90%">유의미함 (약 50% ~ 90% 시간 절감)</option>
+              <option value="20%~50%">약간 단축 (약 20% ~ 50% 시간 절감)</option>
+              <option value="미비">거의 체감 안 됨</option>
+            </select>
+          </div>
+
+          <!-- Q5 -->
+          <div style="margin-bottom: 25px;">
+            <label style="color: var(--secondary); font-size: 0.95rem; text-transform: none; letter-spacing: normal; display: block; margin-bottom: 12px;">
+              Q5. 현장 소방점검을 진행하시면서 인공지능(AI)이 해결해 주었으면 하는 <strong>가장 가렵거나 힘든 애로사항(예: 복잡한 NFTC 화재안전기준 암기, 불량 유형 분류 등)</strong>은 무엇입니까? (주관식 의견)
+            </label>
+            <textarea id="survey-q5" rows="4" placeholder="현장의 고충과 개선 희망 사항을 솔직하게 적어주세요..."></textarea>
+          </div>
+
+          <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+            <button class="btn" style="flex: 1; min-width: 250px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);" onclick="exportSurveyData()">💾 설문 데이터 파일(JSON)로 저장</button>
+            <button class="btn" style="flex: 1; min-width: 250px; background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);" onclick="copySurveyText()">📋 작성 결과 클립보드 복사</button>
+          </div>
+          
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <footer>
+    <p>Projects/fire-safety - 소방안전점검 MCP 기획 및 PoC 분석서</p>
+    <p style="font-size: 0.75rem; margin-top: 5px; color: rgba(255,255,255,0.2);">© 2026 Fire Safety Inspection MCP Assistant. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // 1. 소방안전등급 및 필수 시설 계산기 로직
+    function calculateFireObligations() {
+      const type = document.getElementById("building-type").value;
+      const floors = parseInt(document.getElementById("building-floors").value) || 1;
+      const area = parseInt(document.getElementById("building-area").value) || 1;
+      const height = parseInt(document.getElementById("building-height").value) || 1;
+      
+      let grade = "3급";
+      let gradeClass = "g3";
+      let facilities = [];
+      let duties = "";
+
+      // 등급 판단 간이 로직 (법제처 소방시설법 시행령 기준 시뮬레이션)
+      if (floors >= 50 || height >= 200) {
+        grade = "특급 대상물";
+        gradeClass = "special";
+      } else if (floors >= 30 || height >= 120 || (type !== 'apartment' && area >= 15000)) {
+        grade = "1급 대상물";
+        gradeClass = "g1";
+      } else if (area >= 15000 && type === 'apartment') {
+        grade = "1급 대상물 (아파트)";
+        gradeClass = "g1";
+      } else if (area >= 5000 && type !== 'apartment') {
+        grade = "2급 대상물";
+        gradeClass = "g2";
+      } else if (type === 'apartment' && floors >= 11) {
+        grade = "2급 대상물 (아파트)";
+        gradeClass = "g2";
+      } else {
+        grade = "3급 대상물";
+        gradeClass = "g3";
+      }
+
+      // 필수 시설 분류
+      if (grade.includes("특급") || grade.includes("1급")) {
+        facilities = ["옥내소화전설비", "스프링클러설비", "자동화재탐지설비", "피난유도등 및 비상조명등", "제연설비", "연결송수관설비", "무선통신보조설비"];
+        duties = `
+          <ul>
+            <li><strong>소방안전관리자 선임:</strong> 선임 의무 있음 (30일 이내 선임, 14일 이내 소방서 신고)</li>
+            <li><strong>자체점검 의무:</strong> 연 1회 이상 종합정밀점검 및 연 1회 이상 작동점검 필수 실시.</li>
+            <li><strong>제출 시한:</strong> 점검 후 15일 이내 소방서 또는 자체점검 서식 온라인 제출.</li>
+          </ul>
+        `;
+      } else if (grade.includes("2급")) {
+        facilities = ["옥내소화전설비 (조건부)", "스프링클러 또는 간이스프링클러", "자동화재탐지설비", "유도등", "투척용소화기"];
+        duties = `
+          <ul>
+            <li><strong>소방안전관리자 선임:</strong> 선임 의무 있음 (2급 자격 소지자 이상)</li>
+            <li><strong>자체점검 의무:</strong> 연 1회 작동점검 및 조건에 따른 종합정밀점검 의무.</li>
+            <li><strong>특이사항:</strong> 아파트의 경우 지상 11층 이상 스프링클러 헤드 필수 설치 대상.</li>
+          </ul>
+        `;
+      } else {
+        facilities = ["소화기구", "단독경보형감지기", "유도등"];
+        duties = `
+          <ul>
+            <li><strong>소방안전관리자 선임:</strong> 3급 소방안전관리자 선임 의무.</li>
+            <li><strong>자체점검 의무:</strong> 연 1회 작동점검 실시 후 보고서 보관 및 서명 의무.</li>
+          </ul>
+        `;
+      }
+
+      // 결과 렌더링
+      const badge = document.getElementById("result-grade-badge");
+      badge.textContent = grade;
+      badge.className = "badge-grade " + gradeClass;
+
+      let html = `
+        <p>입력된 구조: <strong>${type === 'apartment' ? '아파트' : type === 'building' ? '일반 빌딩' : '상가'} (지상 ${floors}층, 연면적 ${area.toLocaleString()}㎡, 높이 ${height}m)</strong></p>
+        <p><strong>[법적 의무 사항]</strong></p>
+        ${duties}
+        <p style="margin-top: 12px;"><strong>[필수 설치 소방시설 유형]</strong></p>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+          ${facilities.map(f => `<span style="background: rgba(255,255,255,0.06); padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.1); color: #ffffff;">${f}</span>`).join('')}
+        </div>
+      `;
+
+      document.getElementById("result-content-text").innerHTML = html;
+      document.getElementById("calculator-result").style.display = "block";
+    }
+
+    // 2. 현장 지적사항(불량) 정비계획 시뮬레이터 로직
+    const defectDatabase = {
+      detector: {
+        chipText: "감지기 선로 단선 / 전압 미달",
+        inputText: "자동화재탐지설비 점검 중 4층 복도 A감지기 회로의 단선 결함 발생. 종단저항 수신반 측 전압 측정 결과 0V 확인됨. 경보 오작동 및 미작동 유발.",
+        lawBasis: "소방시설법 제12조 (소방시설의 관리 등) 제1항 및 화재안전기술기준 NFTC 203",
+        penalty: "소방시설의 기능 및 성능에 지장을 주는 폐쇄·차단·임의 조작 행위 시 5년 이하의 징역 또는 5천만원 이하의 벌금 (단순 관리 소홀 시 과태료 300만원 이하)",
+        remediation: "1. 4층 단선 구간 선로 단선 여부 관창 탐색.\n2. 불량 감지기 헤드 탈거 후 단자 연결부 접촉 불량 및 단선 확인 후 재조인 작업.\n3. 단선 감지기 신품 교체 및 종단전압 24V 복구 상태 재확인."
+      },
+      sprinkler: {
+        chipText: "스프링클러 헤드 살수장애 (차폐)",
+        inputText: "2층 판매시설(매장) 내부 리모델링 인테리어 파티션 설치로 인해 스프링클러 헤드 3개 반경 살수 방해(차폐) 현상 적발. 살수 반경 확보 안 됨.",
+        lawBasis: "소방시설법 제12조 제1항 및 화재안전성능기준 NFPC 103 / NFTC 103",
+        penalty: "소방시설을 고장 난 상태로 방치하거나 임의 변경하여 장애 발생 시 300만원 이하의 과태료",
+        remediation: "1. 헤드와 인접 파티션 간의 수평거리 최소 60cm 이상 이격 조정.\n2. 이격이 곤란할 경우 소방 배관 연장 및 신설을 통한 헤드 증설(이설) 조치.\n3. 화재 예방을 위한 소방공사업 면허업체 조치 통보."
+      },
+      indicator: {
+        chipText: "피난유도등 예비전원 미점등",
+        inputText: "지하 1층 주차장 기둥부 피난구 유도등(LED) 상시 전원은 점등되나, 수신기 비상전원 강제 연동 시 또는 자체 예비전원 테스트 스위치 누를 시 소등됨(축전지 불량).",
+        lawBasis: "소방시설법 제12조 제1항 및 피난기구 화재안전기준 NFTC 301",
+        penalty: "유도등 등 피난설비의 작동 및 전원 공급 결함 미정비 시 200만원 이하의 과태료",
+        remediation: "1. 유도등 내장 예비전원용 니켈카드뮴(Ni-Cd) 축전지 커넥터 접촉 불량 확인.\n2. 축전지 수명 노후화에 따른 신품 리튬/니켈 카드뮴 축전지(DC 4.8V~12V 규격품) 교체 조치.\n3. 수동 점검 스위치를 활용한 정상 예비전원 연동 테스트 완료."
+      },
+      pump: {
+        chipText: "옥내소화전 주펌프 압력 체절압 미도달",
+        inputText: "옥내소화전 설비 성능시험 배관 작동 연동 테스트 결과, 주펌프 가동 시 토출 압력이 기동점 대비 과도하게 낮아 규정 방수압인 0.17 MPa에 미도달함. 릴리프 밸브 상시 누수 의심.",
+        lawBasis: "소방시설법 제12조 및 옥내소화전설비 화재안전성능기준 NFPC 101",
+        penalty: "소방펌프 작동 차단 및 정비 불이행 시 소방시설법 벌칙 적용 (벌금 또는 시정명령)",
+        remediation: "1. 릴리프 밸브 시트부 이물질 제거 및 압력 설정 재조정.\n2. 펌프 토출측 게이트밸브 폐쇄 상태에서 체절운전 압력 확인 및 기동용 압력챔버 압력스위치 압력 편차(Diff) 재설정.\n3. 규정 토출 방수압 및 토출량 도달 여부 확인 완료."
+      }
+    };
+
+    let selectedKey = 'detector';
+
+    // Web Speech API 기반 실시간 STT(음성 인식) 구현
+    let recognition;
+    function startSTT() {
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert("이 브라우저는 음성 인식을 지원하지 않습니다. Chrome 브라우저를 사용해 주세요.");
+        return;
+      }
+      
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.lang = 'ko-KR';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      const btn = document.getElementById('stt-btn');
+      btn.textContent = "🎙️ 듣는 중... 현장 상태를 말씀하세요";
+      btn.style.background = "linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)";
+      
+      recognition.start();
+
+      recognition.onresult = function(event) {
+        const speechResult = event.results[0][0].transcript;
+        document.getElementById('custom-defect').value = speechResult;
+        btn.textContent = "🎤 음성 입력 완료 (클릭해 재시도)";
+        btn.style.background = "linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)";
+        
+        // 커스텀 음성 입력이 들어왔으므로 기존 칩 활성화 해제
+        selectedKey = 'custom';
+        document.querySelectorAll('.defect-chip').forEach(chip => chip.classList.remove('active'));
+        
+        // 자동으로 분석기 실행
+        generateRemediation();
+      };
+
+      recognition.onerror = function(event) {
+        console.error("STT 에러: ", event.error);
+        btn.textContent = "🎤 음성인식 오류 (클릭해 재시도)";
+        btn.style.background = "linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%)";
+      };
+
+      recognition.onspeechend = function() {
+        recognition.stop();
+      };
+    }
+
+    // 고소음 현장 감지 시뮬레이션
+    function simulateNoiseEnv(e) {
+      e.preventDefault();
+      const btn = document.getElementById('stt-btn');
+      const originalText = btn.textContent;
+      const originalBg = btn.style.background;
+      
+      btn.textContent = "⚠️ 소음 수준 초과 (92dB 감지)";
+      btn.style.background = "linear-gradient(135deg, #ef4444 0%, #7f1d1d 100%)";
+      btn.disabled = true;
+      
+      alert("🚨 [소음 센서 감지 피드백]\n\n현재 구역의 측정 소음이 92dB로 음성인식 불가 기준(80dB)을 초과했습니다.\n\n음성 입력이 일시적으로 제한됩니다. 화면 상단의 '대표 불량 현상 퀵 숏컷' 칩(Shortcut Chip) 또는 타이핑 입력을 사용해 주십시오.");
+      
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.textContent = originalText;
+        btn.style.background = originalBg;
+      }, 5000); // 5초 후 복구
+    }
+
+    function selectDefect(element, key) {
+      document.querySelectorAll('.defect-chip').forEach(chip => chip.classList.remove('active'));
+      element.classList.add('active');
+      selectedKey = key;
+      document.getElementById('custom-defect').value = defectDatabase[key].inputText;
+    }
+
+    function generateRemediation() {
+      const inputText = document.getElementById('custom-defect').value;
+      const db = defectDatabase[selectedKey];
+      
+      // 기사 임의 텍스트 입력 대응을 위한 템플릿 대체 로직
+      const currentLaw = db ? db.lawBasis : "소방시설법 제12조 제1항 및 화재안전기준";
+      const currentPenalty = db ? db.penalty : "소방시설 방치 및 불량 미정비에 따른 벌칙 적용";
+      const currentRemediation = db ? db.remediation : "1. 불량 원인 물리적 상태 현장 점검.\n2. 소방법령에 의거한 적합 규격 부품 교체 및 복구.\n3. 정상 작동 및 작동 연동 상태 정밀 피드백 테스트 수행.";
+
+      const codeOutput = `// [MCP Fire Safety Engine - JSON-LD / Markdown Generator]
+{
+  "@context": "https://schema.org/v1/fire-safety-mcp",
+  "@type": "DefectRemediationReport",
+  "buildingContext": {
+    "target": "공동주택 및 특정소방대상물",
+    "defectLocation": "점검 지적 구역"
+  },
+  "defectIncident": {
+    "description": "${inputText.replace(/\n/g, ' ')}"
+  },
+  "legalCompliance": {
+    "applicableLaw": "${currentLaw}",
+    "penaltySeverity": "${currentPenalty}"
+  },
+  "remediationPlan": {
+    "steps": [
+      "${currentRemediation.split('\n').join('",\n      "')}"
+    ]
+  },
+  "draftedOfficialText": "【지적사항 조치 계획서 초안】\\n\\n● 결함 내용: ${inputText}\\n● 관련 법적 근거: ${currentLaw}\\n● 조치 조언: 위의 지적 사항에 대하여 화재안전기술기준(NFTC)에 부합하는 소방 안전 부품(축전지, 축제, 라인 복구 등)의 적격 규격품 교체 완료 및 성능 복구를 권고함. 방치 시 소방법에 의거한 행정처분 및 과태료 대상이 될 수 있음."
+}`;
+
+      document.getElementById('editor-output').textContent = codeOutput;
+      document.getElementById('simulator-result').style.display = 'block';
+    }
+
+    // 3. 설문조사 데이터 수집 및 처리 기능
+    function getSurveyValues() {
+      const q1Val = document.querySelector('input[name="q1"]:checked')?.value || "3";
+      const q2Val = document.querySelector('input[name="q2"]:checked')?.value || "3";
+      
+      const q3Checkboxes = document.querySelectorAll('input[name="q3"]:checked');
+      const q3Val = Array.from(q3Checkboxes).map(cb => cb.value);
+      
+      const q4Val = document.getElementById('survey-q4').value;
+      const q5Val = document.getElementById('survey-q5').value;
+      
+      return {
+        timestamp: new Date().toISOString(),
+        q1_stt_utility: q1Val + "점/5점",
+        q2_noise_fallback: q2Val + "점/5점",
+        q3_shortcut_necessity: q3Val,
+        q4_admin_time_reduction: q4Val,
+        q5_manual_painpoints: q5Val
+      };
+    }
+
+    // JSON 파일 내보내기
+    function exportSurveyData() {
+      const data = getSurveyValues();
+      const jsonStr = JSON.stringify(data, null, 2);
+      const blob = new Blob([jsonStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `소방점검_기사_현장니즈_조사_${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      alert("💾 작성하신 설문조사가 브라우저 다운로드 폴더에 JSON 파일로 안전하게 저장되었습니다.\n기획자에게 전달해 주시면 아주 훌륭한 스펙 근거가 됩니다!");
+    }
+
+    // 클립보드 복사
+    function copySurveyText() {
+      const data = getSurveyValues();
+      const txtStr = `【소방점검 기사 AI 어시스턴트 도입 현장 니즈 조사 결과】
+■ 조사 일시: ${data.timestamp}
+■ Q1. STT 음성인식 유용성 평가 (5점 만점): ${data.q1_stt_utility}
+■ Q2. 소음감지 숏컷 폴백 유용성 (5점 만점): ${data.q2_noise_fallback}
+■ Q3. 숏컷 필수 등록 설비: ${data.q3_shortcut_necessity.join(', ') || '선택 없음'}
+■ Q4. AI 행정 업무 단축 효과 기대: ${data.q4_admin_time_reduction}
+■ Q5. 현장 점검 실무 고충 사항: 
+"${data.q5_manual_painpoints || '의견 없음'}"
+`;
+
+      navigator.clipboard.writeText(txtStr).then(() => {
+        alert("📋 작성 결과가 클립보드에 깔끔하게 복사되었습니다!\n원하시는 메신저나 이메일에 붙여넣기(Ctrl+V)하여 기획자에게 즉시 전달해 주세요.");
+      }).catch(err => {
+        console.error("복사 실패: ", err);
+        alert("클립보드 복사에 실패했습니다. 브라우저 보안 설정을 확인하시거나 텍스트 영역을 직접 선택해 복사해 주세요.");
+      });
+    }
+
+    // 초기 실행
+    window.onload = function() {
+      calculateFireObligations();
+      generateRemediation();
+    };
+  </script>
+</body>
+</html>

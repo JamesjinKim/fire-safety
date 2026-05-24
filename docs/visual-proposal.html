@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>소방안전점검 워크플로 혁신 시스템 기획안</title>
+  <meta name="description" content="건축물대장 자동 매칭부터 AI 음성 인식까지, 대한민국 영세 업체를 위한 초경량 소방안전점검 SaaS 기획안">
+  
+  <!-- Google Fonts (Outfit & Noto Sans KR) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-light: #e0f2fe;
+      --primary-dark: #0369a1;
+      --accent: #10b981;
+      --accent-light: #d1fae5;
+      --indigo: #6366f1;
+      --indigo-light: #e0e7ff;
+      --neutral-900: #0f172a;
+      --neutral-800: #1e293b;
+      --neutral-700: #334155;
+      --neutral-500: #64748b;
+      --neutral-300: #cbd5e1;
+      --neutral-100: #f8fafc;
+      --neutral-50: #ffffff;
+      
+      --gradient-bg: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 50%, #f5f3ff 100%);
+      --gradient-primary: linear-gradient(135deg, #0284c7 0%, #6366f1 100%);
+      --gradient-accent: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      
+      --shadow-sm: 0 2px 8px -2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 12px 24px -4px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 20px 40px -8px rgba(15, 23, 42, 0.12);
+      
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: var(--neutral-100);
+      background-image: radial-gradient(circle at 10% 20%, rgba(2, 132, 199, 0.03) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.03) 0%, transparent 40%);
+      color: var(--neutral-800);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    
+    h1, h2, h3, h4 {
+      font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+      font-weight: 700;
+      color: var(--neutral-900);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    
+    /* Header & Navigation */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+      padding: 16px 0;
+      transition: var(--transition);
+    }
+    
+    .nav-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--gradient-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+    }
+    
+    .logo-text {
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .logo-badge {
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      padding: 2px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+    
+    .nav-links a {
+      text-decoration: none;
+      color: var(--neutral-700);
+      font-weight: 500;
+      font-size: 15px;
+      transition: var(--transition);
+      position: relative;
+      padding: 8px 0;
+    }
+    
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+    
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--primary);
+      transition: var(--transition);
+    }
+    
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+    
+    /* Hero Section */
+    .hero {
+      background: var(--gradient-bg);
+      padding: 80px 0 100px 0;
+      position: relative;
+      overflow: hidden;
+      border-bottom-left-radius: 48px;
+      border-bottom-right-radius: 48px;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px;
+      right: -200px;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 48px;
+      align-items: center;
+    }
+    
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .hero-tag {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      background: var(--indigo-light);
+      color: var(--indigo);
+      padding: 6px 14px;
+      border-radius: 30px;
+      margin-bottom: 20px;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .hero-title {
+      font-size: 46px;
+      line-height: 1.25;
+      letter-spacing: -1.5px;
+      margin-bottom: 24px;
+    }
+    
+    .hero-title span {
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .hero-description {
+      font-size: 18px;
+      color: var(--neutral-700);
+      margin-bottom: 36px;
+      font-weight: 400;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 16px;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 28px;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 16px;
+      text-decoration: none;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: white;
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(99, 102, 241, 0.35);
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: var(--neutral-700);
+      border: 1px solid var(--neutral-300);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--neutral-100);
+      border-color: var(--neutral-500);
+    }
+    
+    .hero-visual {
+      background: rgba(255, 255, 255, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 28px;
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(20px);
+      position: relative;
+    }
+    
+    .mock-window {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    
+    .mock-header {
+      background: var(--neutral-50);
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .dot-r { background: #ff5f56; }
+    .dot-y { background: #ffbd2e; }
+    .dot-g { background: #27c93f; }
+    
+    .mock-title {
+      font-size: 11px;
+      color: var(--neutral-500);
+      margin-left: auto;
+      margin-right: auto;
+      font-family: 'Outfit', sans-serif;
+    }
+    
+    .mock-body {
+      padding: 24px;
+    }
+    
+    /* Segment Section */
+    section {
+      padding: 100px 0;
+    }
+    
+    .section-title-wrapper {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 60px auto;
+    }
+    
+    .section-tag {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+    
+    .section-title {
+      font-size: 32px;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+    }
+    
+    .section-subtitle {
+      font-size: 16px;
+      color: var(--neutral-500);
+    }
+    
+    /* Core Strategy Cards */
+    .strategy-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+    
+    .strategy-card {
+      background: white;
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .strategy-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary-light);
+    }
+    
+    .card-badge {
+      display: inline-block;
+      align-self: flex-start;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+    
+    .badge-red {
+      background: #fef2f2;
+      color: #ef4444;
+    }
+    
+    .badge-blue {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+    
+    .strategy-card h3 {
+      font-size: 22px;
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+    }
+    
+    .strategy-card p {
+      color: var(--neutral-500);
+      font-size: 15px;
+      margin-bottom: 24px;
+    }
+    
+    .strategy-list {
+      list-style: none;
+      margin-top: auto;
+    }
+    
+    .strategy-list li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--neutral-700);
+      border-bottom: 1px dashed rgba(226, 232, 240, 0.8);
+    }
+    
+    .strategy-list li:last-child {
+      border-bottom: none;
+    }
+    
+    .icon-check {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
+    }
+    
+    .icon-close {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fef2f2;
+      color: #ef4444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
+    }
+    
+    /* Interactive Flow Map */
+    .flow-wrapper {
+      background: white;
+      border-radius: 32px;
+      padding: 48px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    
+    .flow-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      position: relative;
+    }
+    
+    .flow-steps::before {
+      content: '';
+      position: absolute;
+      top: 40px;
+      left: 12%;
+      right: 12%;
+      height: 2px;
+      background: var(--neutral-300);
+      z-index: 1;
+    }
+    
+    .flow-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .step-num {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: white;
+      border: 3px solid var(--neutral-300);
+      color: var(--neutral-500);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      transition: var(--transition);
+    }
+    
+    .flow-step.active .step-num {
+      border-color: var(--primary);
+      background: var(--gradient-primary);
+      color: white;
+      box-shadow: 0 0 0 6px rgba(2, 132, 199, 0.15);
+    }
+    
+    .step-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 8px;
+    }
+    
+    .step-desc {
+      font-size: 13px;
+      color: var(--neutral-500);
+      padding: 0 10px;
+    }
+    
+    .flow-content-viewer {
+      margin-top: 48px;
+      background: var(--neutral-100);
+      border-radius: 20px;
+      padding: 32px;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      min-height: 280px;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+    }
+    
+    .viewer-panel {
+      display: none;
+      width: 100%;
+      animation: fadeIn 0.4s ease;
+    }
+    
+    .viewer-panel.active {
+      display: block;
+    }
+    
+    .viewer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 32px;
+      align-items: center;
+    }
+    
+    .viewer-text h4 {
+      font-size: 20px;
+      margin-bottom: 12px;
+      color: var(--primary);
+    }
+    
+    .viewer-text p {
+      color: var(--neutral-700);
+      font-size: 15px;
+      margin-bottom: 16px;
+    }
+    
+    .viewer-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--indigo-light);
+      color: var(--indigo);
+    }
+    
+    .viewer-graphic {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      font-size: 13px;
+      font-family: monospace;
+    }
+    
+    /* Cost Compare Section */
+    .bg-light-blue {
+      background: #f0f7ff;
+      border-radius: 48px;
+    }
+    
+    .cost-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 48px;
+      align-items: center;
+    }
+    
+    .cost-card-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    
+    .cost-box {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      text-align: center;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .cost-box.recommended {
+      border: 2px solid var(--accent);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .cost-box.recommended::before {
+      content: '추천';
+      position: absolute;
+      top: 10px;
+      right: -20px;
+      background: var(--gradient-accent);
+      color: white;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 20px;
+      transform: rotate(45deg);
+    }
+    
+    .cost-box-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--neutral-500);
+      margin-bottom: 12px;
+    }
+    
+    .cost-val {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--neutral-900);
+      margin-bottom: 6px;
+      font-family: 'Outfit', sans-serif;
+    }
+    
+    .cost-val-r {
+      color: #ef4444;
+    }
+    
+    .cost-val-a {
+      color: var(--accent);
+    }
+    
+    .cost-desc {
+      font-size: 11px;
+      color: var(--neutral-500);
+    }
+    
+    /* Interactive Simulator */
+    .simulator-wrapper {
+      background: white;
+      border-radius: 24px;
+      padding: 32px;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      box-shadow: var(--shadow-md);
+      margin-top: 40px;
+    }
+    
+    .sim-header {
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .sim-header h4 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    
+    .sim-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+    
+    .sim-panel-left {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .sample-btn {
+      background: var(--neutral-100);
+      border: 1px solid var(--neutral-300);
+      padding: 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 500;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .sample-btn:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+    }
+    
+    .sample-btn-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .sim-panel-right {
+      background: var(--neutral-900);
+      border-radius: 16px;
+      padding: 24px;
+      color: #38bdf8;
+      font-family: monospace;
+      font-size: 13px;
+      min-height: 240px;
+      overflow-y: auto;
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+      border: 1px solid #0c4a6e;
+    }
+    
+    /* Timeline Section */
+    .timeline {
+      position: relative;
+      max-width: 800px;
+      margin: 40px auto 0 auto;
+    }
+    
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 32px;
+      width: 4px;
+      background: var(--primary-light);
+    }
+    
+    .timeline-item {
+      position: relative;
+      padding-left: 80px;
+      margin-bottom: 48px;
+    }
+    
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .timeline-dot {
+      position: absolute;
+      left: 18px;
+      top: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: white;
+      border: 4px solid var(--primary);
+      z-index: 2;
+      transition: var(--transition);
+    }
+    
+    .timeline-item.active .timeline-dot {
+      background: var(--gradient-primary);
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.15);
+    }
+    
+    .timeline-content {
+      background: white;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    
+    .timeline-phase {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    
+    .timeline-content h4 {
+      font-size: 18px;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+    
+    .timeline-content p {
+      color: var(--neutral-500);
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+    
+    .timeline-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .timeline-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--neutral-100);
+      color: var(--neutral-700);
+    }
+    
+    /* Footer Section */
+    footer {
+      background: var(--neutral-900);
+      color: var(--neutral-300);
+      padding: 60px 0;
+      border-top-left-radius: 40px;
+      border-top-right-radius: 40px;
+    }
+    
+    .footer-grid {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--neutral-700);
+      padding-bottom: 40px;
+      margin-bottom: 30px;
+    }
+    
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .footer-logo-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--gradient-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 16px;
+    }
+    
+    .footer-logo-text {
+      color: white;
+      font-size: 18px;
+      font-weight: 900;
+    }
+    
+    .copyright {
+      font-size: 13px;
+      color: var(--neutral-500);
+      text-align: center;
+    }
+    
+    /* Animations */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 968px) {
+      .hero-grid, .cost-grid, .strategy-grid, .sim-grid {
+        grid-template-columns: 1fr;
+      }
+      .flow-steps {
+        grid-template-columns: 1fr 1fr;
+      }
+      .flow-steps::before {
+        display: none;
+      }
+      .cost-card-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="nav-wrapper">
+        <a href="#" class="logo">
+          <div class="logo-icon">F</div>
+          <span class="logo-text">소방안전점검 스마트 워크플로</span>
+          <span class="logo-badge">Dynamic v1</span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="#overview">프로젝트 개요</a></li>
+          <li><a href="#flow">핵심 워크플로</a></li>
+          <li><a href="#cost">비용 최적화</a></li>
+          <li><a href="#roadmap">진화 로드맵</a></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-content">
+          <div class="hero-tag">LIGHT ERP & AI PIVOT</div>
+          <h1 class="hero-title">건축물대장부터 AI까지<br><span>가장 똑똑하고 가벼운</span><br>소방안전 SaaS</h1>
+          <p class="hero-description">한국의 1만여 영세 소방점검업체를 위해, 복잡한 9대 의무 ERP의 군더더기를 과감히 배제했습니다. 오직 건축물대장에 기반한 시계열 법령 매칭, 완벽한 A4 1:1 법정 서식 인쇄, 그리고 저비용 고효율 AI 음성 보고 시스템만 담았습니다.</p>
+          <div class="btn-group">
+            <a href="#flow" class="btn btn-primary">핵심 기능 탐색하기</a>
+            <a href="#cost" class="btn btn-secondary">AI 가성비 분석</a>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="mock-window">
+            <div class="mock-header">
+              <div class="dot dot-r"></div>
+              <div class="dot dot-y"></div>
+              <div class="dot dot-g"></div>
+              <div class="mock-title">FIRE-INSPECTION-SYSTEM-POC</div>
+            </div>
+            <div class="mock-body">
+              <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div style="border-left: 4px solid var(--primary); padding-left: 12px;">
+                  <div style="font-size: 11px; color: var(--neutral-500); font-weight: 700;">ACTIVE WORKER / OFFICE</div>
+                  <div style="font-size: 16px; font-weight: 800; color: var(--neutral-900);">건물 정보 기반 법정양식 동적 매칭</div>
+                </div>
+                <div style="background: var(--neutral-100); border-radius: 8px; padding: 12px; font-size: 13px; color: var(--neutral-700);">
+                  사용승인일 <strong>2015-08-12</strong> ➔ 당시 <strong>소방법 설치기준 제12조</strong> 1:1 파싱 ➔ <strong>별지 제4호(점검표 6종)</strong> 활성화 완료.
+                </div>
+                <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                  <span style="font-size: 11px; background: var(--accent-light); color: var(--accent); padding: 4px 8px; border-radius: 4px; font-weight: bold;">환각 0% 검증</span>
+                  <span style="font-size: 11px; background: var(--indigo-light); color: var(--indigo); padding: 4px 8px; border-radius: 4px; font-weight: bold;">A4 1:1 출력 규격</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Overview Section -->
+  <section id="overview">
+    <div class="container">
+      <div class="section-title-wrapper">
+        <span class="section-tag">Overview</span>
+        <h2 class="section-title">비즈니스 성공을 위한 영리한 세그먼트 차별화</h2>
+        <p class="section-subtitle">기존의 무거운 통합 ERP 시장의 틈새를 찾아, 본질인 '자체점검 일지 및 보고서 작성'의 가치를 10배로 극대화합니다.</p>
+      </div>
+      
+      <div class="strategy-grid">
+        <div class="strategy-card">
+          <span class="card-badge badge-red">기존의 무거운 ERP (실패 모델)</span>
+          <h3>회피 대상 1순위, 거대한 만능 시스템</h3>
+          <p>수많은 중소 점검업체들이 값비싼 라이선스를 내고도 복잡한 UI와 과도한 의무 기능 때문에 도입을 회피하는 영역입니다.</p>
+          <ul class="strategy-list">
+            <li><span class="icon-close">✕</span> 다단계 복잡한 전자결재 프로세스</li>
+            <li><span class="icon-close">✕</span> 무거운 회사 인사/근태/급여 관리 연동</li>
+            <li><span class="icon-close">✕</span> 사용률 5% 미만의 재고 관리 기능 내장</li>
+            <li><span class="icon-close">✕</span> 점검 데이터의 시계열 변조 추적 불가</li>
+          </ul>
+        </div>
+        
+        <div class="strategy-card">
+          <span class="card-badge badge-blue">스마트 워크플로 시스템 (Light SaaS)</span>
+          <h3>가입은 3분, 보고서 완성은 30분</h3>
+          <p>현장의 리소스를 절약하고 법적 기준의 신뢰도를 최고 수준으로 올리는 오직 핵심 기능 위주의 최경량 스마트 웹앱입니다.</p>
+          <ul class="strategy-list">
+            <li><span class="icon-check">✓</span> 건축물대장 기준 소방법령 자동 결정론적 매칭</li>
+            <li><span class="icon-check">✓</span> 별지 9호 및 4호서식 완벽 A4 1:1 실측 인쇄</li>
+            <li><span class="icon-check">✓</span> 1차 현장검수 ➔ 2차 관리자검수 상태값 제어</li>
+            <li><span class="icon-check">✓</span> 청구 및 세금계산서 미리보기 PDF 제공</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Workflow Section -->
+  <section id="flow" style="background: var(--neutral-50);">
+    <div class="container">
+      <div class="section-title-wrapper">
+        <span class="section-tag">Interactive Process</span>
+        <h2 class="section-title">E2E 소방안전점검 스마트 프로세스</h2>
+        <p class="section-subtitle">사무실(단계 A)과 현장(단계 B)을 이원화하여 네트워크 의존성을 제거하고 데이터의 무결성을 유지합니다. 아래의 각 단계를 클릭하여 디테일을 확인하세요.</p>
+      </div>
+      
+      <div class="flow-wrapper">
+        <div class="flow-steps">
+          <div class="flow-step active" onclick="switchTab(0)">
+            <div class="step-num">01</div>
+            <div class="step-title">대장 데이터 확보</div>
+            <div class="step-desc">건축물대장 정보 조회 및 입력</div>
+          </div>
+          <div class="flow-step" onclick="switchTab(1)">
+            <div class="step-num">02</div>
+            <div class="step-title">법령 매칭 & 동결</div>
+            <div class="step-desc">그 시점 법령 매칭 후 작업지시 확정</div>
+          </div>
+          <div class="flow-step" onclick="switchTab(2)">
+            <div class="step-num">03</div>
+            <div class="step-title">현장 점검 & 변경기록</div>
+            <div class="step-desc">현장 이탈 수치 실시간 검수</div>
+          </div>
+          <div class="flow-step" onclick="switchTab(3)">
+            <div class="step-num">04</div>
+            <div class="step-title">A4 1:1 실측 출력</div>
+            <div class="step-desc">별지 제9호/4호 원본 정합 인쇄</div>
+          </div>
+        </div>
+        
+        <div class="flow-content-viewer">
+          <!-- Panel 1 -->
+          <div class="viewer-panel active">
+            <div class="viewer-grid">
+              <div class="viewer-text">
+                <span class="viewer-badge">단계 A: 사무실 (오류 최소화)</span>
+                <h4 style="margin-top: 10px;">공공데이터 기반 건축물 정보 파싱</h4>
+                <p>도로명 주소 입력 시, 공공 데이터베이스(건축물대장 OpenAPI)와 즉시 연동하여 사용승인일, 연면적, 층수, 동수, 구조 등 법령 계산에 필요한 핵심 수치를 휴먼 에러 없이 자동으로 로딩합니다.</p>
+                <div style="font-size: 13px; font-weight: bold; color: var(--neutral-700);">→ KPI: 가입에서 첫 데이터 수집까지 3분 완성</div>
+              </div>
+              <div class="viewer-graphic">
+<pre style="color: #475569;"><span style="color: #0284c7;">// BuildingMeta API Response</span>
+{
+  "name": "성우테크빌딩",
+  "useApprovalDate": "2015-08-12",
+  "totalFloorArea": 5839.24,
+  "floorsAbove": 8,
+  "floorsBelow": 2,
+  "fireSafetyGrade": "1급"
+}</pre>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Panel 2 -->
+          <div class="viewer-panel">
+            <div class="viewer-grid">
+              <div class="viewer-text">
+                <span class="viewer-badge">단계 A: 사무실 (Immutable)</span>
+                <h4 style="margin-top: 10px;">룰 엔진 기반 소방법령 산출 및 지시서 동결</h4>
+                <p>LLM의 환각(Hallucination) 위험을 배제한 100% 하드코딩 룰 매칭 엔진이 건물의 사용승인년도 시점의 소방법 및 시설 고시 조문을 역추적 매칭합니다. 해당 건물에만 활성화해야 할 점검표 종류를 골라낸 뒤 해시 암호화를 통해 지시서(WorkOrder)를 단단히 잠금(Freeze) 처리합니다.</p>
+              </div>
+              <div class="viewer-graphic">
+<pre style="color: #475569;"><span style="color: #0284c7;">// ApplicableLaw Matching</span>
+{
+  "lawName": "소방시설 설치 및 관리에 관한 법률",
+  "basis": "시행령 제22조(자체점검)",
+  "checklistOutline": [
+    "SC-소화기구", "SC-옥내소화전", 
+    "SC-자동화재탐지설비", "SC-유도등"
+  ],
+  "immutableHash": "8f9a2b5e7d8c..."
+}</pre>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Panel 3 -->
+          <div class="viewer-panel">
+            <div class="viewer-grid">
+              <div class="viewer-text">
+                <span class="viewer-badge">단계 B: 현장 (실시간 기록)</span>
+                <h4 style="margin-top: 10px;">작업지시 기준 불일치(Discrepancy) 기록</h4>
+                <p>현장 작업자는 동결된 작업지시를 보며 점검을 수행합니다. 지시서에 기입된 가상 소방 기구 수량과 실제 현장 설비 현황이 불일치하는 경우 즉시 수정하며, 이 모든 내역은 삭제가 불가능한 변경로그(Append-only 로그) 형태로 완벽 기록되어 보고서 신뢰성을 지킵니다.</p>
+              </div>
+              <div class="viewer-graphic">
+<pre style="color: #475569;"><span style="color: #0284c7;">// Append-only Discrepancy Log</span>
+{
+  "occurredAt": "2026-05-24T08:24:00Z",
+  "inspector": "김대리(ID: 2849)",
+  "fieldPath": "facilities[0].quantity",
+  "before": 24, // 지시서 소화기수
+  "after": 28,  // 실제 실측수
+  "reason": "4층 발코니 신설 구역 추가 설치 확인"
+}</pre>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Panel 4 -->
+          <div class="viewer-panel">
+            <div class="viewer-grid">
+              <div class="viewer-text">
+                <span class="viewer-badge">출력: 인쇄 & 정산</span>
+                <h4 style="margin-top: 10px;">법정양식 A4 1:1 정밀 픽셀 렌더링</h4>
+                <p>별지 제9호서식(결과보고서, 8쪽) 및 제4호서식(점검표) 원본 PDF 양식의 치수를 실측하여 웹 표준 CSS(@page size: A4) 디자인을 확보했습니다. 1픽셀의 틀어짐도 없이 종이 제출 서식에 호환되며, 1차 책임자 승인 ➔ 2차 관리자 최종 컨펌 프로세스로 통제됩니다.</p>
+              </div>
+              <div class="viewer-graphic" style="border: 1px solid var(--primary); background: white; text-align: center; padding: 30px;">
+                <div style="width: 80px; height: 100px; border: 2px solid var(--neutral-700); margin: 0 auto 10px auto; border-radius: 4px; display: flex; flex-direction: column; justify-content: space-between; padding: 8px;">
+                  <div style="border-bottom: 2px solid var(--primary); height: 8px;"></div>
+                  <div style="background: var(--neutral-100); height: 40px;"></div>
+                  <div style="border-top: 1px solid var(--neutral-300); height: 6px;"></div>
+                </div>
+                <div style="font-size: 13px; font-weight: bold; color: var(--neutral-900);">A4(210×297mm) Exact Fit</div>
+                <div style="font-size: 11px; color: var(--neutral-500);">A4 용지 실측 동일 스케일 렌더러</div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cost Optimization & AI Roadmap -->
+  <section id="cost" class="bg-light-blue">
+    <div class="container">
+      <div class="cost-grid">
+        <div>
+          <span class="section-tag">AI Innovation & Cost Strategy</span>
+          <h2 class="section-title">비용 폭탄을 완벽히 피한<br>실용적 AI 음성 보고 시스템</h2>
+          <p class="section-subtitle" style="margin-bottom: 30px;">그룹 통화 전체를 무작정 클라우드로 인코딩하고 분석하는 서비스는 심각한 적자 요인이 됩니다. 우리 솔루션은 혁신적인 AI 보고 설계를 통해 데이터 사용과 서버 리소스를 극도로 통제합니다.</p>
+          
+          <div class="cost-card-list">
+            <div class="cost-box">
+              <div class="cost-box-title">전체 통화 실시간 분석</div>
+              <div class="cost-val cost-val-r">3,000원+</div>
+              <div class="cost-desc">1회 점검당 API 원가</div>
+              <div style="font-size: 11px; color: #ef4444; margin-top: 12px; font-weight: bold;">(가입자 증가 시 적자 누적)</div>
+            </div>
+            
+            <div class="cost-box recommended">
+              <div class="cost-box-title">대안 A: Push-to-Talk (무전식)</div>
+              <div class="cost-val cost-val-a">18원</div>
+              <div class="cost-desc">1회 점검당 API 원가</div>
+              <div style="font-size: 11px; color: var(--accent); margin-top: 12px; font-weight: bold;">(필요할 때만 짧은 녹음)</div>
+            </div>
+            
+            <div class="cost-box">
+              <div class="cost-box-title">대안 B: 카카오톡 로그 분석</div>
+              <div class="cost-val" style="color: var(--indigo)">5원 미만</div>
+              <div class="cost-desc">1회 점검당 API 원가</div>
+              <div style="font-size: 11px; color: var(--indigo); margin-top: 12px; font-weight: bold;">(텍스트 추출, STT 비용 0원)</div>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <!-- Simulator Component -->
+          <div class="simulator-wrapper">
+            <div class="sim-header">
+              <h4>AI 음성 데이터 매핑 시뮬레이터</h4>
+              <span style="font-size: 11px; font-weight: bold; background: #e0f2fe; color: #0284c7; padding: 2px 8px; border-radius: 4px;">Gemini 3.5 Flash API</span>
+            </div>
+            <div class="sim-grid">
+              <div class="sim-panel-left">
+                <div style="font-size: 12px; color: var(--neutral-500); font-weight: bold;">현장 음성 샘플 선택 (클릭)</div>
+                <button class="sample-btn" onclick="simulateVoice(1)">
+                  <div class="sample-btn-icon">🎙️</div>
+                  <div>"3층 계단 피난구 유도등 예비전원 충전 안 됨 불량 배터리 교체 필요"</div>
+                </button>
+                <button class="sample-btn" onclick="simulateVoice(2)">
+                  <div class="sample-btn-icon">🎙️</div>
+                  <div>"지하 1층 주차장에 소화기 압력 바늘 탈이탈 저하 상태 교체 요망"</div>
+                </button>
+              </div>
+              <div class="sim-panel-right" id="sim-output">
+// 시뮬레이터 마이크 버튼을 클릭하여
+// AI의 초경량 구조화 능력을 확인하세요.
+// 대기중...
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline / Roadmap Section -->
+  <section id="roadmap">
+    <div class="container">
+      <div class="section-title-wrapper">
+        <span class="section-tag">Product Timeline</span>
+        <h2 class="section-title">스마트 소방안전점검 로드맵</h2>
+        <p class="section-subtitle">안정적인 코어 시스템 v1 빌드를 시작으로, 단계적으로 지능형 모바일 확장 및 AI 혁신 모델로 발전해 나갑니다.</p>
+      </div>
+      
+      <div class="timeline">
+        <!-- Item 1 -->
+        <div class="timeline-item active">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <div class="timeline-phase">Phase 1 (v1.0 POC)</div>
+            <h4>결정론적 룰 기반 코어 웹폼 및 인쇄 최적화</h4>
+            <p>건축물대장 정보에 근거하여 시계열 소방법과 동적으로 1:1 매칭합니다. A4 정밀 1:1 서식 렌더러와 수동 불일치 변경 로그 추적 기반 다듬기.</p>
+            <div class="timeline-tags">
+              <span class="timeline-tag">Next.js App Router</span>
+              <span class="timeline-tag">CSS Print Engine</span>
+              <span class="timeline-tag">Rule Matcher</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Item 2 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <div class="timeline-phase">Phase 2 (v1.5)</div>
+            <h4>모바일 친화도 향상 및 단일 음성 받아쓰기</h4>
+            <p>모바일 브라우저 편의성을 극대화하고 텍스트 입력의 답답함을 해소하기 위해 단일 필드 전용 '음성 메모 쓰기' 마이크 UI 적용.</p>
+            <div class="timeline-tags">
+              <span class="timeline-tag">STT API</span>
+              <span class="timeline-tag">PWA Mobile UX</span>
+              <span class="timeline-tag">Field Voice Memo</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Item 3 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <div class="timeline-phase">Phase 3 (v2.0)</div>
+            <h4>카카오톡 텍스트 분석 및 다중 협업 락킹 시스템</h4>
+            <p>동시 다발적 현장 데이터 덮어쓰기 사고를 예방하는 설비별 영역 락킹(Locking)을 적용합니다. 단톡방 텍스트 데이터 추출 ➔ 5원 미만의 보고서 자동 파싱 엔진 배포.</p>
+            <div class="timeline-tags">
+              <span class="timeline-tag">BaaS Section Lock</span>
+              <span class="timeline-tag">Kakao Talk Parser</span>
+              <span class="timeline-tag">LLM Extractor</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Item 4 -->
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <div class="timeline-phase">Phase 4 (v3.0)</div>
+            <h4>실시간 AI 스마트 무전 보고 서비스 완성</h4>
+            <p>인앱 그룹 통화 채널을 구축하고, 실시간 무전(Push-to-Talk) 음성을 클라우드 파이프라인으로 처리하여 법정 9호 및 4호서식을 AI가 실시간으로 입력해주는 궁극의 자동화 실현.</p>
+            <div class="timeline-tags">
+              <span class="timeline-tag">WebRTC VoIP</span>
+              <span class="timeline-tag">Real-time Stream STT</span>
+              <span class="timeline-tag">E2E Auto-fill</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-logo">
+          <div class="footer-logo-icon">F</div>
+          <div class="footer-logo-text">Fire Safety Smart Workflow</div>
+        </div>
+        <div style="font-size: 14px; color: var(--neutral-500);">영세 업체를 위한 가장 완벽한 해답</div>
+      </div>
+      <div class="copyright">
+        &copy; 2026 소방안전점검 스마트 워크플로 구축 기획안. All rights reserved. (Confidential & Creative Strategy)
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Tab switching for interactive stepper
+    function switchTab(index) {
+      const steps = document.querySelectorAll('.flow-step');
+      const panels = document.querySelectorAll('.viewer-panel');
+      
+      steps.forEach(step => step.classList.remove('active'));
+      panels.forEach(panel => panel.classList.remove('active'));
+      
+      steps[index].classList.add('active');
+      panels[index].classList.add('active');
+    }
+    
+    // Voice report simulator logic
+    function simulateVoice(id) {
+      const output = document.getElementById('sim-output');
+      output.style.color = '#38bdf8';
+      output.innerHTML = '// AI가 음성을 분석하여 데이터를 정형화 중입니다...\n// API 호출 완료...';
+      
+      setTimeout(() => {
+        if (id === 1) {
+          output.style.color = '#34d399';
+          output.innerHTML = `// [인식 성공] Gemini 3.5 구조화 결과
+{
+  "location": "3층 계단 비상구",
+  "checklistCode": "21-A-003",
+  "facilityName": "피난구유도등",
+  "status": "불량",
+  "details": "예비전원(축전지) 충전 불가 상태",
+  "action": "현장 배터리 즉시 교체 권고"
+}
+// [완료] 별지 제4호 서식의 21번 유도등 점검표에
+// 데이터 바인딩(Auto-fill) 성공!`;
+        } else {
+          output.style.color = '#34d399';
+          output.innerHTML = `// [인식 성공] Gemini 3.5 구조화 결과
+{
+  "location": "지하 1층 주차장",
+  "checklistCode": "1-A-001",
+  "facilityName": "소화기",
+  "status": "불량",
+  "details": "지시압력계 바늘 녹색범위 이탈 (압력 저하)",
+  "action": "소화기 교체 필수"
+}
+// [완료] 별지 제4호 서식의 1번 소화기 점검표에
+// 데이터 바인딩(Auto-fill) 성공!`;
+        }
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
