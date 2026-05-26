@@ -52,3 +52,5 @@ Pull requests should include a short summary, changed paths, validation results,
 ## Security & Configuration Tips
 
 Do not commit `.env*`, local agent state, or PDFs. Legal source PDFs may remain on disk for reference, but Git should track only extracted, reviewed data and lightweight HTML/JSON assets.
+
+# 항상 한글로 답변 할것!  

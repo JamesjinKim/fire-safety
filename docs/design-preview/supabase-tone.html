@@ -1,0 +1,1030 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Supabase 톤 미리보기 · 소방안전점검 SaaS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────────
+   Supabase 톤 토큰 (Light SaaS 적용)
+   원본: https://github.com/VoltAgent/awesome-design-md/tree/main/design-md/supabase
+   ───────────────────────────────────────────── */
+:root {
+  /* color */
+  --primary: #2F9E44;        /* Pine Green — ForestGreen 계열을 한 단계 밝혀 "신호"로 작동하게 */
+  --primary-deep: #237A35;   /* hover/pressed (ForestGreen에 가까운 톤으로 떨어짐) */
+  --primary-soft: #e6f3e7;   /* 확정 뱃지/연한 배경 (Pine Green 계열 매우 연한 톤) */
+  --ink: #171717;
+  --ink-2: #212121;
+  --ink-mute: #707070;
+  --ink-mute-2: #9a9a9a;
+  --ink-faint: #b2b2b2;
+  --canvas: #ffffff;
+  --canvas-soft: #fafafa;
+  --canvas-night: #1c1c1c;
+  --hairline: #dfdfdf;
+  --hairline-strong: #c7c7c7;
+  --hairline-cool: #ededed;
+  --hairline-cool-2: #efefef;
+  /* semantic (점검 결과용 — Supabase 시스템 위에 우리가 추가) */
+  --pass: #2F9E44;
+  --fail: #e02d3c;
+  --fail-soft: #fde8ea;
+  --na: #9a9a9a;
+  --not-checked: #f5a623;
+
+  /* spacing */
+  --xxs: 2px; --xs: 4px; --sm: 8px; --md: 12px; --lg: 16px; --xl: 24px; --xxl: 32px; --huge: 64px;
+
+  /* radius */
+  --r-xs: 4px; --r-sm: 6px; --r-md: 8px; --r-lg: 12px; --r-xl: 16px;
+
+  /* shadow */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 2px 8px rgba(0,0,0,.06);
+
+  /* font */
+  --sans: Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, Menlo, Monaco, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  background: var(--canvas-soft);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--ink); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.mono { font-family: var(--mono); }
+.tabnum { font-variant-numeric: tabular-nums; }
+
+/* ─── Layout ─── */
+.preview-banner {
+  background: #2a2d2e;
+  color: #d8dadb;
+  padding: var(--md) var(--xl);
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #3a3d3e;
+}
+.preview-banner b { color: #6dd585; font-weight: 500; }   /* 어두운 배경 위에서 그린이 충분히 빛나도록 한 톤 위 */
+.preview-banner code {
+  font-family: var(--mono);
+  background: rgba(255,255,255,.08);
+  padding: 2px 6px;
+  border-radius: var(--r-xs);
+  color: #a8e6b5;
+}
+
+.topnav {
+  background: var(--canvas);
+  border-bottom: 1px solid var(--hairline);
+  padding: var(--lg) var(--xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.brand { display: flex; align-items: center; gap: var(--sm); font-weight: 600; font-size: 16px; letter-spacing: -0.2px; }
+.brand-mark {
+  width: 22px; height: 22px; border-radius: var(--r-xs);
+  background: var(--ink);
+  position: relative;
+}
+.brand-mark::after {
+  content: '';
+  position: absolute; left: 4px; top: 4px;
+  width: 6px; height: 14px;
+  background: var(--primary);
+  border-radius: 1px;
+}
+.brand small { color: var(--ink-mute); font-weight: 400; font-size: 12px; letter-spacing: 0; margin-left: 4px; }
+
+.topnav-right { display: flex; align-items: center; gap: var(--xl); font-size: 14px; }
+.topnav-right .nav-link { color: var(--ink-mute); }
+.topnav-right .nav-link:hover { color: var(--ink); }
+.topnav-right .user-chip {
+  display: inline-flex; align-items: center; gap: var(--sm);
+  padding: 4px 10px 4px 4px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-full, 9999px);
+  font-size: 13px;
+}
+.topnav-right .user-chip .avatar {
+  width: 22px; height: 22px;
+  border-radius: 9999px;
+  background: var(--ink); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 500;
+}
+
+main { max-width: 1180px; margin: 0 auto; padding: var(--xxl) var(--xl) var(--huge); }
+section + section { margin-top: var(--huge); }
+
+/* ─── Display type ─── */
+.display-lg {
+  font-size: 36px; font-weight: 500; line-height: 1.15; letter-spacing: -0.72px;
+  margin: 0 0 var(--sm);
+}
+.display-md {
+  font-size: 28px; font-weight: 500; line-height: 1.2; letter-spacing: -0.42px;
+  margin: 0 0 var(--sm);
+}
+.heading-lg { font-size: 22px; font-weight: 500; line-height: 1.2; margin: 0 0 var(--sm); letter-spacing: -0.2px; }
+.heading-md { font-size: 18px; font-weight: 500; line-height: 1.4; margin: 0 0 var(--xs); }
+.body-lg { font-size: 17px; color: var(--ink-mute); line-height: 1.6; max-width: 720px; }
+.muted { color: var(--ink-mute); }
+.faint { color: var(--ink-mute-2); }
+.caption { font-size: 13px; line-height: 1.45; color: var(--ink-mute); }
+.micro { font-size: 12px; line-height: 1.45; color: var(--ink-mute); letter-spacing: 0.2px; }
+
+.section-label {
+  display: inline-block;
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: var(--md);
+}
+.section-label::before {
+  content: ''; display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--primary);
+  border-radius: 9999px;
+  margin-right: var(--sm);
+  transform: translateY(-2px);
+}
+
+/* ─── Buttons ─── */
+.btn {
+  display: inline-flex; align-items: center; gap: var(--xs);
+  font-family: var(--sans);
+  font-size: 14px; font-weight: 500;
+  padding: 8px 16px;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  line-height: 1;
+  transition: all .12s ease;
+  white-space: nowrap;
+}
+.btn-primary { background: var(--primary); color: #ffffff; }
+.btn-primary:hover { background: var(--primary-deep); color: #fff; }
+.btn-outline { background: var(--canvas); color: var(--ink); border-color: var(--hairline-strong); }
+.btn-outline:hover { background: var(--canvas-soft); }
+.btn-ghost { background: transparent; color: var(--ink); }
+.btn-ghost:hover { background: var(--hairline-cool); }
+.btn-sm { font-size: 13px; padding: 6px 12px; }
+
+/* ─── Cards ─── */
+.card {
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  padding: var(--xl);
+}
+.card-tight { padding: var(--lg); }
+.card-clickable { cursor: pointer; transition: border-color .15s ease, box-shadow .15s ease; }
+.card-clickable:hover { border-color: var(--hairline-strong); box-shadow: var(--shadow-sm); }
+
+/* ─── Pills ─── */
+.pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 500; line-height: 1;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  border: 1px solid var(--hairline);
+  background: var(--canvas);
+  color: var(--ink-2);
+}
+.pill .dot { width: 6px; height: 6px; border-radius: 9999px; background: var(--ink-mute); }
+.pill-green { background: var(--primary-soft); border-color: transparent; color: #1a5a25; }
+.pill-green .dot { background: var(--primary-deep); }
+.pill-warn { background: #fef4e0; border-color: transparent; color: #92560c; }
+.pill-warn .dot { background: var(--not-checked); }
+.pill-fail { background: var(--fail-soft); border-color: transparent; color: #8a1320; }
+.pill-fail .dot { background: var(--fail); }
+.pill-mute { background: var(--canvas-soft); border-color: transparent; color: var(--ink-mute); }
+
+/* ─── Screen frame ─── */
+.screen {
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+.screen-chrome {
+  background: var(--canvas-soft);
+  border-bottom: 1px solid var(--hairline);
+  padding: 10px var(--lg);
+  display: flex; align-items: center; gap: var(--md);
+  font-size: 12px; color: var(--ink-mute);
+}
+.screen-chrome .dots { display: flex; gap: 6px; }
+.screen-chrome .dots span {
+  width: 11px; height: 11px; border-radius: 9999px;
+  background: var(--hairline-strong);
+}
+.screen-chrome .url {
+  font-family: var(--mono); font-size: 12px;
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-sm);
+  padding: 4px var(--md);
+  color: var(--ink-mute);
+  flex: 1;
+}
+.screen-body { padding: var(--xxl); }
+
+/* ─── Project list ─── */
+.toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--xl);
+  gap: var(--md);
+}
+.search {
+  flex: 1; max-width: 340px;
+  display: flex; align-items: center; gap: var(--sm);
+  border: 1px solid var(--hairline);
+  background: var(--canvas);
+  border-radius: var(--r-sm);
+  padding: 8px var(--md);
+  color: var(--ink-mute);
+  font-size: 14px;
+}
+.search:focus-within { border-color: var(--ink-mute); }
+.search svg { flex: 0 0 16px; }
+.search input { flex: 1; border: 0; outline: 0; font: inherit; color: var(--ink); background: transparent; }
+.filter-bar { display: flex; gap: var(--sm); }
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--lg);
+}
+.project-card .row1 { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--md); }
+.project-card h3 { margin: 0 0 var(--xs); font-size: 16px; font-weight: 500; letter-spacing: -0.1px; }
+.project-card .meta { font-size: 13px; color: var(--ink-mute); line-height: 1.6; }
+.project-card .meta b { color: var(--ink-2); font-weight: 500; }
+.project-card .meta code {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-mute-2);
+}
+.project-card .footer {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: var(--lg);
+  padding-top: var(--md);
+  border-top: 1px dashed var(--hairline-cool);
+  font-size: 13px;
+}
+.progress {
+  display: inline-flex; align-items: center; gap: var(--sm);
+  font-size: 12px;
+  color: var(--ink-mute);
+}
+.progress-bar {
+  width: 80px; height: 4px;
+  background: var(--hairline-cool);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.progress-bar > i {
+  display: block; height: 100%;
+  background: var(--primary);
+  border-radius: 9999px;
+}
+
+/* ─── OCR review ─── */
+.ocr-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 0;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--canvas);
+}
+.ocr-pane { padding: var(--xl); }
+.ocr-pane + .ocr-pane { border-left: 1px solid var(--hairline); background: var(--canvas-soft); }
+.ocr-pane h4 {
+  margin: 0 0 var(--md);
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--ink-mute);
+}
+.ocr-pane h4 .pill { margin-left: var(--sm); text-transform: none; letter-spacing: 0; }
+
+/* 원본 미리보기 (PDF placeholder) */
+.pdf-frame {
+  background: #ffffff;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  padding: var(--lg);
+  height: 420px;
+  overflow: hidden;
+  position: relative;
+}
+.pdf-stamp {
+  position: absolute;
+  top: var(--md); right: var(--md);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-faint);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-xs);
+  padding: 2px 6px;
+}
+.pdf-title { text-align: center; font-size: 15px; font-weight: 500; margin: var(--xs) 0 var(--lg); }
+.pdf-row {
+  display: grid; grid-template-columns: 90px 1fr;
+  border-top: 1px solid var(--hairline-cool);
+  font-size: 13px;
+  align-items: stretch;
+}
+.pdf-row:last-child { border-bottom: 1px solid var(--hairline-cool); }
+.pdf-row .k {
+  background: var(--canvas-soft);
+  color: var(--ink-mute);
+  padding: 8px var(--md);
+  border-right: 1px solid var(--hairline-cool);
+  font-size: 12px;
+}
+.pdf-row .v {
+  padding: 8px var(--md);
+  color: var(--ink-2);
+}
+.bbox-hit { background: rgba(62, 207, 142, 0.14); border-radius: 2px; padding: 0 3px; }
+
+/* OCR 검수 필드 */
+.field-list { display: flex; flex-direction: column; }
+.field {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--md);
+  padding: var(--md) 0;
+  border-top: 1px solid var(--hairline-cool);
+}
+.field:first-child { border-top: 0; }
+.field-label { font-size: 12px; color: var(--ink-mute); display: flex; align-items: center; gap: var(--xs); }
+.field-label .req { color: var(--fail); font-weight: 500; }
+.field-value {
+  font-size: 14px;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.field-input {
+  font-family: inherit;
+  font-size: 14px;
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-sm);
+  padding: 6px var(--md);
+  min-width: 220px;
+  text-align: right;
+}
+.field-input:focus { outline: none; border-color: var(--ink-mute); }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 500; line-height: 1;
+  padding: 3px 8px;
+  border-radius: var(--r-xs);
+}
+.badge-extracted { background: var(--canvas-soft); color: var(--ink-mute); border: 1px solid var(--hairline); }
+.badge-confirmed { background: var(--primary-soft); color: #1a5a25; }
+.badge-edited { background: #eef0ff; color: #3340a9; }
+.badge-low { background: #fef4e0; color: #92560c; }
+.badge-missing { background: var(--fail-soft); color: #8a1320; }
+
+.ocr-actions { display: flex; gap: var(--sm); margin-top: var(--xl); justify-content: flex-end; align-items: center; }
+.ocr-confidence {
+  font-size: 12px; color: var(--ink-mute); margin-right: auto;
+}
+.ocr-confidence b { color: var(--ink); font-weight: 500; }
+
+/* ─── Form 4 inspection ─── */
+.form4-shell { display: grid; grid-template-columns: 240px 1fr; gap: var(--xl); }
+.section-nav {
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  padding: var(--md);
+  height: fit-content;
+}
+.section-nav .nav-section-label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px;
+  color: var(--ink-mute);
+  padding: var(--sm) var(--sm);
+}
+.section-nav ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 2px; }
+.section-nav li {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px var(--md);
+  border-radius: var(--r-sm);
+  font-size: 13.5px;
+  cursor: pointer;
+}
+.section-nav li:hover { background: var(--canvas-soft); }
+.section-nav li.active {
+  background: var(--primary-soft);
+  color: var(--ink);
+  font-weight: 500;
+  position: relative;
+}
+.section-nav li.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 6px; bottom: 6px;
+  width: 3px;
+  background: var(--primary);
+  border-radius: 0 2px 2px 0;
+}
+.section-nav li.active .pill { background: rgba(47,158,68,.18); color: var(--primary-deep); border: 0; }
+.section-nav .count {
+  font-size: 11px;
+  font-family: var(--mono);
+  background: var(--canvas-soft);
+  color: var(--ink-mute);
+  padding: 1px 6px;
+  border-radius: var(--r-xs);
+}
+
+.form4-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: var(--lg); gap: var(--md); }
+.form4-title h3 { margin: 0 0 var(--xs); font-size: 18px; font-weight: 500; }
+.form4-title .code {
+  font-family: var(--mono); font-size: 12px; color: var(--ink-mute);
+}
+
+.checklist {
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+.checklist-row {
+  display: grid;
+  grid-template-columns: 78px 1fr auto;
+  gap: var(--lg);
+  padding: var(--lg) var(--xl);
+  border-top: 1px solid var(--hairline-cool);
+  align-items: flex-start;
+}
+.checklist-row:first-child { border-top: 0; }
+.checklist-row .code { font-family: var(--mono); font-size: 12px; color: var(--ink-mute); padding-top: 2px; }
+.checklist-row .item { font-size: 14.5px; line-height: 1.55; }
+.checklist-row .item .desc { color: var(--ink); }
+.checklist-row .item .extras {
+  margin-top: var(--sm);
+  font-size: 13px;
+  color: var(--ink-mute);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.checklist-row .item .extras .defect {
+  color: #8a1320;
+  background: var(--fail-soft);
+  border-radius: var(--r-sm);
+  padding: 6px var(--md);
+  display: inline-block;
+  max-width: 100%;
+}
+.checklist-row .item .extras .attachments {
+  display: flex; align-items: center; gap: var(--sm);
+  font-family: var(--mono); font-size: 11.5px;
+}
+.checklist-row .item .extras .attachments .att {
+  display: inline-flex; align-items: center; gap: 4px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-xs);
+  padding: 2px 6px;
+  color: var(--ink-mute);
+}
+.result-toggle {
+  display: inline-flex;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--canvas-soft);
+}
+.result-toggle button {
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  border: 0;
+  background: transparent;
+  padding: 6px var(--md);
+  color: var(--ink-mute);
+  cursor: pointer;
+  border-right: 1px solid var(--hairline);
+}
+.result-toggle button:last-child { border-right: 0; }
+.result-toggle button.on-pass { background: var(--primary); color: #ffffff; }
+.result-toggle button.on-fail { background: var(--fail); color: #fff; }
+.result-toggle button.on-na { background: var(--ink); color: #fff; }
+.result-toggle button.on-nc { background: var(--not-checked); color: #fff; }
+
+.checklist-foot {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: var(--lg) var(--xl);
+  background: var(--canvas-soft);
+  border-top: 1px solid var(--hairline);
+  font-size: 13px;
+}
+.checklist-foot .stats { display: flex; gap: var(--xl); color: var(--ink-mute); }
+.checklist-foot .stats b { color: var(--ink); font-weight: 500; margin-right: 4px; }
+
+/* ─── Footer ─── */
+footer {
+  border-top: 1px solid var(--hairline);
+  background: var(--canvas);
+  padding: var(--xxl) var(--xl);
+  margin-top: var(--huge);
+  font-size: 13px;
+  color: var(--ink-mute);
+}
+footer .row { max-width: 1180px; margin: 0 auto; display: flex; justify-content: space-between; }
+</style>
+</head>
+<body>
+
+<!-- 미리보기 안내 (실제 제품에서는 노출 안 함) -->
+<div class="preview-banner">
+  <div>
+    <b>● Supabase 톤 미리보기</b>
+    <span style="opacity:.6"> · </span>
+    소방안전점검 워크플로 시스템 · 3개 핵심 화면 (프로젝트 목록 / OCR 검수 / 별지 4호 점검 입력)
+  </div>
+  <div>
+    Inter + JetBrains Mono · primary <code>#3ecf8e</code>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────────────────────
+     상단 내비게이션 (전 페이지 공통)
+     ───────────────────────────────────────────────────── -->
+<header class="topnav">
+  <div class="brand">
+    <span class="brand-mark"></span>
+    소방안전점검
+    <small>· ○○소방안전</small>
+  </div>
+  <nav class="topnav-right">
+    <a class="nav-link" href="#projects">프로젝트</a>
+    <a class="nav-link" href="#customers">고객사</a>
+    <a class="nav-link" href="#field">현장</a>
+    <a class="nav-link" href="#billing">청구</a>
+    <span class="user-chip">
+      <span class="avatar">김</span>
+      <span>김국진</span>
+    </span>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ─────────────────────────────────────────────────
+       1) 프로젝트 목록 (단계 A 시작점)
+       ───────────────────────────────────────────────── -->
+  <section id="projects">
+    <span class="section-label">화면 1 / 사무실 관리자</span>
+    <h1 class="display-lg">프로젝트</h1>
+    <p class="body-lg">진행 중인 자체점검 프로젝트와 작업지시 상태를 한눈에 확인합니다.</p>
+
+    <div style="margin-top: var(--xl)">
+      <div class="screen">
+        <div class="screen-chrome">
+          <span class="dots"><span></span><span></span><span></span></span>
+          <span class="url">app.firesafety.kr/projects</span>
+        </div>
+        <div class="screen-body">
+
+          <div class="toolbar">
+            <div class="search">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+              <input placeholder="건물명·고객사·작업지시번호 검색">
+            </div>
+            <div class="filter-bar">
+              <button class="btn btn-outline btn-sm">전체 상태 ▾</button>
+              <button class="btn btn-outline btn-sm">2026 ▾</button>
+              <button class="btn btn-primary btn-sm">+ 새 프로젝트</button>
+            </div>
+          </div>
+
+          <div class="project-grid">
+
+            <div class="card card-clickable project-card">
+              <div class="row1">
+                <div>
+                  <h3>○○빌딩 2026 자체점검</h3>
+                  <div class="meta">
+                    <b>세종건설(주)</b> · 서울 강남구 테헤란로 123<br>
+                    사용승인 <span class="tabnum">2010-08-15</span> · 연면적 <span class="tabnum">5,420㎡</span> · <span class="mono" style="color:var(--ink-mute-2)">1급</span>
+                  </div>
+                </div>
+                <span class="pill pill-warn"><span class="dot"></span>OCR 검수 중</span>
+              </div>
+              <div class="footer">
+                <div class="progress">
+                  <span class="progress-bar"><i style="width:30%"></i></span>
+                  <span>건축물대장 검수 30%</span>
+                </div>
+                <span class="caption">2일 전 갱신</span>
+              </div>
+            </div>
+
+            <div class="card card-clickable project-card">
+              <div class="row1">
+                <div>
+                  <h3>서울 신정아파트 종합점검</h3>
+                  <div class="meta">
+                    <b>신정아파트 관리사무소</b> · 양천구 신정로 45<br>
+                    사용승인 <span class="tabnum">2018-04-20</span> · 세대수 <span class="tabnum">412세대</span> · <span class="mono" style="color:var(--ink-mute-2)">1급</span>
+                  </div>
+                </div>
+                <span class="pill pill-green"><span class="dot"></span>작업지시 동결</span>
+              </div>
+              <div class="footer">
+                <div class="caption mono">
+                  WO #a4f3·8b2 · 동결 2026-05-22
+                </div>
+                <a href="#" style="color: var(--ink); font-weight: 500;">현장 진행 →</a>
+              </div>
+            </div>
+
+            <div class="card card-clickable project-card">
+              <div class="row1">
+                <div>
+                  <h3>강동구 상가 5종 작동점검</h3>
+                  <div class="meta">
+                    <b>강동상가관리(주)</b> · 강동구 천호대로<br>
+                    사용승인 <span class="tabnum">2003-11-02</span> · 연면적 <span class="tabnum">1,180㎡</span> · <span class="mono" style="color:var(--ink-mute-2)">3급</span>
+                  </div>
+                </div>
+                <span class="pill pill-fail"><span class="dot"></span>불량 8건</span>
+              </div>
+              <div class="footer">
+                <div class="caption">
+                  점검자 <b style="color:var(--ink-2)">박현장</b> · 별지 9호 검토 대기
+                </div>
+                <a href="#" style="color: var(--ink); font-weight: 500;">제출 검토 →</a>
+              </div>
+            </div>
+
+            <div class="card card-clickable project-card">
+              <div class="row1">
+                <div>
+                  <h3>○○ 다중이용업소 종합점검(초기)</h3>
+                  <div class="meta">
+                    <b>○○노래연습장</b> · 마포구 양화로<br>
+                    영업장 <span class="tabnum">240㎡</span> · 지하 1층 · <span class="mono" style="color:var(--ink-mute-2)">다중이용업소</span>
+                  </div>
+                </div>
+                <span class="pill"><span class="dot"></span>초안</span>
+              </div>
+              <div class="footer">
+                <div class="caption mono">
+                  생성 2026-05-26
+                </div>
+                <a href="#" style="color: var(--ink); font-weight: 500;">건축물대장 업로드 →</a>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────
+       2) OCR 검수 (단계 A-2)
+       ───────────────────────────────────────────────── -->
+  <section id="ocr">
+    <span class="section-label">화면 2 / 단계 A · 건축물대장 OCR 검수</span>
+    <h2 class="display-md">원본 ↔ 추출값을 나란히 검수하세요</h2>
+    <p class="body-lg">관리자가 필수 필드를 확정해야 다음 단계(설비 추천)로 진행할 수 있습니다.</p>
+
+    <div style="margin-top: var(--xl)" class="ocr-grid">
+
+      <!-- 좌: 원본 PDF -->
+      <div class="ocr-pane">
+        <h4>원본 건축물대장 <span class="pill pill-mute mono">page 1 / 4</span></h4>
+        <div class="pdf-frame">
+          <div class="pdf-stamp">PDF · application/pdf · 1.2 MB</div>
+          <div class="pdf-title">건축물대장 (일반건축물)</div>
+          <div class="pdf-row"><div class="k">대지위치</div><div class="v">서울특별시 강남구 테헤란로 123</div></div>
+          <div class="pdf-row"><div class="k">건물명</div><div class="v"><span class="bbox-hit">○○빌딩</span></div></div>
+          <div class="pdf-row"><div class="k">주용도</div><div class="v">근린생활시설, 업무시설</div></div>
+          <div class="pdf-row"><div class="k">건축허가일</div><div class="v"><span class="bbox-hit">2008-11-03</span></div></div>
+          <div class="pdf-row"><div class="k">사용승인일</div><div class="v"><span class="bbox-hit">2010-08-15</span></div></div>
+          <div class="pdf-row"><div class="k">연면적</div><div class="v"><span class="bbox-hit">5,420.32 ㎡</span></div></div>
+          <div class="pdf-row"><div class="k">건축면적</div><div class="v">782.10 ㎡</div></div>
+          <div class="pdf-row"><div class="k">지상 / 지하</div><div class="v">7층 / 1층</div></div>
+          <div class="pdf-row"><div class="k">높이</div><div class="v">28.4 m</div></div>
+          <div class="pdf-row"><div class="k">구조</div><div class="v">철근콘크리트구조</div></div>
+        </div>
+        <p class="micro" style="margin-top: var(--md);">
+          <span class="bbox-hit" style="font-family:var(--mono)">초록 하이라이트</span>는 OCR이 추출한 영역. 클릭하면 우측 필드와 정렬됩니다.
+        </p>
+      </div>
+
+      <!-- 우: 추출 필드 검수 -->
+      <div class="ocr-pane">
+        <h4>추출 필드 <span class="pill pill-mute mono">manual</span></h4>
+        <div class="field-list">
+
+          <div class="field">
+            <div>
+              <div class="field-label">건물명 <span class="req">*</span></div>
+              <div class="field-value">○○빌딩</div>
+            </div>
+            <div><span class="badge badge-confirmed">● 확정</span></div>
+          </div>
+
+          <div class="field">
+            <div>
+              <div class="field-label">소재지 <span class="req">*</span></div>
+              <div class="field-value">서울특별시 강남구 테헤란로 123</div>
+            </div>
+            <div><span class="badge badge-confirmed">● 확정</span></div>
+          </div>
+
+          <div class="field">
+            <div>
+              <div class="field-label">사용승인일 <span class="req">*</span></div>
+              <input class="field-input tabnum" value="2010-08-15">
+            </div>
+            <div><span class="badge badge-edited">✎ 수정됨</span></div>
+          </div>
+
+          <div class="field">
+            <div>
+              <div class="field-label">건축허가일 <span class="req">*</span></div>
+              <div class="field-value tabnum">2008-11-03</div>
+            </div>
+            <div><span class="badge badge-extracted">● 추출됨 · 신뢰도 0.92</span></div>
+          </div>
+
+          <div class="field">
+            <div>
+              <div class="field-label">연면적 (㎡) <span class="req">*</span></div>
+              <input class="field-input tabnum" value="5,420.32">
+            </div>
+            <div><span class="badge badge-extracted">● 추출됨 · 신뢰도 0.87</span></div>
+          </div>
+
+          <div class="field">
+            <div>
+              <div class="field-label">지상 층수 <span class="req">*</span></div>
+              <div class="field-value tabnum">7</div>
+            </div>
+            <div><span class="badge badge-extracted">● 추출됨 · 신뢰도 0.95</span></div>
+          </div>
+
+          <div class="field">
+            <div>
+              <div class="field-label">세대수 (공동주택)</div>
+              <div class="field-value faint">—</div>
+            </div>
+            <div><span class="badge badge-missing">⚠ 누락 · 해당없음 처리</span></div>
+          </div>
+
+          <div class="field">
+            <div>
+              <div class="field-label">다중이용업소 여부 <span class="req">*</span></div>
+              <div class="field-value faint">확인 필요</div>
+            </div>
+            <div><span class="badge badge-low">! 신뢰도 0.41 · 검수</span></div>
+          </div>
+
+        </div>
+
+        <div class="ocr-actions">
+          <span class="ocr-confidence">필수 14개 중 <b>11개 확정</b> · 3개 남음</span>
+          <button class="btn btn-ghost btn-sm">초안 저장</button>
+          <button class="btn btn-primary btn-sm">검수 완료 → 설비 추천</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────────────────────────────
+       3) 별지 4호 현장 점검 입력 (단계 B)
+       ───────────────────────────────────────────────── -->
+  <section id="form4">
+    <span class="section-label">화면 3 / 단계 B · 현장 점검자</span>
+    <h2 class="display-md">설비별 점검표 입력</h2>
+    <p class="body-lg">작업지시에 포함된 설비 섹션을 따라 별지 제4호서식 점검항목을 채웁니다. 불량 항목에는 사진·메모·음성을 함께 남길 수 있습니다.</p>
+
+    <div style="margin-top: var(--xl)" class="form4-shell">
+
+      <!-- 좌측: 설비 섹션 내비 -->
+      <aside class="section-nav">
+        <div class="nav-section-label">작업지시 #a4f3·8b2</div>
+        <ul>
+          <li>
+            <span><span style="color:var(--primary)">●</span> 1. 소화기구</span>
+            <span class="count">12/12</span>
+          </li>
+          <li class="active">
+            <span><span style="color:#fff">●</span> 2. 옥내소화전</span>
+            <span class="count">4/8</span>
+          </li>
+          <li>
+            <span>15. 자동화재탐지설비</span>
+            <span class="count">0/22</span>
+          </li>
+          <li>
+            <span>20. 피난기구</span>
+            <span class="count">0/6</span>
+          </li>
+          <li>
+            <span>21. 유도등</span>
+            <span class="count">0/9</span>
+          </li>
+          <li>
+            <span>22. 비상조명등</span>
+            <span class="count">0/5</span>
+          </li>
+        </ul>
+        <div style="border-top: 1px solid var(--hairline); margin: var(--md) 0; padding-top: var(--md);">
+          <div class="nav-section-label">불일치 로그</div>
+          <ul>
+            <li><span class="caption">옥내소화전 수량 (3→2)</span></li>
+            <li><span class="caption">자탐 수신기 위치 변경</span></li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- 우측: 점검표 -->
+      <div>
+        <div class="form4-header">
+          <div class="form4-title">
+            <h3>2. 옥내소화전설비</h3>
+            <div class="code">별지 제4호서식 · 점검표 코드 2 · 종합점검 ●</div>
+          </div>
+          <div style="display:flex; gap: var(--sm)">
+            <button class="btn btn-outline btn-sm">불일치 기록</button>
+            <button class="btn btn-primary btn-sm">섹션 저장</button>
+          </div>
+        </div>
+
+        <div class="checklist">
+
+          <div class="checklist-row">
+            <div class="code">2-A-001</div>
+            <div class="item">
+              <div class="desc">수원의 유효수량 적정 여부</div>
+            </div>
+            <div class="result-toggle">
+              <button class="on-pass">적합</button>
+              <button>부적합</button>
+              <button>해당없음</button>
+              <button>미점검</button>
+            </div>
+          </div>
+
+          <div class="checklist-row">
+            <div class="code">2-A-002</div>
+            <div class="item">
+              <div class="desc">가압송수장치의 정상 작동 여부</div>
+            </div>
+            <div class="result-toggle">
+              <button class="on-pass">적합</button>
+              <button>부적합</button>
+              <button>해당없음</button>
+              <button>미점검</button>
+            </div>
+          </div>
+
+          <div class="checklist-row">
+            <div class="code">2-B-003</div>
+            <div class="item">
+              <div class="desc">소화전함 표시등 및 위치표지 적정 설치 여부</div>
+              <div class="extras">
+                <div class="defect">불량 — 3층 동측 표시등 결손, 신품 교체 필요 (조치 견적 별도)</div>
+                <div class="attachments">
+                  <span class="att">📷 IMG_4231.jpg</span>
+                  <span class="att">📷 IMG_4232.jpg</span>
+                  <span class="att">🎙 memo-3f.m4a</span>
+                  <span class="att">✎ 텍스트 메모</span>
+                </div>
+              </div>
+            </div>
+            <div class="result-toggle">
+              <button>적합</button>
+              <button class="on-fail">부적합</button>
+              <button>해당없음</button>
+              <button>미점검</button>
+            </div>
+          </div>
+
+          <div class="checklist-row">
+            <div class="code">2-B-004</div>
+            <div class="item">
+              <div class="desc">소화전함 내 호스·관창 부속품 비치 여부</div>
+            </div>
+            <div class="result-toggle">
+              <button class="on-pass">적합</button>
+              <button>부적합</button>
+              <button>해당없음</button>
+              <button>미점검</button>
+            </div>
+          </div>
+
+          <div class="checklist-row">
+            <div class="code">2-C-005</div>
+            <div class="item">
+              <div class="desc">방수압력 및 방수량 적정 여부 (시험치 ≥ 0.17MPa, 130L/min)</div>
+              <div class="extras">
+                <span class="caption tabnum">측정값 0.21 MPa / 142 L/min</span>
+              </div>
+            </div>
+            <div class="result-toggle">
+              <button class="on-pass">적합</button>
+              <button>부적합</button>
+              <button>해당없음</button>
+              <button>미점검</button>
+            </div>
+          </div>
+
+          <div class="checklist-row">
+            <div class="code">2-C-006</div>
+            <div class="item">
+              <div class="desc">옥상수조 설치 및 유효수량 적정 여부 (옥상 설치 시)</div>
+            </div>
+            <div class="result-toggle">
+              <button>적합</button>
+              <button>부적합</button>
+              <button class="on-na">해당없음</button>
+              <button>미점검</button>
+            </div>
+          </div>
+
+          <div class="checklist-row">
+            <div class="code">2-D-007</div>
+            <div class="item">
+              <div class="desc">압력계·진공계의 지시상태 정상 여부</div>
+            </div>
+            <div class="result-toggle">
+              <button>적합</button>
+              <button>부적합</button>
+              <button>해당없음</button>
+              <button class="on-nc">미점검</button>
+            </div>
+          </div>
+
+          <div class="checklist-row">
+            <div class="code">2-D-008</div>
+            <div class="item">
+              <div class="desc">제어반의 동작 및 표시상태 정상 여부</div>
+            </div>
+            <div class="result-toggle">
+              <button>적합</button>
+              <button>부적합</button>
+              <button>해당없음</button>
+              <button>미점검</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="checklist-foot">
+          <div class="stats">
+            <span><b>4</b>적합</span>
+            <span><b>1</b>부적합</span>
+            <span><b>1</b>해당없음</span>
+            <span><b>1</b>미점검</span>
+            <span class="faint">총 8</span>
+          </div>
+          <span class="caption mono">last edited · 김국진 · 1분 전</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="row">
+    <div>소방안전점검 워크플로 시스템 · v1 PoC · 디자인 시안 (Supabase 톤)</div>
+    <div>© 2026 ○○소방안전 · 시안 미리보기 (Production X)</div>
+  </div>
+</footer>
+
+</body>
+</html>

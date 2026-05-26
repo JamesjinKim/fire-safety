@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>소방안전점검 워크플로 시스템 PRD 브리핑</title>
+  <meta name="description" content="건축물대장 OCR부터 설비별 현장 점검, 법정 서식 출력, 비용 PDF까지 이어지는 소방안전점검 Light SaaS PRD 브리핑">
+  <!-- Google Fonts (Outfit & Noto Sans KR) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --surface: #ffffff;
+      --surface-soft: #eef5f7;
+      --ink: #111827;
+      --muted: #5f6b7a;
+      --line: #d9e1e8;
+      --blue: #2563eb;
+      --blue-soft: #e8f0ff;
+      --teal: #0f8b8d;
+      --teal-soft: #e4f5f4;
+      --green: #198754;
+      --green-soft: #e9f7ef;
+      --amber: #b7791f;
+      --amber-soft: #fff4dc;
+      --red: #c2413d;
+      --red-soft: #fdecec;
+      --navy: #172554;
+      --shadow: 0 18px 50px rgba(17, 24, 39, 0.08);
+      --radius: 8px;
+      --max: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, "Apple SD Gothic Neo", "Malgun Gothic", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(217, 225, 232, 0.86);
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(16px);
+    }
+
+    .topbar-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      background: linear-gradient(135deg, var(--blue), var(--teal));
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .nav a {
+      padding: 7px 10px;
+      border-radius: 6px;
+    }
+
+    .nav a:hover {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .hero {
+      background:
+        linear-gradient(120deg, rgba(23, 37, 84, 0.92), rgba(15, 139, 141, 0.88)),
+        linear-gradient(90deg, #172554, #0f8b8d);
+      color: white;
+    }
+
+    .hero-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 76px 22px 48px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 390px;
+      gap: 42px;
+      align-items: end;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 22px 0 16px;
+      max-width: 800px;
+      font-size: clamp(34px, 5vw, 62px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .hero-copy {
+      max-width: 760px;
+      margin: 0;
+      color: rgba(255, 255, 255, 0.84);
+      font-size: 18px;
+    }
+
+    .hero-panel {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.12);
+      padding: 20px;
+    }
+
+    .hero-panel h2 {
+      margin: 0 0 12px;
+      font-size: 17px;
+      color: white;
+    }
+
+    .hero-panel p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 14px;
+    }
+
+    .metrics {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 22px 34px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric {
+      min-height: 112px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.12);
+      padding: 18px;
+      color: white;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 26px;
+      line-height: 1.1;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 8px;
+      color: rgba(255, 255, 255, 0.76);
+      font-size: 13px;
+    }
+
+    main {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 50px 22px 82px;
+    }
+
+    section {
+      margin: 0 0 54px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      align-items: flex-end;
+      margin-bottom: 22px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: clamp(24px, 3vw, 34px);
+      line-height: 1.2;
+    }
+
+    .section-head p {
+      max-width: 560px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .band {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .decision-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .decision {
+      padding: 22px;
+      border-right: 1px solid var(--line);
+      min-height: 164px;
+    }
+
+    .decision:last-child {
+      border-right: 0;
+    }
+
+    .decision b {
+      display: inline-flex;
+      width: 32px;
+      height: 32px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 7px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-size: 13px;
+    }
+
+    .decision h3 {
+      margin: 14px 0 8px;
+      font-size: 17px;
+      color: var(--ink);
+    }
+
+    .decision p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+      padding: 22px;
+    }
+
+    .flow-step {
+      position: relative;
+      min-height: 150px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfdff;
+      padding: 16px;
+    }
+
+    .flow-step::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -10px;
+      width: 10px;
+      height: 1px;
+      background: var(--line);
+    }
+
+    .flow-step:last-child::after {
+      display: none;
+    }
+
+    .flow-step .num {
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .flow-step h3 {
+      margin: 8px 0 8px;
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .flow-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .gate {
+      padding: 22px;
+      border-top: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      background: #fbfdff;
+    }
+
+    .gate-item {
+      border-radius: var(--radius);
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+    }
+
+    .gate-item h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+    }
+
+    .gate-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .gate-item.locked {
+      background: var(--red-soft);
+      border-color: #f1b9b7;
+    }
+
+    .gate-item.ready {
+      background: var(--green-soft);
+      border-color: #b7dfc9;
+    }
+
+    .gate-item.review {
+      background: var(--amber-soft);
+      border-color: #efd192;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel h3 {
+      margin: 0 0 12px;
+      color: var(--navy);
+      font-size: 20px;
+    }
+
+    .panel p {
+      margin: 0 0 14px;
+      color: var(--muted);
+    }
+
+    .list {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      margin-top: 8px;
+      border-radius: 999px;
+      background: var(--teal);
+      flex: 0 0 auto;
+    }
+
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .role {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .role .tag {
+      display: inline-flex;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: var(--surface-soft);
+      color: var(--teal);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .role h3 {
+      margin: 14px 0 8px;
+      font-size: 19px;
+    }
+
+    .role p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .object-map {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      padding: 22px;
+      background: var(--surface);
+    }
+
+    .object {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfdff;
+      padding: 14px;
+      min-height: 105px;
+    }
+
+    .object strong {
+      display: block;
+      color: var(--navy);
+      font-size: 14px;
+    }
+
+    .object span {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .scope {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .scope-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .scope-card header {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: var(--green-soft);
+      color: var(--green);
+      font-weight: 900;
+    }
+
+    .scope-card.out header {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .scope-card ul {
+      margin: 0;
+      padding: 18px 22px 20px 34px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .scope-card li + li {
+      margin-top: 7px;
+    }
+
+    .review-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .question {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 18px;
+      min-height: 142px;
+      box-shadow: var(--shadow);
+    }
+
+    .question b {
+      color: var(--teal);
+      font-size: 13px;
+    }
+
+    .question p {
+      margin: 9px 0 0;
+      color: var(--ink);
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .footer-note {
+      margin-top: 56px;
+      padding: 22px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    /* Visual alignment with docs/visual-proposal.html */
+    :root {
+      --primary: #0284c7;
+      --primary-light: #e0f2fe;
+      --primary-dark: #0369a1;
+      --accent: #10b981;
+      --accent-light: #d1fae5;
+      --indigo: #6366f1;
+      --indigo-light: #e0e7ff;
+      --neutral-900: #0f172a;
+      --neutral-800: #1e293b;
+      --neutral-700: #334155;
+      --neutral-500: #64748b;
+      --neutral-300: #cbd5e1;
+      --neutral-100: #f8fafc;
+      --neutral-50: #ffffff;
+      --gradient-bg: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 50%, #f5f3ff 100%);
+      --gradient-primary: linear-gradient(135deg, #0284c7 0%, #6366f1 100%);
+      --gradient-accent: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --shadow-sm: 0 2px 8px -2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 12px 24px -4px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 20px 40px -8px rgba(15, 23, 42, 0.12);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --surface: var(--neutral-50);
+      --surface-soft: var(--neutral-100);
+      --ink: var(--neutral-900);
+      --muted: var(--neutral-500);
+      --line: rgba(226, 232, 240, 0.8);
+      --blue: var(--primary);
+      --blue-soft: var(--primary-light);
+      --teal: var(--accent);
+      --teal-soft: var(--accent-light);
+      --green: var(--accent);
+      --green-soft: var(--accent-light);
+      --amber: #d97706;
+      --amber-soft: #fffbeb;
+      --red: #ef4444;
+      --red-soft: #fef2f2;
+      --navy: var(--neutral-900);
+      --shadow: var(--shadow-md);
+      --radius: 24px;
+      --max: 1200px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--neutral-100);
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(2, 132, 199, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.03) 0%, transparent 40%);
+      color: var(--neutral-800);
+      font-family: 'Noto Sans KR', sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      color: var(--neutral-900);
+      font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+      font-weight: 700;
+    }
+
+    .topbar {
+      z-index: 100;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: var(--transition);
+    }
+
+    .topbar-inner {
+      max-width: var(--max);
+      padding: 16px 24px;
+    }
+
+    .brand {
+      gap: 10px;
+      font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: var(--gradient-primary);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .brand span:last-child {
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav {
+      gap: 28px;
+      color: var(--neutral-700);
+      font-size: 15px;
+    }
+
+    .nav a {
+      position: relative;
+      padding: 8px 0;
+      border-radius: 0;
+      color: var(--neutral-700);
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--primary);
+      transition: var(--transition);
+    }
+
+    .nav a:hover {
+      background: transparent;
+      color: var(--primary);
+    }
+
+    .nav a:hover::after {
+      width: 100%;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-bottom-right-radius: 48px;
+      border-bottom-left-radius: 48px;
+      background: var(--gradient-bg);
+      box-shadow: var(--shadow-sm);
+      color: var(--neutral-800);
+    }
+
+    .hero-inner {
+      max-width: var(--max);
+      padding: 80px 24px 44px;
+    }
+
+    .hero-grid {
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      margin-bottom: 20px;
+      padding: 6px 14px;
+      border: 0;
+      border-radius: 30px;
+      background: var(--indigo-light);
+      color: var(--indigo);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    h1 {
+      max-width: 820px;
+      margin: 0 0 24px;
+      font-size: 46px;
+      line-height: 1.25;
+      letter-spacing: -1.5px;
+    }
+
+    .hero h1 {
+      color: var(--neutral-900);
+    }
+
+    .hero h1 span {
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-copy {
+      max-width: 760px;
+      color: var(--neutral-700);
+      font-size: 18px;
+      font-weight: 400;
+    }
+
+    .hero-panel {
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.65);
+      box-shadow: var(--shadow-lg);
+      backdrop-filter: blur(20px);
+      padding: 24px;
+    }
+
+    .hero-panel::before {
+      content: 'project/work-order';
+      display: block;
+      margin: -4px -4px 18px;
+      padding: 12px 16px;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      border-radius: 16px 16px 0 0;
+      background: var(--neutral-50);
+      color: var(--neutral-500);
+      font-family: 'Outfit', sans-serif;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .hero-panel h2 {
+      margin-bottom: 12px;
+      color: var(--primary);
+      font-size: 20px;
+    }
+
+    .hero-panel p {
+      color: var(--neutral-700);
+      font-size: 15px;
+    }
+
+    .metrics {
+      max-width: var(--max);
+      padding: 0 24px 58px;
+      gap: 20px;
+    }
+
+    .metric {
+      min-height: 128px;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      border-radius: 20px;
+      background: white;
+      box-shadow: var(--shadow-sm);
+      color: var(--neutral-800);
+      padding: 24px;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .metric:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .metric strong {
+      color: var(--primary);
+      font-family: 'Outfit', sans-serif;
+      font-size: 30px;
+      font-weight: 800;
+    }
+
+    .metric span {
+      color: var(--neutral-500);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    main {
+      max-width: var(--max);
+      padding: 0 24px 86px;
+    }
+
+    section {
+      margin: 0;
+      padding: 92px 0 0;
+    }
+
+    .section-head {
+      display: block;
+      max-width: 760px;
+      margin: 0 auto 54px;
+      text-align: center;
+    }
+
+    .section-head::before {
+      content: 'PRD BRIEFING';
+      display: inline-block;
+      margin-bottom: 12px;
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .section-head h2 {
+      margin-bottom: 16px;
+      color: var(--neutral-900);
+      font-size: 32px;
+      line-height: 1.25;
+      letter-spacing: -1px;
+    }
+
+    .section-head p {
+      max-width: none;
+      color: var(--neutral-500);
+      font-size: 16px;
+    }
+
+    .band,
+    .decision-strip,
+    .panel,
+    .role,
+    .scope-card,
+    .question {
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      border-radius: 24px;
+      background: white;
+      box-shadow: var(--shadow-md);
+    }
+
+    .band {
+      border-radius: 32px;
+      overflow: hidden;
+    }
+
+    .decision-strip {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      overflow: visible;
+    }
+
+    .decision {
+      min-height: 208px;
+      border-right: 1px dashed rgba(226, 232, 240, 0.9);
+      padding: 40px 28px;
+      transition: var(--transition);
+    }
+
+    .decision:hover {
+      transform: translateY(-4px);
+    }
+
+    .decision b {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .decision h3 {
+      margin: 18px 0 12px;
+      color: var(--neutral-900);
+      font-size: 20px;
+      letter-spacing: -0.5px;
+    }
+
+    .decision p {
+      color: var(--neutral-500);
+      font-size: 15px;
+    }
+
+    .flow {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 18px;
+      padding: 42px;
+      position: relative;
+    }
+
+    .flow-step {
+      min-height: 178px;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      border-radius: 20px;
+      background: var(--neutral-50);
+      box-shadow: var(--shadow-sm);
+      padding: 22px;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .flow-step:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .flow-step::after {
+      display: none;
+    }
+
+    .flow-step .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 18px;
+      border: 3px solid var(--primary);
+      border-radius: 50%;
+      background: var(--gradient-primary);
+      box-shadow: 0 0 0 6px rgba(2, 132, 199, 0.12);
+      color: white;
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .flow-step h3 {
+      color: var(--neutral-900);
+      font-size: 16px;
+    }
+
+    .flow-step p {
+      color: var(--neutral-500);
+      font-size: 13px;
+    }
+
+    .gate {
+      padding: 32px 42px 42px;
+      border-top: 1px solid rgba(226, 232, 240, 0.8);
+      background: var(--neutral-100);
+      gap: 20px;
+    }
+
+    .gate-item {
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .gate-item h3 {
+      color: var(--neutral-900);
+      font-size: 17px;
+    }
+
+    .gate-item p {
+      color: var(--neutral-700);
+      font-size: 14px;
+    }
+
+    .two-col,
+    .scope {
+      gap: 32px;
+    }
+
+    .panel,
+    .role,
+    .question {
+      padding: 40px;
+      transition: var(--transition);
+    }
+
+    .panel:hover,
+    .role:hover,
+    .question:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .panel h3,
+    .role h3 {
+      margin-bottom: 16px;
+      color: var(--neutral-900);
+      font-size: 22px;
+      letter-spacing: -0.5px;
+    }
+
+    .panel p,
+    .role p {
+      color: var(--neutral-500);
+      font-size: 15px;
+    }
+
+    .list {
+      margin-top: 20px;
+      gap: 0;
+    }
+
+    .list li {
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px dashed rgba(226, 232, 240, 0.8);
+      color: var(--neutral-700);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .list li:last-child {
+      border-bottom: 0;
+    }
+
+    .dot {
+      width: 18px;
+      height: 18px;
+      margin-top: 0;
+      border-radius: 50%;
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .dot::before {
+      content: '✓';
+      display: block;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 18px;
+      text-align: center;
+    }
+
+    .role-grid,
+    .review-grid {
+      gap: 24px;
+    }
+
+    .role .tag {
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .object-map {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 16px;
+      padding: 40px;
+    }
+
+    .object {
+      min-height: 124px;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      border-radius: 16px;
+      background: var(--neutral-100);
+      padding: 20px;
+      transition: var(--transition);
+    }
+
+    .object:hover {
+      transform: translateY(-3px);
+      border-color: var(--primary-light);
+      background: white;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .object strong {
+      color: var(--primary);
+      font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+      font-size: 14px;
+    }
+
+    .object span {
+      color: var(--neutral-500);
+      font-size: 13px;
+    }
+
+    .scope-card {
+      border-radius: 24px;
+      overflow: hidden;
+    }
+
+    .scope-card header {
+      padding: 18px 24px;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    .scope-card.out header {
+      background: #fef2f2;
+      color: #ef4444;
+    }
+
+    .scope-card ul {
+      padding: 28px 32px 30px 48px;
+      color: var(--neutral-700);
+      font-size: 15px;
+    }
+
+    .question {
+      min-height: 180px;
+      padding: 28px;
+    }
+
+    .question b {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--indigo-light);
+      color: var(--indigo);
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .question p {
+      margin-top: 16px;
+      color: var(--neutral-900);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .footer-note {
+      margin-top: 80px;
+      padding: 28px 0 0;
+      border-top: 1px solid rgba(226, 232, 240, 0.8);
+      color: var(--neutral-500);
+      font-size: 13px;
+    }
+
+    @media (max-width: 980px) {
+      .hero-grid,
+      .two-col,
+      .scope,
+      .gate {
+        grid-template-columns: 1fr;
+      }
+
+      .metrics,
+      .decision-strip,
+      .role-grid,
+      .review-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .flow,
+      .object-map {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .decision {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+    }
+
+    @media (max-width: 680px) {
+      .topbar-inner,
+      .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav {
+        justify-content: flex-start;
+      }
+
+      .metrics,
+      .decision-strip,
+      .role-grid,
+      .review-grid,
+      .flow,
+      .object-map {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-step::after {
+        display: none;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .topbar {
+        display: none;
+      }
+
+      .hero {
+        color: #111827;
+        background: white;
+        border-bottom: 2px solid #111827;
+      }
+
+      .hero-panel,
+      .metric,
+      .panel,
+      .role,
+      .band,
+      .decision-strip,
+      .scope-card,
+      .question {
+        box-shadow: none;
+      }
+
+      section {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#top" aria-label="문서 상단으로 이동">
+        <span class="brand-mark">FS</span>
+        <span>Fire Safety PRD Briefing</span>
+      </a>
+      <nav class="nav" aria-label="문서 내 이동">
+        <a href="#decisions">확정 방향</a>
+        <a href="#workflow">흐름</a>
+        <a href="#roles">사용자</a>
+        <a href="#data">객체</a>
+        <a href="#scope">범위</a>
+        <a href="#review">검토 안건</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" id="top">
+    <div class="hero-inner">
+      <div class="hero-grid">
+        <div>
+          <span class="eyebrow">PRD v0.1 · 전문가 검토용</span>
+          <h1>건축물대장에서 법정 서식까지 이어지는 <span>소방안전점검 Light SaaS</span></h1>
+          <p class="hero-copy">
+            건물주 위탁 요청을 시작점으로, 건축물대장 OCR 검수, 법정 요건 기반 설비 추천,
+            설비별 현장 입력, 별지 제4호·제9호 출력, 비용 PDF 생성을 하나의 프로젝트 흐름으로 묶는다.
+          </p>
+        </div>
+        <aside class="hero-panel">
+          <h2>제품의 첫인상</h2>
+          <p>
+            관리자가 건축물대장을 업로드하면 OCR 초안이 생성되고, 확정된 건물 정보로 점검 설비 섹션이 추천된다.
+            현장은 추천·동결된 설비 섹션을 기준으로 결과만 입력한다.
+          </p>
+        </aside>
+      </div>
+    </div>
+    <div class="metrics" aria-label="핵심 지표">
+      <div class="metric">
+        <strong>1</strong>
+        <span>프로젝트 단위로 고객, 건물, 작업지시, 점검, 출력, 비용을 묶음</span>
+      </div>
+      <div class="metric">
+        <strong>2</strong>
+        <span>관리자와 현장 사용자가 모두 로그인하는 v1 구조</span>
+      </div>
+      <div class="metric">
+        <strong>4/9</strong>
+        <span>별지 제4호 점검표와 제9호 결과보고서를 핵심 산출물로 고정</span>
+      </div>
+      <div class="metric">
+        <strong>A4</strong>
+        <span>법정 양식 HTML을 PDF와 인쇄물로 저장하는 출력 중심 설계</span>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <section id="decisions">
+      <div class="section-head">
+        <h2>확정된 제품 방향</h2>
+        <p>이번 PRD의 기준점이다. 자동화는 입력 부담을 줄이되, 법정 판단에는 관리자 확정값만 사용한다.</p>
+      </div>
+      <div class="decision-strip">
+        <article class="decision">
+          <b>01</b>
+          <h3>OCR은 초안</h3>
+          <p>건축물대장 PDF/이미지를 읽지만, 관리자가 필수 필드를 확정하기 전에는 설비 추천을 막는다.</p>
+        </article>
+        <article class="decision">
+          <b>02</b>
+          <h3>설비 자동 추천</h3>
+          <p>건축년도, 용도, 면적, 층수 등 확정값을 기준으로 법정 요건에 맞는 설비 섹션을 추천한다.</p>
+        </article>
+        <article class="decision">
+          <b>03</b>
+          <h3>관리자 동결</h3>
+          <p>추천 결과는 관리자가 포함, 제외, 수정 후 작업지시로 동결한다. 현장 차이는 변경 로그로 남긴다.</p>
+        </article>
+        <article class="decision">
+          <b>04</b>
+          <h3>현장은 설비별</h3>
+          <p>점검 입력 단위는 별지 제4호 구조에 맞춰 소화기구, 옥내소화전, 유도등 같은 설비 섹션으로 나눈다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="workflow">
+      <div class="section-head">
+        <h2>엔드투엔드 흐름</h2>
+        <p>고객사 위탁 요청부터 비용 PDF까지 이어지는 v1 업무 흐름. 회색 지점은 시스템 자동화, 노란 지점은 관리자 검수 게이트다.</p>
+      </div>
+      <div class="band">
+        <div class="flow">
+          <article class="flow-step">
+            <span class="num">STEP 1</span>
+            <h3>고객사·건물 등록</h3>
+            <p>건물주 또는 관리주체, 점검 대상 건물을 프로젝트에 연결한다.</p>
+          </article>
+          <article class="flow-step">
+            <span class="num">STEP 2</span>
+            <h3>건축물대장 업로드</h3>
+            <p>PDF 또는 이미지를 업로드하고 OCR 초안을 생성한다.</p>
+          </article>
+          <article class="flow-step">
+            <span class="num">STEP 3</span>
+            <h3>필수 필드 확정</h3>
+            <p>원본과 추출값을 비교해 사용승인일, 용도, 면적, 층수 등을 확정한다.</p>
+          </article>
+          <article class="flow-step">
+            <span class="num">STEP 4</span>
+            <h3>설비 섹션 추천</h3>
+            <p>법정 요건 DB와 룰 엔진으로 적용 설비를 추천한다.</p>
+          </article>
+          <article class="flow-step">
+            <span class="num">STEP 5</span>
+            <h3>작업지시 동결</h3>
+            <p>관리자가 추천 결과를 검수하고 현장용 설비 섹션을 확정한다.</p>
+          </article>
+          <article class="flow-step">
+            <span class="num">STEP 6</span>
+            <h3>현장 입력·출력</h3>
+            <p>설비별 점검 결과를 입력하고 별지 제4호·제9호와 비용 PDF를 생성한다.</p>
+          </article>
+        </div>
+        <div class="gate">
+          <article class="gate-item locked">
+            <h3>차단 게이트</h3>
+            <p>OCR 필수 필드가 미확정이면 설비 추천 버튼은 비활성화된다.</p>
+          </article>
+          <article class="gate-item review">
+            <h3>검수 게이트</h3>
+            <p>시스템 추천 설비는 바로 작업지시가 되지 않고 관리자 검토를 거친다.</p>
+          </article>
+          <article class="gate-item ready">
+            <h3>동결 게이트</h3>
+            <p>작업지시는 해시와 함께 저장되며, 현장 변경은 별도 로그로 추적한다.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>OCR 검수 화면의 역할</h2>
+        <p>OCR은 편의 기능이지만, 제품 신뢰는 검수 UX에서 결정된다. 관리자는 원본과 추출값을 나란히 보며 확정한다.</p>
+      </div>
+      <div class="two-col">
+        <article class="panel">
+          <h3>왼쪽: 원본 문서</h3>
+          <p>건축물대장 PDF 또는 이미지 원본을 표시한다. 페이지 이동, 확대, 축소, 필드 위치 확인이 필요하다.</p>
+          <ul class="list">
+            <li><span class="dot"></span><span>PDF/이미지 원본 확인</span></li>
+            <li><span class="dot"></span><span>추출 필드의 근거 위치 확인</span></li>
+            <li><span class="dot"></span><span>저신뢰 필드 빠른 검토</span></li>
+          </ul>
+        </article>
+        <article class="panel">
+          <h3>오른쪽: 확정 입력 폼</h3>
+          <p>추출값은 초안으로 들어오며, 관리자가 확인해야 확정값으로 바뀐다. 설비 추천은 확정값만 사용한다.</p>
+          <ul class="list">
+            <li><span class="dot"></span><span>추출됨, 수정됨, 누락, 저신뢰, 확정 상태 표시</span></li>
+            <li><span class="dot"></span><span>필수 필드 미확정 목록 표시</span></li>
+            <li><span class="dot"></span><span>확정 완료 후 설비 추천 실행</span></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="roles">
+      <div class="section-head">
+        <h2>사용자와 권한</h2>
+        <p>v1은 관리자와 현장 사용자를 모두 로그인 대상으로 둔다. 팀장/점검자 세분화는 나중에 확장한다.</p>
+      </div>
+      <div class="role-grid">
+        <article class="role">
+          <span class="tag">관리자</span>
+          <h3>프로젝트 책임자</h3>
+          <p>고객사, 건물, OCR 검수, 설비 추천 검토, 작업지시 발행, 최종 출력, 비용 PDF 생성을 담당한다.</p>
+        </article>
+        <article class="role">
+          <span class="tag">현장 사용자</span>
+          <h3>설비별 입력자</h3>
+          <p>배정된 작업지시를 확인하고 설비별 점검 결과, 불량 내용, 메모, 사진, 음성 파일을 입력한다.</p>
+        </article>
+        <article class="role">
+          <span class="tag">고객사</span>
+          <h3>데이터 대상</h3>
+          <p>v1에서는 포털 사용자가 아니라 점검 의뢰자, 건물주, 공급받는자 정보로 관리한다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="data">
+      <div class="section-head">
+        <h2>핵심 객체 지도</h2>
+        <p>객체는 업무 흐름을 그대로 반영한다. 나중에 협업, AI 정리, 정산 시스템으로 확장할 수 있도록 경계를 분리한다.</p>
+      </div>
+      <div class="band">
+        <div class="object-map">
+          <div class="object"><strong>CustomerCompany</strong><span>건물주, 관리주체, 청구 대상</span></div>
+          <div class="object"><strong>Building</strong><span>점검 대상 건축물 기본 정보</span></div>
+          <div class="object"><strong>BuildingRegister</strong><span>원본 파일, OCR 초안, 확정값</span></div>
+          <div class="object"><strong>InspectionProject</strong><span>고객·건물·점검 업무 컨테이너</span></div>
+          <div class="object"><strong>SuggestedFacility</strong><span>법정 요건 기반 추천 설비</span></div>
+          <div class="object"><strong>WorkOrder</strong><span>관리자가 동결한 작업지시</span></div>
+          <div class="object"><strong>Assignment</strong><span>사용자와 설비 섹션 배정</span></div>
+          <div class="object"><strong>InspectionSection</strong><span>설비별 현장 입력 단위</span></div>
+          <div class="object"><strong>InspectionResult</strong><span>점검번호별 적합/부적합 결과</span></div>
+          <div class="object"><strong>FieldNote</strong><span>텍스트, 사진, 음성, 파일 기록</span></div>
+          <div class="object"><strong>Discrepancy</strong><span>작업지시와 현장 차이 로그</span></div>
+          <div class="object"><strong>OfficialForm</strong><span>별지 제4호·제9호 출력 데이터</span></div>
+          <div class="object"><strong>BillingDocument</strong><span>비용 입력과 세금계산서 형태 PDF</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="scope">
+      <div class="section-head">
+        <h2>v1 범위와 후속 범위</h2>
+        <p>제품 매력을 위해 OCR과 현장 입력은 v1에 포함한다. AI 정리, 전자발행, 협업은 다음 단계로 분리한다.</p>
+      </div>
+      <div class="scope">
+        <article class="scope-card">
+          <header>v1에 포함</header>
+          <ul>
+            <li>관리자와 현장 사용자 로그인</li>
+            <li>건축물대장 PDF/이미지 업로드</li>
+            <li>OCR 초안 생성 및 관리자 확정</li>
+            <li>법정 요건 기반 설비 섹션 자동 추천</li>
+            <li>관리자 검수 후 작업지시 동결</li>
+            <li>설비별 현장 점검 결과 입력</li>
+            <li>텍스트, 사진, 음성, 파일 기록 저장</li>
+            <li>별지 제4호·제9호 HTML/PDF 출력</li>
+            <li>관리자 입력 기반 세금계산서 형태 PDF</li>
+          </ul>
+        </article>
+        <article class="scope-card out">
+          <header>v1 이후로 분리</header>
+          <ul>
+            <li>음성 인식과 AI 문장 정리</li>
+            <li>Google Drive 자동 저장</li>
+            <li>실제 국세청 전자세금계산서 발행</li>
+            <li>정산·회계 시스템</li>
+            <li>고객사 포털</li>
+            <li>다중 점검자 실시간 협업</li>
+            <li>소방청 제출 시스템 연동</li>
+            <li>9대 의무 통합 ERP 기능</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>법정 서식 연결 방식</h2>
+        <p>현장에서 한 번 입력한 설비별 결과가 별지 제4호 점검표와 별지 제9호 불량 세부사항으로 동시에 연결된다.</p>
+      </div>
+      <div class="two-col">
+        <article class="panel">
+          <h3>별지 제4호</h3>
+          <p>설비별 점검표가 원천 데이터다. 점검번호 체계는 원문과 같은 형태로 보존한다.</p>
+          <ul class="list">
+            <li><span class="dot"></span><span>예: 1-A-007</span></li>
+            <li><span class="dot"></span><span>결과: 적합, 부적합, 해당없음, 미점검</span></li>
+            <li><span class="dot"></span><span>사진과 메모는 점검항목 또는 설비 섹션에 연결</span></li>
+          </ul>
+        </article>
+        <article class="panel">
+          <h3>별지 제9호</h3>
+          <p>건물 정보와 점검 결과 요약, 불량 세부사항을 프로젝트 데이터에서 구성한다.</p>
+          <ul class="list">
+            <li><span class="dot"></span><span>건축물 정보는 관리자 확정값 사용</span></li>
+            <li><span class="dot"></span><span>설비 현황은 작업지시와 현장 결과에서 구성</span></li>
+            <li><span class="dot"></span><span>부적합 항목은 불량 세부사항으로 자동 집계</span></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="review">
+      <div class="section-head">
+        <h2>전문가 검토 안건</h2>
+        <p>다음 회의에서는 자동 추천의 정확도를 결정하는 필드와 룰 범위를 우선 검증한다.</p>
+      </div>
+      <div class="review-grid">
+        <article class="question">
+          <b>Q1</b>
+          <p>건축물대장에서 설비 추천에 반드시 필요한 필드는 무엇인가?</p>
+        </article>
+        <article class="question">
+          <b>Q2</b>
+          <p>사용승인일과 건축허가일 중 어떤 값을 기본 법령 시점으로 삼아야 하는가?</p>
+        </article>
+        <article class="question">
+          <b>Q3</b>
+          <p>v1 설비 추천 룰의 최소 범위는 어디까지인가?</p>
+        </article>
+        <article class="question">
+          <b>Q4</b>
+          <p>별지 제4호 32종 중 v1 우선 설비 섹션은 무엇인가?</p>
+        </article>
+        <article class="question">
+          <b>Q5</b>
+          <p>작업지시와 현장 실제가 다를 때 어떤 변경 사유를 필수로 남겨야 하는가?</p>
+        </article>
+        <article class="question">
+          <b>Q6</b>
+          <p>세금계산서 형태 PDF에 실무상 반드시 들어가야 할 항목은 무엇인가?</p>
+        </article>
+      </div>
+    </section>
+
+    <div class="footer-note">
+      PRD 원문: docs/01-plan/features/fire-inspection-system.prd.md · 본 HTML은 전문가 토의용 요약 브리핑입니다.
+    </div>
+  </main>
+</body>
+</html>

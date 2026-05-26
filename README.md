@@ -1,8 +1,50 @@
 # 소방안전점검 워크플로 시스템
 
-> **9대 의무 다 안 합니다. 자체점검 일지·보고서만은 한국에서 가장 정확하고 가장 가볍게.**
+> **9대 의무(업무) 다 안 합니다. 자체점검 일지·보고서만은 한국에서 가장 정확하고 가장 가볍게.**
 > 가입은 3분, 구독은 셀프, 점검 한 건은 30분.
 
+# 소방안전관리 9대 업무 내용
+
+1. 피난계획에 관한 사항과 소방계획서의 작성 및 시행
+
+    화재 발생 시 인명 피해를 최소화하기 위한 피난 경로 설정과 전반적인 소방 운영 계획 수립.
+
+2. 자위소방대 및 초기대응체계의 구성, 운영 및 교육
+
+    입주민이나 직원들로 구성된 비상 대응팀을 조직하고, 실제 상황 발생 시 초기 진압과 대피를 돕는 체계 구축.
+
+3. 피난시설, 방화구획 및 방화시설의 유지·관리
+
+    비상구, 계단, 방화셔터 등이 정상 작동하도록 상시 점검하고 적치물을 제거.
+
+4. 소방시설이나 그 밖의 소방 관련 시설의 유지·관리
+
+    스프링클러, 소화기, 경보 설비 등 소방 설비의 정상 가동 상태 유지.
+
+5. 화기취급의 감독
+
+    화기 사용 시 안전 수칙 준수 여부를 확인하고 위험 요소를 사전에 차단.
+
+6. 소방훈련 및 교육
+
+    거주자나 근무자를 대상으로 한 정기적인 대피 훈련 및 소방 안전 교육 실시.
+
+7. 화재발생 시 홍보 및 응급조치
+
+    화재 상황 전파 및 환자 발생 시 응급 처치 지원.
+
+8. 소방안전관리 업무에 관한 기록의 유지
+
+    점검 기록, 교육 내역 등 수행한 모든 안전관리 업무를 서면이나 전자 문서로 기록·보존(보통 2년).
+
+9. 그 밖에 소방안전관리에 필요한 업무
+
+    법령에서 정하는 추가적인 안전 조치 및 소방본부장/소방서장의 지도 사항 이행.
+
+# 핵심 참고 사항
+    위반 시 불이익: 소방안전관리 업무를 게을리할 경우 300만 원 이하의 과태료가 부과될 수 있으며, 화재 발생 시 관리 소홀이 입증되면 민·형사상 책임이 무거워질 수 있습니다.
+
+    특히 최근에는 '초기대응체계'의 중요성이 강조되고 있어, 단순히 계획서만 만드는 것이 아니라 실제 훈련을 통해 대응 역량을 갖추는 것이 실무에서 가장 중요합니다.
 ---
 
 ## 한 줄 정의
@@ -46,8 +88,9 @@
 | [docs/01-overview.md](docs/01-overview.md) | 프로젝트 개요·문제 정의·의사결정 이력 (피벗 포함) |
 | [docs/visual-proposal.html](docs/visual-proposal.html) | [시각화] 대기업 제안서 스타일 인터랙티브 기획안 (HTML) |
 | [docs/01-plan/features/fire-inspection-system.plan.md](docs/01-plan/features/fire-inspection-system.plan.md) | 상위 Plan — 워크플로·범위·리스크 |
+| [docs/01-plan/features/fire-inspection-system.prd.md](docs/01-plan/features/fire-inspection-system.prd.md) | PRD v0.1 — 제품 요구사항 (Design v0.2에 통합 완료, 컨텍스트 보존용) |
 | [docs/01-plan/features/group-call-ai-roadmap.plan.md](docs/01-plan/features/group-call-ai-roadmap.plan.md) | [미래] 그룹 통화 & AI 자동완성 로드맵 Plan |
-| [docs/02-design/features/fire-inspection-system.design.md](docs/02-design/features/fire-inspection-system.design.md) | Design — 도메인 모델·디렉토리·인쇄 표준 |
+| [docs/02-design/features/fire-inspection-system.design.md](docs/02-design/features/fire-inspection-system.design.md) | **Design v0.2** — 도메인 모델·디렉토리·인쇄 표준 (PRD 통합 + OCR v1) |
 | [docs/01-plan/features/fire-duty-master.plan.md](docs/01-plan/features/fire-duty-master.plan.md) | 하위 데이터셋 Plan (법정문서 SSoT) |
 | [docs/02-design/features/fire-duty-master.design.md](docs/02-design/features/fire-duty-master.design.md) | 하위 데이터셋 Design |
 | [docs/_archive/2026-05-21/](docs/_archive/2026-05-21/) | 워크플로 피벗으로 보류된 자료 (MCP 설계·현장 웹앱·프로토타입) |
@@ -67,7 +110,10 @@ fire-safety/
 ├── data/                ← 산출 데이터
 │   ├── fire-duty-master.json
 │   └── validate-master.mjs
-└── reference/           ← 소방 법령·서식 PDF
+│── html/
+│   ├── 별지_제4호서식.html
+│   └── 별지_제9호서식.html
+└── reference/   ← 소방 법령·서식 PDF  # 참고용 자료임. PDF 큰 파일 읽기 금지ㅈ !!
     ├── 소방기본법.pdf
     ├── 소방시설법 및 화재예방법령집.pdf
     ├── 별지 제9호서식.pdf   (자체점검 결과보고서, 8쪽)
@@ -86,8 +132,11 @@ fire-safety/
 - [x] 방향 확정 (웹앱 + greenfield, RAG·MCP-as-1st 폐기)
 - [x] 워크플로 피벗 (단계 A / 단계 B 분리)
 - [x] 시장 진단·차별 포지셔닝 박제 (Light SaaS, 20년 베테랑 공동개발 파트너 확보)
-- [x] fire-inspection-system Plan / Design 작성
-- [ ] Open Questions 해소 (법제처 API 키·PoC 점검표 최종 7종·등급 자동판정 분리 여부)
-- [ ] Do Phase 1: monorepo 부트스트랩 (apps/web, packages/{types,fire-data,law-client})
-- [ ] 별지 9호/4호 HTML 양식 (A4 1:1) + 세금계산서 PDF 떨어뜨림
+- [x] fire-inspection-system Plan / Design v0.1 / PRD v0.1 작성
+- [x] **Design v0.2 갱신** (2026-05-26): PRD v0.1 통합 + OCR v1 편입. 사용자·고객사·BuildingRegister·SuggestedFacilitySection·InspectionSection·BillingDocument 명시화
+- [x] **Design v0.2.2 디자인 시스템 톤 확정** (2026-05-26): Supabase 톤 기반 + Pine Green `#2F9E44` primary. §6A 토큰 박제. 시안: [docs/design-preview/supabase-tone.html](docs/design-preview/supabase-tone.html)
+- [ ] Open Questions 해소: **OCR 엔진 선정 PoC (1주, 건축물대장 10건)**, 법제처 API 키, PoC 점검표 7종 최종 확정, v1 권한 범위 검증
+- [ ] Do Phase 1-2: monorepo 부트스트랩 + **디자인 시스템 토큰 이식** (apps/web, packages/{types,fire-data,law-client,**ocr-client**}, apps/web/styles/{tokens,globals,print}.css)
+- [ ] 데이터셋: `data/fire-duty-master.json` TODO 25개 + `data/inspection-checklist.json` 신규 (PoC 7종)
+- [ ] 별지 9호/4호 HTML 양식 (A4 1:1) + 세금계산서 형태 PDF
 - [ ] 파트너 주 1회 정기 리뷰 시작, v1 완성 직후 2번째 파트너 탐색

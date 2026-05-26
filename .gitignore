@@ -10,11 +10,20 @@ docs/.bkit-memory.json
 docs/.pdca-status.json
 docs/.pdca-snapshots/
 
-# Dependency/build outputs for future app work
+# Dependency/build outputs
 node_modules/
 .next/
+.next/**
 dist/
 coverage/
+*.tsbuildinfo
+
+# pnpm
+.pnpm-debug.log
+.pnpm-store/
+
+# OS
+Thumbs.db
 
 # Local environment files
 .env
