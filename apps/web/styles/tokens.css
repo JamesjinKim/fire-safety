@@ -1,0 +1,100 @@
+/* ─────────────────────────────────────────────────────────────
+   Design Tokens · fire-inspection-system · Design v0.2.2 §6A
+   베이스: Supabase 톤 (VoltAgent/awesome-design-md/supabase)
+   Primary: Pine Green #2F9E44 (ForestGreen 사용자 선호 + 신호성 +6%p)
+   시안: docs/design-preview/supabase-tone.html
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  /* ─── Color: Primary (단일 액센트) ─── */
+  --primary:       #2F9E44;
+  --primary-deep:  #237A35;   /* hover/pressed */
+  --primary-soft:  #e6f3e7;   /* 확정 뱃지/연한 배경 */
+  --primary-on:    #ffffff;   /* primary 위 글자 */
+
+  /* ─── Color: Ink (텍스트) ─── */
+  --ink:           #171717;   /* primary text. 절대 순수 #000 사용 안 함 */
+  --ink-2:         #212121;
+  --ink-mute:      #707070;   /* 보조 텍스트, 메타 */
+  --ink-mute-2:    #9a9a9a;
+  --ink-faint:     #b2b2b2;   /* placeholder */
+
+  /* ─── Color: Canvas (배경) ─── */
+  --canvas:        #ffffff;
+  --canvas-soft:   #fafafa;   /* 페이지 배경, 카드 호버 */
+  --canvas-night:  #1c1c1c;   /* 인쇄 미리보기 사이드바, 코드 블록 */
+
+  /* ─── Color: Hairline (구분선·테두리) ─── */
+  --hairline:         #dfdfdf;
+  --hairline-strong:  #c7c7c7;
+  --hairline-cool:    #ededed;
+  --hairline-cool-2:  #efefef;
+
+  /* ─── Color: Semantic (점검 결과 + OCR 검수) ─── */
+  --pass:            #2F9E44;  /* = primary, "적합" */
+  --fail:            #e02d3c;  /* "부적합", 불량 카운트 */
+  --fail-soft:       #fde8ea;
+  --na:              #9a9a9a;  /* "해당없음" */
+  --not-checked:     #f5a623;  /* "미점검" */
+  --confirm:         var(--primary);  /* OCR 확정 */
+  --extracted:       #707070;         /* OCR 추출됨 */
+  --edited:          #3340a9;         /* OCR 사용자 수정 */
+  --low-confidence:  #92560c;         /* OCR 신뢰도 낮음 */
+  --missing:         #e02d3c;         /* OCR 누락 */
+
+  /* ─── Typography: Font family ─── */
+  --font-sans: 'Inter', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR',
+               'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Menlo, Monaco, Consolas,
+               'Liberation Mono', monospace;
+
+  /* ─── Typography: Scale ─── (size / weight / line / tracking) */
+  --t-display-lg-size: 36px;  --t-display-lg-weight: 500;
+  --t-display-lg-line: 1.15;  --t-display-lg-track: -0.72px;
+
+  --t-display-md-size: 28px;  --t-display-md-weight: 500;
+  --t-display-md-line: 1.20;  --t-display-md-track: -0.42px;
+
+  --t-heading-lg-size: 22px;  --t-heading-lg-weight: 500;
+  --t-heading-lg-line: 1.20;  --t-heading-lg-track: -0.20px;
+
+  --t-heading-md-size: 18px;  --t-heading-md-weight: 500;
+  --t-heading-md-line: 1.40;  --t-heading-md-track: 0;
+
+  --t-body-lg-size:    17px;  --t-body-lg-weight: 400;
+  --t-body-lg-line:    1.60;
+
+  --t-body-size:       15px;  --t-body-weight: 400;
+  --t-body-line:       1.55;
+
+  --t-body-sm-size:    14px;  --t-body-sm-weight: 400;
+  --t-body-sm-line:    1.55;
+
+  --t-caption-size:    13px;  --t-caption-weight: 400;
+  --t-caption-line:    1.45;
+
+  --t-micro-size:      12px;  --t-micro-weight: 400;
+  --t-micro-line:      1.45;
+
+  /* ─── Spacing (8pt 기반) ─── */
+  --xxs: 2px;
+  --xs:  4px;
+  --sm:  8px;
+  --md:  12px;
+  --lg:  16px;
+  --xl:  24px;
+  --xxl: 32px;
+  --huge: 64px;
+
+  /* ─── Radius (Pill 금지 — full은 아바타·dot에만) ─── */
+  --r-xs:   4px;
+  --r-sm:   6px;
+  --r-md:   8px;
+  --r-lg:   12px;
+  --r-xl:   16px;
+  --r-full: 9999px;
+
+  /* ─── Shadow (절제) ─── */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
+}

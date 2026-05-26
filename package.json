@@ -1,0 +1,19 @@
+{
+  "name": "fire-safety-monorepo",
+  "version": "0.0.1",
+  "private": true,
+  "description": "소방안전점검 워크플로 시스템 — Light SaaS for Korean fire-safety inspection (별지 9호/4호)",
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=11"
+  },
+  "scripts": {
+    "dev": "pnpm -F web dev",
+    "build": "pnpm -F web build",
+    "start": "pnpm -F web start",
+    "lint": "pnpm -F web lint",
+    "typecheck": "pnpm -r --parallel typecheck",
+    "validate-data": "node data/validate-master.mjs"
+  },
+  "packageManager": "pnpm@11.1.3"
+}

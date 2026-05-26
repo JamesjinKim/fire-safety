@@ -1,0 +1,9 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Next.js 이미지 최적화(sharp)와 ESLint resolver(unrs-resolver)는
+# 신뢰 패키지이므로 빌드 스크립트 실행 허용. pnpm 11 보안 기본값 우회.
+allowBuilds:
+  sharp: true
+  unrs-resolver: true

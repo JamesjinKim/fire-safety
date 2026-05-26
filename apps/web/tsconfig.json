@@ -1,0 +1,26 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [{ "name": "next" }],
+    "paths": {
+      "@/*": ["./*"],
+      "@fire-safety/types": ["../../packages/types/src"],
+      "@fire-safety/fire-data": ["../../packages/fire-data/src"],
+      "@fire-safety/law-client": ["../../packages/law-client/src"],
+      "@fire-safety/ocr-client": ["../../packages/ocr-client/src"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}

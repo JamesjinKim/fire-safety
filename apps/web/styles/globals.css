@@ -1,0 +1,62 @@
+/* ─────────────────────────────────────────────────────────────
+   globals.css · 화면(웹앱) 전용 스타일
+   인쇄 라우트(app/print/*)는 print.css만 로드, 본 파일 미사용
+   ───────────────────────────────────────────────────────────── */
+
+/* 토큰 먼저 (CSS 변수 사용 가능 상태로) */
+@import './tokens.css';
+
+/* 폰트 (Inter weight 400/500/600 + JetBrains Mono 400/500) */
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
+@import '@fontsource/inter/600.css';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
+
+/* ─── Reset (절제 — Tailwind preflight 없이 최소) ─── */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+img, picture, video, canvas, svg { display: block; max-width: 100%; }
+button { font: inherit; cursor: pointer; }
+input, textarea, select { font: inherit; }
+a { color: inherit; text-decoration: none; }
+ul, ol { list-style: none; padding: 0; margin: 0; }
+
+/* ─── Base typography ─── */
+html {
+  font-family: var(--font-sans);
+  font-size: var(--t-body-size);
+  line-height: var(--t-body-line);
+  color: var(--ink);
+  background: var(--canvas-soft);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-weight: var(--t-body-weight);
+}
+
+/* ─── Type helpers (필요 시 className으로 사용) ─── */
+.t-display-lg { font-size: var(--t-display-lg-size); font-weight: var(--t-display-lg-weight); line-height: var(--t-display-lg-line); letter-spacing: var(--t-display-lg-track); }
+.t-display-md { font-size: var(--t-display-md-size); font-weight: var(--t-display-md-weight); line-height: var(--t-display-md-line); letter-spacing: var(--t-display-md-track); }
+.t-heading-lg { font-size: var(--t-heading-lg-size); font-weight: var(--t-heading-lg-weight); line-height: var(--t-heading-lg-line); letter-spacing: var(--t-heading-lg-track); }
+.t-heading-md { font-size: var(--t-heading-md-size); font-weight: var(--t-heading-md-weight); line-height: var(--t-heading-md-line); }
+.t-body-lg    { font-size: var(--t-body-lg-size);    font-weight: var(--t-body-lg-weight);    line-height: var(--t-body-lg-line); }
+.t-body       { font-size: var(--t-body-size);       font-weight: var(--t-body-weight);       line-height: var(--t-body-line); }
+.t-body-sm    { font-size: var(--t-body-sm-size);    font-weight: var(--t-body-sm-weight);    line-height: var(--t-body-sm-line); }
+.t-caption    { font-size: var(--t-caption-size);    font-weight: var(--t-caption-weight);    line-height: var(--t-caption-line); }
+.t-micro      { font-size: var(--t-micro-size);      font-weight: var(--t-micro-weight);      line-height: var(--t-micro-line); }
+.t-mono       { font-family: var(--font-mono); }
+.t-tabnum     { font-variant-numeric: tabular-nums; }
+
+.muted   { color: var(--ink-mute); }
+.faint   { color: var(--ink-mute-2); }
+
+/* ─── Focus (접근성: 모든 인터랙티브 요소에 일관된 포커스 링) ─── */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: var(--r-xs);
+}
