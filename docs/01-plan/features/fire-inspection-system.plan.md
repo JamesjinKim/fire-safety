@@ -50,7 +50,7 @@ Next.js 웹앱 단일 인터페이스의 소방안전점검 워크플로 PoC를 
 - `apps/web/lib/domain/`: 4함수 (`lookupLawByYear`, `deriveInspectionScope`, `composeWorkOrder`, `validateInspection`) — v2 MCP 래핑 대비 순수 함수 형태
 - `data/fire-duty-master.json`: 기존 산출물, 본 feature가 참조
 - `data/inspection-checklist.json`: 별지 제4호 32종 점검항목 마스터 (PoC는 우선 5~7종)
-- `data/law-snapshots/`: 법제처 API 응답 캐시 (빌드타임 스냅샷 폴백)
+- `data/law-snapshots/`: 고객 키 기반 수집으로 만든 법령 스냅샷
 - 양식 HTML 컴포넌트: `별지9호.tsx`, `별지4호.tsx` (A4 210×297mm 정확 출력)
 - **세금계산서 PDF 출력** (v1.5에서 ASP 자동 발행 전환): 점검 완료 후 청구 PDF 떨어뜨림. 사용자가 외부 시스템에서 직접 발행.
 - **셀프 온보딩 흐름**: 가입·구독 결제·첫 점검 일지 생성까지 SI 개입 0으로 가능 (KPI: 가입 3분, 첫 보고서 30분)
@@ -98,7 +98,10 @@ v1 완성 직후 **2번째 파트너**(다른 규모·지역) 일찍 확보 — 
 | 항목 | 결정 | 이유 / 보완 |
 |---|---|---|
 | Feature 구조 | 상위 `fire-inspection-system` 신규, `fire-duty-master`는 하위 데이터셋 | 워크플로 단위가 사용자 가치의 단위 |
-| 법령 시계열 확보 | **법제처 API 우선 검토** | 사용자 우려: 응답속도. → 빌드타임 스냅샷 + 런타임 캐시 폴백 설계 필수 |
+| 웹앱 배포 | **Vercel 우선** | Next.js App Router/RSC, Preview 배포, 한국 인접 region 운영성이 PoC에 적합 |
+| 운영 DB/파일 | **Supabase Seoul 우선** | PostgreSQL 호환 RDB + Storage. 사용자/데이터가 한국 중심이므로 `ap-northeast-2` 우선 |
+| 법령 시계열 확보 | **고객 키 기반 스냅샷 수집(BYOK)** | 고객 관리자가 자기 법제처 API 키로 필요한 시행일 스냅샷을 생성·업로드. 런타임은 저장된 스냅샷만 조회 |
+| 법제처 API 인증키 | **저장 금지** | 고객 관리자 세션에서만 사용. Vercel/Supabase에 키를 넣지 않음 |
 | 실시간 협업 (v2) | bkend.ai BaaS + 섹션(설비) 단위 락킹 | CRDT보다 구현 난이도 낮음, Dynamic 레벨에 적합 |
 | PoC 범위 | E2E 양식 완성까지 | 협업·MCP·NFPC/NFTC는 v2 후보 |
 | 프로젝트 레벨 | **Dynamic** | bkend BaaS 도입 + 협업 v2 예정으로 Starter 불가 |
@@ -125,15 +128,54 @@ v1 완성 직후 **2번째 파트너**(다른 규모·지역) 일찍 확보 — 
    ┌───────────┴───────────┐
    ↓                       ↓
 ┌─────────────────┐    ┌─────────────────────┐
-│ Data (정적)      │    │ 법제처 API (단계 A만)│
-│ fire-duty-master │    │ 응답은 WorkOrder에   │
-│ inspection-      │    │ 동결 (작업지시=캐시) │
-│   checklist      │    │                      │
+│ Data (정적)      │    │ 법령 스냅샷 저장소    │
+│ fire-duty-master │    │ 고객 키로 생성된      │
+│ inspection-      │    │ snapshot JSON 보관    │
+│   checklist      │    │ 룰 엔진은 조회만      │
 └─────────────────┘    └─────────────────────┘
 ```
 
 > 핵심 원칙 유지: 계산은 코드(결정론적 룰), LLM은 해석·요약만 (v1은 LLM 호출 0).
 > v2 MCP 부활 경로: 위 4함수를 import하는 `apps/mcp/`를 추가하면 동일 로직을 Claude Desktop에 노출 가능.
+
+### 4.1 법령 데이터 접근 전략 (BYOK 스냅샷 수집)
+
+해외 웹서버가 법제처 국가법령정보 공동활용 API를 직접 호출하지 못하는 상황을 기본 장애 시나리오로 둔다. 따라서 Vercel 런타임은 법제처 API를 호출하지 않는다. 필요한 법령은 고객 관리자가 자기 API 키로 스냅샷 JSON을 생성하고, 우리 시스템은 그 스냅샷을 근거 데이터로 저장한 뒤 룰 엔진으로 설비 섹션을 추천한다.
+
+| 계층 | 역할 | 위치 | 실패 시 동작 |
+|---|---|---|---|
+| 스냅샷 필요 판정 | 건축물대장 확정값에서 필요한 법령명·시행일·조문 후보 산출 | Vercel 웹앱 | 스냅샷이 없으면 `법령 스냅샷 필요` 표시 |
+| 고객 키 수집 | 고객 관리자 API 키로 `eflaw`/`eflawjosub` 조회, snapshot JSON 생성 | 고객 관리자 브라우저 세션 | 키는 저장하지 않고 세션 종료 시 폐기 |
+| 스냅샷 저장소 | `lawId + effectiveDate + articleNo` 단위 JSON/DB 저장, hash 보존 | Supabase 및 `data/law-snapshots/` | 이전 스냅샷 유지 |
+| 룰 엔진 | 스냅샷 + 건축물 확정값으로 설비 섹션 추천 | Vercel 웹앱 | 미검증/누락 구간은 `확인 필요`로 차단 |
+
+구현 원칙:
+
+- 고객이 만드는 것은 설비 리스트가 아니라 법령 스냅샷이다.
+- 설비 섹션 추천은 항상 우리 룰 엔진이 만든다.
+- API 키는 저장하지 않는다. Supabase에는 snapshot JSON과 메타데이터만 저장한다.
+- `lookupLawByYear`는 기본적으로 네트워크 호출을 하지 않는다. 저장된 스냅샷만 반환한다.
+- Vercel 런타임 환경은 `LAW_DATA_MODE=runtime`으로 고정하고, 서버 환경변수에 법제처 API 키를 두지 않는다.
+- 모든 작업지시는 `snapshotId`, `effectiveDate`, `sourceUrl`, `retrievedAt`, `contentHash`, `ruleVersion`을 함께 저장한다.
+- 스냅샷이 없거나 구조 검증에 실패하면 STEP 4를 중단하고 `법령 스냅샷 필요` 또는 `확인 필요`를 표시한다.
+
+### 4.2 웹서버 임대·운영 배치
+
+v1은 웹 요청 처리와 법령 API 키 저장을 분리한다. 웹앱은 Vercel + Supabase Seoul로 운영하고, 법제처 API 키는 고객 관리자 세션에서 스냅샷 생성 때만 사용한다.
+
+| 구성요소 | 1순위 | 대안 | 운영 원칙 |
+|---|---|---|---|
+| Next.js 웹앱 | Vercel `icn1` Seoul | Vercel `hnd1` Tokyo / `sin1` Singapore | 사용자 요청 중 법제처 API 호출 0 |
+| DB/Auth | Supabase Seoul `ap-northeast-2` | Supabase Tokyo | 함수 region은 DB 가까운 곳 우선 |
+| 파일 저장 | Supabase Storage Seoul | Supabase Storage Tokyo | Vercel 파일시스템 영구 저장 금지 |
+| 법령 수집 | 고객 관리자 화면에서 API 키 입력 | snapshot JSON 수동 업로드 | API 키 저장 금지 |
+| PDF/OCR 처리 | v1은 브라우저 인쇄/외부 OCR API 중심 | 대량 처리 수요 확인 후 재검토 | 현재 백엔드 스키마에는 포함하지 않음 |
+
+배포 환경변수 기준:
+
+- Vercel Production/Preview: `LAW_DATA_MODE=runtime`, 법제처 API 키 미설정.
+- 고객 관리자 화면: API 키 입력값은 수집 세션에서만 사용하고 저장하지 않는다.
+- 스냅샷 저장 경로는 PoC에서는 `data/law-snapshots/`, 운영에서는 `law_snapshots` 테이블과 Supabase Storage를 병행한다.
 
 ## 5. 성공 기준 (Check 단계 판정용)
 
@@ -142,7 +184,10 @@ PoC v1 완료 = 다음 시나리오가 사람 손 없이 흘러간다.
 - [ ] 임의 건축물(예: 2010년 사용승인, 연면적 5000㎡, 다중이용업소 일부) 입력 → 적용 소방시설 리스트가 reproducible하게 산출
 - [ ] 별지 제9호서식 1쪽 ~ 8쪽 전체가 HTML로 렌더되고, **A4 인쇄 시 PDF 원본과 1:1 사이즈** (210×297mm, 단 1픽셀 오차 허용)
 - [ ] 별지 제4호서식의 적용 점검표(PoC 5~7종)가 HTML로 렌더, 점검번호 체계(`{대분류}-{중분류}-{소분류}` 예: `1-A-007`) 그대로 유지
-- [ ] 법제처 API 호출 실패 시 로컬 스냅샷으로 폴백, 사용자에게 폴백 사실 명시
+- [ ] 해외 웹 런타임에서 법제처 API 호출 없이도 저장된 스냅샷만으로 적용 소방시설 리스트가 산출
+- [ ] 스냅샷 miss 또는 구조 검증 실패 구간은 자동 추정하지 않고 `확인 필요` 라벨로 작업지시 동결을 막음
+- [ ] Vercel 환경에 법제처 API 키가 없어도 웹앱이 정상 동작
+- [ ] 고객 관리자 세션에서 `eflaw`/`eflawjosub` 조회로 소방시설법 제22조 스냅샷 생성 및 업로드 가능
 - [ ] `fire-duty-master.json` 6종 + `inspection-checklist.json` 5~7종 모두 출처(법령 조문·페이지) 표기, 추정·환각 0
 - [ ] 한국어 폼 입력 → 한국어 출력, 모든 법조문 인용은 [[2026 시행기준]] 명시
 
@@ -150,7 +195,10 @@ PoC v1 완료 = 다음 시나리오가 사람 손 없이 흘러간다.
 
 | 리스크 | 영향 | 대응 |
 |---|---|---|
-| 법제처 API 응답속도 (사용자 우려) | 사용자 체감 성능 저하 | 캐시 first + 빌드타임 스냅샷 폴백. API는 비동기 갱신용 |
+| 해외 웹서버의 법제처 API 접근 실패 | 작업지시 생성 불가 | API를 런타임 경로에서 제거. 고객 BYOK 스냅샷 수집 + 저장된 스냅샷 조회 |
+| Vercel 파일시스템에 첨부 저장 | 파일 유실 | 첨부·생성 PDF는 Supabase Storage 사용. Vercel은 임시 처리만 |
+| PDF/OCR 작업이 함수 시간을 초과 | 작업 실패·비용 증가 | v1은 브라우저 인쇄/외부 OCR API 중심. 대량 처리 수요 확인 후 재검토 |
+| 법제처 API 응답속도 (사용자 우려) | 수집 지연 | 사용자 요청과 분리. API는 배치 수집/개정 모니터링용 |
 | 별지 제4호 점검표 71쪽·항목 수백 개 | 데이터 입력 작업량 폭발 | PoC는 5~7종 (소화기/옥내소화전/자동화재탐지/유도등/피난기구 등 최빈) |
 | 연도별 법령 시계열 매칭 정확도 | 법적 위험 | PoC는 최근 5년 + 주요 개정시점만. 미확인 매칭은 "확인 필요" 라벨 강제 |
 | A4 인쇄 1:1 정확성 (브라우저 차이) | 양식 무효화 | Chromium 기준 1차, 인쇄 미리보기 자동 검증. 폰트 임베딩 |
@@ -163,7 +211,7 @@ PoC v1 완료 = 다음 시나리오가 사람 손 없이 흘러간다.
   - `inspection-collab` (v2 협업)
   - `fire-law-corpus-extended` (1980~2020 법령 시계열)
   - `nfpc-nftc-bundle` (기술기준)
-- **외부 의존**: 법제처 OpenAPI (law.go.kr), 사용자 reference/ 폴더의 PDF
+- **외부 의존**: 법제처 OpenAPI (고객 BYOK 스냅샷 수집 전용), 사용자 reference/ 폴더의 PDF
 - **bkend.ai BaaS**: 협업 v2부터. v1은 로컬 상태/파일 저장으로 시작.
 
 ## 8. 다음 단계
@@ -171,7 +219,7 @@ PoC v1 완료 = 다음 시나리오가 사람 손 없이 흘러간다.
 1. `/pdca design fire-inspection-system` — 데이터 모델 + API 인터페이스 + 양식 HTML 구조 설계
 2. 설계에서 확정해야 할 것:
    - `inspection-checklist.json` 스키마 (별지 4호 점검번호 체계 반영)
-   - 법제처 API 호출/캐시 정책
+   - 고객 BYOK 법령 스냅샷 생성/업로드 정책
    - 건축물 메타 입력 폼 필드 (별지 9호 2쪽 건축물정보 기반)
    - HTML A4 인쇄 CSS 표준 (210×297mm, @page, print-color-adjust)
    - v2 협업 대비 데이터모델 자리(sectionId/lock 필드) 위치

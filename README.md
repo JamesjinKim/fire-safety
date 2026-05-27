@@ -65,8 +65,10 @@
 | 방식 | **웹앱 (Next.js)** — v1 단일 인터페이스 |
 | 코드 출발점 | **Greenfield** — 처음부터 새로 작성 (건설안전 OSS fork 안 함, 설계 패턴만 참고) |
 | 웹앱 스택 | Next.js App Router + RSC · pnpm workspaces |
+| 웹서버 임대/배포 | **Vercel 우선** — Function region `icn1`(Seoul), 불가 시 `hnd1`/`sin1`. DB/Storage는 Supabase Seoul |
 | 데이터 | `data/fire-duty-master.json` (법정문서 SSoT) + `data/inspection-checklist.json` (별지 4호 점검항목) |
-| 법령 시계열 | 법제처 OpenAPI를 **단계 A(사무실)에서만** 호출 → 작업지시에 동결 |
+| 법령 시계열 | **고객 키 기반 스냅샷 수집(BYOK)**. 고객 관리자가 자기 법제처 API 키로 필요한 법령 스냅샷을 생성·업로드 → 우리 룰 엔진이 설비 추천 |
+| 법제처 API 키 | 서버에 보관하지 않음. 고객 관리자 세션에서 스냅샷 생성 때만 사용하고 저장하지 않음 |
 | MCP | **v2 후보로 보류** (v1은 웹앱 내부 함수로 동일 로직 구현, 실수요 검증 후 얇은 MCP 래퍼 부활) |
 | RAG | **폐기** (숫자 기준 환각 위험, 본 도메인은 결정론적 룰 계산이 본질) |
 
@@ -135,7 +137,7 @@ fire-safety/
 - [x] fire-inspection-system Plan / Design v0.1 / PRD v0.1 작성
 - [x] **Design v0.2 갱신** (2026-05-26): PRD v0.1 통합 + OCR v1 편입. 사용자·고객사·BuildingRegister·SuggestedFacilitySection·InspectionSection·BillingDocument 명시화
 - [x] **Design v0.2.2 디자인 시스템 톤 확정** (2026-05-26): Supabase 톤 기반 + Pine Green `#2F9E44` primary. §6A 토큰 박제. 시안: [docs/design-preview/supabase-tone.html](docs/design-preview/supabase-tone.html)
-- [ ] Open Questions 해소: **OCR 엔진 선정 PoC (1주, 건축물대장 10건)**, 법제처 API 키, PoC 점검표 7종 최종 확정, v1 권한 범위 검증
+- [ ] Open Questions 해소: **OCR 엔진 선정 PoC (1주, 건축물대장 10건)**, 고객 키 기반 법령 스냅샷 생성/업로드 UX, PoC 점검표 7종 최종 확정, v1 권한 범위 검증
 - [ ] Do Phase 1-2: monorepo 부트스트랩 + **디자인 시스템 토큰 이식** (apps/web, packages/{types,fire-data,law-client,**ocr-client**}, apps/web/styles/{tokens,globals,print}.css)
 - [ ] 데이터셋: `data/fire-duty-master.json` TODO 25개 + `data/inspection-checklist.json` 신규 (PoC 7종)
 - [ ] 별지 9호/4호 HTML 양식 (A4 1:1) + 세금계산서 형태 PDF
