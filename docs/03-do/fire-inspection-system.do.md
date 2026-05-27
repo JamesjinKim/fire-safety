@@ -164,7 +164,7 @@ pnpm -F web add @fontsource/inter @fontsource/jetbrains-mono
 ### 3.3 시안 검증
 
 `docs/design-preview/supabase-tone.html`을 옆에 열고 색상값·폰트·간격이 1:1 일치하는지 눈으로 확인.
-간단한 데모 페이지(`apps/web/app/_design-check/page.tsx`)에 다음 요소 렌더:
+간단한 데모 페이지(`apps/web/app/design-check/page.tsx`)에 다음 요소 렌더:
 - `display-lg` 헤딩 1개
 - Primary 버튼 + Outline 버튼
 - 카드 1개 + Pill 3종 (green/warn/fail)
@@ -178,7 +178,7 @@ pnpm -F web add @fontsource/inter @fontsource/jetbrains-mono
 - 운영 DB 기준선: **PostgreSQL 호환 RDB** (Supabase Postgres 또는 동일 계열)
 - 테이블 전략: 핵심 관계는 정규화, 동결 스냅샷·OCR 추출 결과·법령 스냅샷은 `jsonb`
 - 멀티테넌시: 모든 업무 테이블에 `org_id` 포함
-- 파일: DB에는 `attachments` 메타데이터만 저장, 실제 파일은 v1 로컬 `attachments/`, 운영 전환 시 Object Storage
+- 파일: DB에는 `attachments` 메타데이터만 저장, 실제 파일은 v1 로컬 `attachments/`, 운영 전환 시 Supabase Storage
 - 배포 기준: 웹앱은 Vercel, 운영 DB/Storage는 Supabase Seoul, 법령 수집은 고객 관리자 BYOK 세션
 
 상세 기준선은 [DB 설계 문서](../02-design/features/fire-inspection-system.database.md)를 따른다.
@@ -223,20 +223,20 @@ design-validator가 식별한 갭 중 코드에 직접 영향:
 - Phase 4 `lib/auth/guard.ts` 작성 시 결정
 - 임시 결정: admin은 자기 orgId의 모든 프로젝트 접근, field는 `InspectionAssignment` (= `assignedUserIds[]`)로 받은 섹션만 접근
 
-## 6. Phase 1+2 종료 기준
+## 6. Phase 1+2 완료 기준 (완료)
 
-- [ ] `pnpm install` 성공
-- [ ] `pnpm -F web dev`로 Next.js 기본 화면 동작
-- [ ] `apps/web/app/_design-check/page.tsx`가 시안과 1:1 일치 (Pine Green CTA, Inter 본문, JetBrains Mono 숫자)
-- [ ] `apps/web/app/print/layout.tsx`가 globals.css를 로드하지 않음 (인쇄 톤 분리 확인)
-- [ ] Git commit: `chore: phase 1+2 — monorepo bootstrap + design tokens`
+- [x] `pnpm install` 성공
+- [x] `pnpm -F web dev`로 Next.js 기본 화면 동작
+- [x] `apps/web/app/design-check/page.tsx`가 시안과 1:1 일치 (Pine Green CTA, Inter 본문, JetBrains Mono 숫자)
+- [x] `apps/web/app/print/layout.tsx`가 globals.css를 로드하지 않음 (인쇄 톤 분리 확인)
+- [x] Git commit: Phase 1+2 작업 반영 완료
 
 ## 7. 다음 단계
 
-Phase 1+2 완료 후:
-- `/pdca status` — Do phase 진행도 확인
-- Phase 3 진입 (DB 기준선) 시 운영 DB와 v1 JSON 매핑 확정
-- Phase 4 진입 (packages/types 작성) 시 갭 #4 (orgId) 결정 필요
+현재 순서:
+- Phase 3 잔여 확인: `orgId` 전 entity 포함 정책과 `InspectionProject.status` 전이표를 Phase 4에서 코드화
+- Phase 4 진입: `packages/types` 작성 시 갭 #4 (`orgId`) 결정 반영
+- Phase 5-6 진입: `fire-data` 로더와 고객 BYOK 법령 스냅샷 조회/수집 클라이언트 구현
 - Phase 7 완료 시 OCR 엔진 PoC 트리거 (Open Q)
 - 배포 설정 시 Vercel에는 `LAW_DATA_MODE=runtime`만 두고 법제처 API 키는 등록하지 않음
 - 대량 PDF/OCR 처리는 v1.5+에서 실제 수요 확인 후 재검토

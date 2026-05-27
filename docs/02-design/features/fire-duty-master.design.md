@@ -8,7 +8,7 @@
 
 ## 1. 설계 목표
 
-`fire-duty-master.json` — 소방 법정문서/의무의 단일 진실 공급원(SSoT). MCP 모든 도구가 참조.
+`fire-duty-master.json` — 소방 법정문서/의무의 단일 진실 공급원(SSoT). 웹앱 룰 엔진, 출력물, 향후 자동화 래퍼가 공통으로 참조한다.
 이 문서는 **JSON 스키마 + 실제 노드 데이터 구조 + 검증 규칙 + 산출 위치**를 확정한다.
 
 ## 2. 파일 위치 (확정)
@@ -17,26 +17,29 @@
 data/
 └── fire-duty-master.json     ← SSoT (이 feature의 산출물)
 ```
-> MCP 서버 구현(별도 feature) 시 `src/ontology/`로 옮기거나 빌드시 복사. 현 단계는 `data/`에 둔다.
+> 현 단계는 `data/`에 둔다. 앱 구현 시 `packages/fire-data` 로더가 이 파일을 읽어 룰 엔진과 화면에 제공한다.
 
 ## 2.5 법령 데이터 활용 방식 (핵심 결정)
 
-**MCP는 PDF를 실시간으로 읽지 않는다.** 법령 원천은 빌드 타임에 한 번 사람이 추출·검증하여
-구조화된 SSoT(`fire-duty-master.json`)로 만들고, 런타임에는 MCP 도구가 이 JSON만 조회한다.
-(오프라인 번들 방식 — [../../02-mcp-design.md](../../02-mcp-design.md) §5)
+> 구분: `fire-duty-master.json`은 서비스가 관리하는 **정적 법정문서/의무 마스터**다.
+> 건축물 사용승인일별 본문 조회에 쓰는 프로젝트 법령 스냅샷은 `fire-inspection-system`의
+> 고객 BYOK 수집 흐름(`law_snapshots`)에서 관리한다.
+
+**런타임은 PDF를 실시간으로 읽지 않는다.** 법령 원천은 빌드 타임에 한 번 사람이 추출·검증하여
+구조화된 SSoT(`fire-duty-master.json`)로 만들고, 웹앱 런타임은 이 JSON에서 파생된 정적 데이터를 조회한다.
 
 ```
 [원천]                  [빌드 타임, 1회 수동]          [런타임]
 reference/PDF      ─┐
-법제처 law.go.kr   ─┼─→ 추출·검증·구조화 ─→ fire-duty-master.json ─→ MCP 도구 조회
-nfsc.go.kr(NFTC)   ─┘   (사람이 검증)        (서버 내장 SSoT)        (네트워크 0, ms)
+법제처 law.go.kr   ─┼─→ 추출·검증·구조화 ─→ fire-duty-master.json ─→ 웹앱 룰 엔진/화면 조회
+nfsc.go.kr(NFTC)   ─┘   (사람이 검증)        (서비스 내장 SSoT)       (네트워크 0, ms)
 ```
 
 법령은 두 용도로 갈린다:
 1. **규칙(rule)** = 면적·층수·등급 등 판정 기준 → 텍스트 아닌 **결정론적 코드(if/else)로 박제**
    (별도 feature `assess-building-obligations`). PDF는 그 코드의 `source` 근거로 인용.
 2. **참조(reference)** = 조문 본문·벌칙·기한 → 본 마스터의 `legalRef`·`penaltyOnMissing` 필드에
-   **검증된 텍스트로** 저장. 도구가 그대로 인용 출력.
+   **검증된 텍스트로** 저장. 화면과 출력물이 그대로 인용 출력.
 
 > 출처는 **법제처(law.go.kr)**가 법령 본문의 공식 원천이다. (대법원은 판례 — 본 프로젝트 범위 밖)
 > NFPC/NFTC는 소방청 고시라 법제처 미등재 → nfsc.go.kr 별도 수집 (본 feature 범위 밖).

@@ -92,7 +92,7 @@
 | [docs/01-plan/features/fire-inspection-system.plan.md](docs/01-plan/features/fire-inspection-system.plan.md) | 상위 Plan — 워크플로·범위·리스크 |
 | [docs/01-plan/features/fire-inspection-system.prd.md](docs/01-plan/features/fire-inspection-system.prd.md) | PRD v0.1 — 제품 요구사항 (Design v0.2에 통합 완료, 컨텍스트 보존용) |
 | [docs/01-plan/features/group-call-ai-roadmap.plan.md](docs/01-plan/features/group-call-ai-roadmap.plan.md) | [미래] 그룹 통화 & AI 자동완성 로드맵 Plan |
-| [docs/02-design/features/fire-inspection-system.design.md](docs/02-design/features/fire-inspection-system.design.md) | **Design v0.2** — 도메인 모델·디렉토리·인쇄 표준 (PRD 통합 + OCR v1) |
+| [docs/02-design/features/fire-inspection-system.design.md](docs/02-design/features/fire-inspection-system.design.md) | **Design v0.2.5** — 도메인 모델·DB 기준선·BYOK 법령 스냅샷·인쇄 표준 |
 | [docs/01-plan/features/fire-duty-master.plan.md](docs/01-plan/features/fire-duty-master.plan.md) | 하위 데이터셋 Plan (법정문서 SSoT) |
 | [docs/02-design/features/fire-duty-master.design.md](docs/02-design/features/fire-duty-master.design.md) | 하위 데이터셋 Design |
 | [docs/_archive/2026-05-21/](docs/_archive/2026-05-21/) | 워크플로 피벗으로 보류된 자료 (MCP 설계·현장 웹앱·프로토타입) |
@@ -137,8 +137,9 @@ fire-safety/
 - [x] fire-inspection-system Plan / Design v0.1 / PRD v0.1 작성
 - [x] **Design v0.2 갱신** (2026-05-26): PRD v0.1 통합 + OCR v1 편입. 사용자·고객사·BuildingRegister·SuggestedFacilitySection·InspectionSection·BillingDocument 명시화
 - [x] **Design v0.2.2 디자인 시스템 톤 확정** (2026-05-26): Supabase 톤 기반 + Pine Green `#2F9E44` primary. §6A 토큰 박제. 시안: [docs/design-preview/supabase-tone.html](docs/design-preview/supabase-tone.html)
+- [x] **Design v0.2.5 확정** (2026-05-27): Vercel + Supabase Seoul, 고객 BYOK 법령 스냅샷 수집, 우리 룰 엔진 추천 구조 반영
+- [x] Do Phase 1-2 완료: monorepo 부트스트랩 + 디자인 시스템 토큰 이식
 - [ ] Open Questions 해소: **OCR 엔진 선정 PoC (1주, 건축물대장 10건)**, 고객 키 기반 법령 스냅샷 생성/업로드 UX, PoC 점검표 7종 최종 확정, v1 권한 범위 검증
-- [ ] Do Phase 1-2: monorepo 부트스트랩 + **디자인 시스템 토큰 이식** (apps/web, packages/{types,fire-data,law-client,**ocr-client**}, apps/web/styles/{tokens,globals,print}.css)
 - [ ] 데이터셋: `data/fire-duty-master.json` TODO 25개 + `data/inspection-checklist.json` 신규 (PoC 7종)
 - [ ] 별지 9호/4호 HTML 양식 (A4 1:1) + 세금계산서 형태 PDF
 - [ ] 파트너 주 1회 정기 리뷰 시작, v1 완성 직후 2번째 파트너 탐색

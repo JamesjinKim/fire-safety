@@ -8,12 +8,11 @@
 
 ## 1. 결정
 
-v1 구현은 기존 결정대로 **로컬 JSON + 로컬 파일시스템**으로 시작한다. 다만 Phase 04(`packages/types`) 진입 전에 운영 DB 기준선을 아래처럼 확정한다.
+v1 개발/PoC 저장은 **로컬 JSON + 로컬 파일시스템**으로 시작한다. 운영 전환 기준선은 Vercel + Supabase Seoul이며, Phase 04(`packages/types`) 진입 전에 Supabase 테이블과 v1 JSON의 매핑을 확정한다.
 
 | 항목 | 결정 |
 |---|---|
-| 운영 DB 후보 | **PostgreSQL 호환 RDB** |
-| 1차 관리형 후보 | Supabase Postgres Seoul(`ap-northeast-2`) 또는 동일한 PostgreSQL 계열 |
+| 운영 DB | **Supabase Postgres Seoul(`ap-northeast-2`)** |
 | 스키마 전략 | 핵심 관계는 정규화, 동결 스냅샷·OCR 원문·출력 view-model은 `jsonb` |
 | 멀티테넌시 | 모든 업무 테이블에 `org_id` 포함 |
 | 파일 저장 | DB에는 `attachments` 메타만 저장, 실제 파일은 v1 `data/projects/.../attachments/`, 운영 전환 시 Supabase Storage Seoul |
@@ -32,7 +31,7 @@ PostgreSQL을 기준으로 잡는 이유는 이 도메인이 고객사·건물·
 | `inspection.json` | `inspections`, `inspection_sections`, `inspection_results`, `field_notes` |
 | `discrepancies.jsonl` | `discrepancies` |
 | `billing.json` | `billing_documents`, `billing_line_items` |
-| `attachments/**` | `attachments` + Object Storage |
+| `attachments/**` | `attachments` + Supabase Storage |
 
 ## 3. 핵심 테이블
 

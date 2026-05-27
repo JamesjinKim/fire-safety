@@ -1,7 +1,7 @@
 # Plan: fire-inspection-system (소방안전점검 워크플로 시스템)
 
 > PDCA Plan · feature: `fire-inspection-system` · 작성 2026-05-23
-> 상위 맥락: [../../01-overview.md](../../01-overview.md) · [../../02-mcp-design.md](../../02-mcp-design.md) · [../../03-webapp.md](../../03-webapp.md)
+> 상위 맥락: [../../01-overview.md](../../01-overview.md)
 > 하위 데이터셋 Plan: [fire-duty-master.plan.md](./fire-duty-master.plan.md) (그대로 유지, 본 feature 안에서 참조)
 > 미래 진화 Plan: [group-call-ai-roadmap.plan.md](./group-call-ai-roadmap.plan.md) (그룹 통화 및 AI 자동완성 로드맵)
 
@@ -14,7 +14,7 @@
 2026-05-23 도착한 현장 요구사항은 다음과 같은 **end-to-end 워크플로**였다.
 
 1. 건축물대장(건축년도·용도·면적) → 적용 소방시설 리스트와 점검 범위 자동 산출
-2. 건축년도에 해당하는 **그 시점의 소방법령**을 매칭 (1980~현재 개정 시계열)
+2. 건축년도에 해당하는 **그 시점의 소방법령**을 매칭 (1980년대 건축물까지 대응하되, 사전 풀 코퍼스 구축이 아니라 고객 BYOK 스냅샷 방식으로 확보)
 3. 매칭 결과로 **별지 제9호서식**(자체점검 결과보고서) + **별지 제4호서식**(점검표) 작성
 4. A4(210×297) 인쇄 1:1 동일 사이즈로 HTML 양식 출력
 5. 여러 점검자가 현장에서 각자 부분 작성 → **하나의 문서로 통합**
@@ -35,9 +35,9 @@ Next.js 웹앱 단일 인터페이스의 소방안전점검 워크플로 PoC를 
 ```
 [입력] 건축물대장 항목 (건축년도, 용도, 연면적, 층수, 다중이용업소 여부 등)
    ↓
-[엔진] 건축년도 → 그 시점 소방시설법/화재예방법 매칭
+[엔진] 건축년도 → 저장된 법령 스냅샷 매칭, 없으면 고객 BYOK 수집 요청
    ↓
-[산출] 해당 건축물에 적용되는 소방시설 리스트 + 점검대상 (별지 4호 32종 중 해당분)
+[산출] 우리 룰 엔진이 해당 건축물에 적용되는 설비 섹션 + 점검대상 추천
    ↓
 [양식] 별지 제9호서식 (8쪽) + 별지 제4호서식 (해당 점검표만) HTML 생성
    ↓
@@ -47,7 +47,7 @@ Next.js 웹앱 단일 인터페이스의 소방안전점검 워크플로 PoC를 
 ### 2.2 PoC 1단계 산출물
 
 - `apps/web/`: Next.js 웹앱 (단일 건축물 입력 폼 → 양식 미리보기 → 인쇄)
-- `apps/web/lib/domain/`: 4함수 (`lookupLawByYear`, `deriveInspectionScope`, `composeWorkOrder`, `validateInspection`) — v2 MCP 래핑 대비 순수 함수 형태
+- `apps/web/lib/domain/`: 6함수 (`extractBuildingRegister`, `lookupLawByYear`, `suggestFacilities`, `deriveInspectionScope`, `composeWorkOrder`, `validateInspection`) — v2 자동화 래핑 대비 순수 함수 형태
 - `data/fire-duty-master.json`: 기존 산출물, 본 feature가 참조
 - `data/inspection-checklist.json`: 별지 제4호 32종 점검항목 마스터 (PoC는 우선 5~7종)
 - `data/law-snapshots/`: 고객 키 기반 수집으로 만든 법령 스냅샷
@@ -63,12 +63,12 @@ Next.js 웹앱 단일 인터페이스의 소방안전점검 워크플로 PoC를 
 
 **v2 후보**
 - **다중 점검자 실시간 협업/문서 통합** — 아키텍처는 v1에서 미리 설계, 구현은 v2 (sub-feature: `inspection-collab`)
-- **연도별 법령 시계열 풀 코퍼스 (1980~)** — v1은 최근 5년 + 주요 개정시점(2003/2012/2024) 우선
+- 고객별 누적 법령 스냅샷 재사용·검증 대시보드
 - 별표 제10호 이행계획서, 점검인력 배치확인서
 - NFPC/NFTC 기술기준 본문 번들 (nfsc.go.kr 수집)
 - 보고서 제출(소방본부장 송신)·전자정부 연동
 - 음성 입력·현장 모드 (단계 B 부활 후보)
-- **MCP 래퍼** (`apps/mcp/`) — `apps/web/lib/domain/` 4함수를 Claude Desktop에 노출
+- **MCP 래퍼** (`apps/mcp/`) — 수요 검증 후 `apps/web/lib/domain/` 6함수를 Claude Desktop에 노출
 
 **v3 후보**
 - 인력 관리·일정 관리
@@ -102,9 +102,9 @@ v1 완성 직후 **2번째 파트너**(다른 규모·지역) 일찍 확보 — 
 | 운영 DB/파일 | **Supabase Seoul 우선** | PostgreSQL 호환 RDB + Storage. 사용자/데이터가 한국 중심이므로 `ap-northeast-2` 우선 |
 | 법령 시계열 확보 | **고객 키 기반 스냅샷 수집(BYOK)** | 고객 관리자가 자기 법제처 API 키로 필요한 시행일 스냅샷을 생성·업로드. 런타임은 저장된 스냅샷만 조회 |
 | 법제처 API 인증키 | **저장 금지** | 고객 관리자 세션에서만 사용. Vercel/Supabase에 키를 넣지 않음 |
-| 실시간 협업 (v2) | bkend.ai BaaS + 섹션(설비) 단위 락킹 | CRDT보다 구현 난이도 낮음, Dynamic 레벨에 적합 |
-| PoC 범위 | E2E 양식 완성까지 | 협업·MCP·NFPC/NFTC는 v2 후보 |
-| 프로젝트 레벨 | **Dynamic** | bkend BaaS 도입 + 협업 v2 예정으로 Starter 불가 |
+| 실시간 협업 (v2) | Supabase Realtime 또는 섹션 단위 락킹 후보 | v1 데이터모델에 `sectionId`, `lastEditor`, `lockHolder` 자리만 확보 |
+| PoC 범위 | E2E 양식 완성까지 | 협업·MCP 래퍼·NFPC/NFTC는 v2 후보 |
+| 프로젝트 레벨 | **Dynamic** | Supabase 운영 DB + 협업 v2 예정으로 Starter 불가 |
 
 ## 4. 핵심 아키텍처 개략 (Design에서 확정)
 
@@ -119,7 +119,9 @@ v1 완성 직후 **2번째 파트너**(다른 규모·지역) 일찍 확보 — 
                ↓
 ┌─────────────────────────────────────────────────┐
 │  Domain functions (apps/web/lib/domain/)        │
+│  ─ extractBuildingRegister(file)                 │
 │  ─ lookupLawByYear(year, lawId)                  │
+│  ─ suggestFacilities(confirmedBuildingMeta)      │
 │  ─ deriveInspectionScope(buildingMeta)           │
 │  ─ composeWorkOrder(project)                     │
 │  ─ validateInspection(inspection)                │
@@ -136,7 +138,7 @@ v1 완성 직후 **2번째 파트너**(다른 규모·지역) 일찍 확보 — 
 ```
 
 > 핵심 원칙 유지: 계산은 코드(결정론적 룰), LLM은 해석·요약만 (v1은 LLM 호출 0).
-> v2 MCP 부활 경로: 위 4함수를 import하는 `apps/mcp/`를 추가하면 동일 로직을 Claude Desktop에 노출 가능.
+> v2 MCP 부활 경로: 위 6함수를 import하는 `apps/mcp/`를 추가하면 동일 로직을 Claude Desktop에 노출 가능.
 
 ### 4.1 법령 데이터 접근 전략 (BYOK 스냅샷 수집)
 
@@ -179,7 +181,7 @@ v1은 웹 요청 처리와 법령 API 키 저장을 분리한다. 웹앱은 Verc
 
 ## 5. 성공 기준 (Check 단계 판정용)
 
-PoC v1 완료 = 다음 시나리오가 사람 손 없이 흘러간다.
+PoC v1 완료 = 다음 시나리오가 반복 수작업 없이 재현 가능하게 흘러간다.
 
 - [ ] 임의 건축물(예: 2010년 사용승인, 연면적 5000㎡, 다중이용업소 일부) 입력 → 적용 소방시설 리스트가 reproducible하게 산출
 - [ ] 별지 제9호서식 1쪽 ~ 8쪽 전체가 HTML로 렌더되고, **A4 인쇄 시 PDF 원본과 1:1 사이즈** (210×297mm, 단 1픽셀 오차 허용)
@@ -198,9 +200,9 @@ PoC v1 완료 = 다음 시나리오가 사람 손 없이 흘러간다.
 | 해외 웹서버의 법제처 API 접근 실패 | 작업지시 생성 불가 | API를 런타임 경로에서 제거. 고객 BYOK 스냅샷 수집 + 저장된 스냅샷 조회 |
 | Vercel 파일시스템에 첨부 저장 | 파일 유실 | 첨부·생성 PDF는 Supabase Storage 사용. Vercel은 임시 처리만 |
 | PDF/OCR 작업이 함수 시간을 초과 | 작업 실패·비용 증가 | v1은 브라우저 인쇄/외부 OCR API 중심. 대량 처리 수요 확인 후 재검토 |
-| 법제처 API 응답속도 (사용자 우려) | 수집 지연 | 사용자 요청과 분리. API는 배치 수집/개정 모니터링용 |
+| 법제처 API 응답속도 (사용자 우려) | 스냅샷 생성 지연 | STEP 4에서 스냅샷 필요 상태를 명시하고, 생성 완료 후 추천 재실행 |
 | 별지 제4호 점검표 71쪽·항목 수백 개 | 데이터 입력 작업량 폭발 | PoC는 5~7종 (소화기/옥내소화전/자동화재탐지/유도등/피난기구 등 최빈) |
-| 연도별 법령 시계열 매칭 정확도 | 법적 위험 | PoC는 최근 5년 + 주요 개정시점만. 미확인 매칭은 "확인 필요" 라벨 강제 |
+| 연도별 법령 시계열 매칭 정확도 | 법적 위험 | 필요한 시행일 스냅샷을 고객 BYOK로 수집하고, 누락·미검증 구간은 "확인 필요" 라벨로 작업지시 동결 차단 |
 | A4 인쇄 1:1 정확성 (브라우저 차이) | 양식 무효화 | Chromium 기준 1차, 인쇄 미리보기 자동 검증. 폰트 임베딩 |
 | 협업 v2 아키텍처가 v1 데이터모델과 충돌 | v2 시 마이그레이션 비용 | v1 데이터모델에 `sectionId`(설비 단위) + `lastEditor`/`lockedBy` 자리 미리 확보 |
 | 별표 양식이 2025-12-01 개정 반영본 | PDF 추출 정확도 | PDF 텍스트는 1차 참고, 최종 HTML 양식은 손으로 픽셀 정합 |
@@ -209,20 +211,17 @@ PoC v1 완료 = 다음 시나리오가 사람 손 없이 흘러간다.
 
 - **하위 feature로 분리될 가능성**:
   - `inspection-collab` (v2 협업)
-  - `fire-law-corpus-extended` (1980~2020 법령 시계열)
+  - `law-snapshot-governance` (고객별 누적 스냅샷 재사용·검증 대시보드)
   - `nfpc-nftc-bundle` (기술기준)
 - **외부 의존**: 법제처 OpenAPI (고객 BYOK 스냅샷 수집 전용), 사용자 reference/ 폴더의 PDF
-- **bkend.ai BaaS**: 협업 v2부터. v1은 로컬 상태/파일 저장으로 시작.
+- **Supabase**: v1 운영 DB/Auth/Storage 기준선. 협업 v2에서는 Supabase Realtime 또는 섹션 락킹을 검토.
 
 ## 8. 다음 단계
 
-1. `/pdca design fire-inspection-system` — 데이터 모델 + API 인터페이스 + 양식 HTML 구조 설계
-2. 설계에서 확정해야 할 것:
-   - `inspection-checklist.json` 스키마 (별지 4호 점검번호 체계 반영)
-   - 고객 BYOK 법령 스냅샷 생성/업로드 정책
-   - 건축물 메타 입력 폼 필드 (별지 9호 2쪽 건축물정보 기반)
-   - HTML A4 인쇄 CSS 표준 (210×297mm, @page, print-color-adjust)
-   - v2 협업 대비 데이터모델 자리(sectionId/lock 필드) 위치
+1. Do Phase 3 — Supabase 기준 DB/Storage 경계와 v1 JSON 매핑 확정
+2. Do Phase 4 — `packages/types`에 도메인 타입, 상태 전이, 권한 guard 코드화
+3. Do Phase 5-6 — `fire-data` 로더와 고객 BYOK 법령 스냅샷 조회/수집 클라이언트 구현
+4. 병행 — OCR 엔진 PoC, PoC 점검표 7종 확정, 고객 BYOK 스냅샷 생성/업로드 UX 확정
 
 ---
 

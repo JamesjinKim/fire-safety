@@ -1,7 +1,7 @@
 # Design: fire-inspection-system (소방안전점검 워크플로 시스템)
 
 > PDCA Design 문서 · feature: `fire-inspection-system`
-> 작성 2026-05-23 · 갱신 2026-05-24 (MCP v2 보류) · 갱신 **2026-05-27 (v0.2.4 — 법령 스냅샷 우선 전략)**
+> 작성 2026-05-23 · 갱신 2026-05-24 (MCP v2 보류) · 갱신 **2026-05-27 (v0.2.5 — 고객 BYOK 법령 스냅샷 전략)**
 > Plan: [../../01-plan/features/fire-inspection-system.plan.md](../../01-plan/features/fire-inspection-system.plan.md)
 > PRD: [../../01-plan/features/fire-inspection-system.prd.md](../../01-plan/features/fire-inspection-system.prd.md) (v0.1 → 본 문서 v0.2에 통합 완료)
 > 하위 데이터셋 Design: [fire-duty-master.design.md](./fire-duty-master.design.md) (그대로 유지)
@@ -13,7 +13,7 @@
 | 버전 | 일자 | 주요 변경 | 사유 |
 |------|------|-----------|------|
 | v0.1 | 2026-05-23 | 최초 작성. 2단계 워크플로, 4 도메인 함수, A4 1:1 인쇄 표준 | Plan 확정 직후 설계 |
-| v0.1.1 | 2026-05-24 | MCP(`apps/mcp`)를 v2 후보로 보류. 도메인 4함수는 `apps/web/lib/domain/`에 순수 함수로 유지 | 페르소나가 LLM 호출자→웹폼 사용자로 이동. [../../01-overview.md §3.3](../../01-overview.md) |
+| v0.1.1 | 2026-05-24 | MCP(`apps/mcp`)를 v2 후보로 보류. 도메인 함수는 `apps/web/lib/domain/`에 순수 함수로 유지 | 페르소나가 LLM 호출자→웹폼 사용자로 이동. [../../01-overview.md §3.3](../../01-overview.md) |
 | **v0.2** | **2026-05-26** | **PRD v0.1 통합 + OCR v1 편입**. ① 사용자/권한 모델 신설(Organization·User) ② CustomerCompany·Building 분리 ③ BuildingRegister + OCR 검수 단계 신설 ④ SuggestedFacilitySection(추천)과 WorkOrder(동결) 분리 ⑤ InspectionSection/InspectionResult/FieldNote/BillingDocument 명시 ⑥ 도메인 함수에 `extractBuildingRegister`, `suggestFacilities` 추가 ⑦ `packages/ocr-client` + `app/api/ocr` 신설 ⑧ 구현 순서에 OCR·검수·추천 검수 단계 삽입 | PRD 도입 개념을 단일 설계서로 정합. 사용자 결정: OCR v1 포함 + Design in-place 갱신 |
 | **v0.2.1** | **2026-05-26** | **design-validator 블로커 3개 해소**. ① `MultiUseEstablishment` placeholder 타입 정의 (§3.1) ② `BuildingRegisterExtraction.fields`를 mapped type `{ [K in keyof BuildingMeta]?: ExtractedField<NonNullable<BuildingMeta[K]>> }`으로 수정 — 옵셔널 필드 안전 + 필드별 정확한 제네릭 유지 (§3.1) ③ `Form9Data`/`Form4Data`/`Form4Item`을 "derive view-model" 정책으로 명시하고 placeholder 타입 정의 (§3.2 신설). §7 중복 정의 정리. | `packages/types` 작성 시 타입 모호성 차단. 갭(orgId, status 전이표 등)은 구현 초반부에 병행 해소. |
 | **v0.2.2** | **2026-05-26** | **디자인 시스템 톤 확정**. ① 베이스: Supabase 디자인 톤 (화이트 캔버스 + 단일 액센트 + 절제된 그레이 래더). 출처: voltagent/awesome-design-md/supabase. ② Primary green을 Supabase 원본 `#3ecf8e`에서 **Pine Green `#2F9E44`** 로 교체 (소방·안전 도메인의 정통 그린 톤 적용, ForestGreen 사용자 선호를 신호성 확보를 위해 명도 +6%p 조정). ③ §6A "디자인 시스템 토큰" 섹션 신설(color/typography/spacing/radius/components). ④ §4 디렉토리에 `apps/web/styles/tokens.css` + `apps/web/styles/globals.css` 추가, §9 구현 순서 step 7 "디자인 시스템 토큰 이식"을 부트스트랩 직후로 명시. ⑤ 시각 미리보기: [docs/design-preview/supabase-tone.html](../../design-preview/supabase-tone.html) (프로젝트 목록 / OCR 검수 / 별지 4호 점검 입력 3화면). | 개발 진입 전 톤앤매너 확정으로 Phase 6+ UI 작업 시 일관성 보장. 데이터 밀도 높은 화면(OCR 검수, 별지 4호 점검표)에 적합한 절제된 화이트+단일 그린 액센트 톤 채택. |
@@ -29,7 +29,7 @@
 2. **계산은 코드, 해석은 LLM**: 법령 조회·시설 매칭·양식 조립은 결정론적 코드. v1은 LLM 호출 0.
 3. **작업지시 동결**: 단계 A 산출물(`WorkOrder`)은 immutable. 단계 B에서 다른 점은 별도 `Discrepancy` 로그로 기록.
 4. **양식 정확성**: 별지 9호/4호 HTML은 A4 210×297mm 인쇄 1:1. CSS `@page size: A4`.
-5. **v1은 로컬, v2는 bkend**: v1 데이터모델은 bkend 테이블 스키마와 1:1 대응되도록 미리 설계.
+5. **v1 개발은 로컬, 운영 기준은 Supabase**: v1 PoC는 로컬 JSON/파일로 시작하되, 데이터모델은 Supabase Postgres/Storage와 1:1 대응되도록 미리 설계.
 6. **자동화는 초안, 법정 판단은 확정값** (v0.2 신설): OCR·자동 추천은 입력 부담을 줄이는 보조 수단이며, 설비 추천 룰 입력값으로는 **관리자가 확정한 값(`confirmedBuildingMeta`)만** 사용. OCR 검수 미완료 시 설비 추천 실행 금지.
 7. **추천→검수→동결 3단 분리** (v0.2 신설): 시설 산출은 `SuggestedFacilitySection`(추천, 가변) → 관리자 검수(included/excluded/modified/pending) → `WorkOrder`(동결, immutable) 3단계로 분리. v0.1의 단일 `composeWorkOrder` 호출은 두 함수(`suggestFacilities`, `composeWorkOrder`)로 분해.
 8. **2역할 단순 모델** (v0.2 신설): v1은 `admin`(관리자)과 `field`(현장 사용자) 2역할만. 다만 `User.role`은 enum으로 두어 v2에서 팀장·검토자·대표자 분리로 확장할 자리만 확보.
@@ -50,7 +50,7 @@
 | 8 | **권한 모델 (v0.2)** | **2역할만 v1 (admin / field)**. `User.role` enum으로 v2 확장 자리 확보(`field-lead`, `reviewer`, `representative`). 권한 분기는 `apps/web/lib/auth/`에 단일 가드 함수. |
 | 9 | **고객사·건물 계층 (v0.2)** | **3계층 분리**: `CustomerCompany` (고객사/건물주) → `Building` (점검 대상 건물) → `InspectionProject` (1회 점검 단위). v0.1의 `Project`는 `InspectionProject`로 명칭 정리. |
 | 10 | **추천·검수·동결 분리 (v0.2)** | `SuggestedFacilitySection`(추천, 가변) ⟶ 관리자 검수(reviewStatus) ⟶ `WorkOrder`(동결, immutable hash) 3단으로 분리. v0.1의 단일 `composeWorkOrder`를 2함수로 분해. |
-| 11 | **첨부 저장 (v0.2)** | v1은 **로컬 파일시스템** (`data/projects/{projectId}/attachments/`). bkend Storage 마이그레이션 경로만 미리 설계. Open Question에서 운영 방안 결정. |
+| 11 | **첨부 저장 (v0.2)** | v1 개발은 **로컬 파일시스템** (`data/projects/{projectId}/attachments/`). 운영 전환 시 Supabase Storage로 교체할 수 있게 `lib/storage` 경계를 둔다. |
 | 12 | **비용 문서 (v0.2)** | **세금계산서 형태 PDF 생성까지만** v1. 실제 국세청 전자발행은 v1.5+. UI·문서에 "내부 보관·고객 전달용"임을 명시. |
 
 ## 3. 도메인 모델 (1등 시민)
@@ -594,7 +594,7 @@ fire-safety/                                       # repo root
 │     │  │  ├─ deriveInspectionScope.ts            # (PoC 점검표 매핑, suggestFacilities 내부 호출)
 │     │  │  ├─ composeWorkOrder.ts                 # v0.2: 검수된 SuggestedFacilitySection을 동결
 │     │  │  └─ validateInspection.ts
-│     │  └─ storage/                                # v0.2: 로컬 파일 저장 (v2 bkend Storage 교체 자리)
+│     │  └─ storage/                                # v0.2: 로컬 파일 저장 (운영 Supabase Storage 교체 자리)
 │     │     └─ localFileStore.ts
 │     ├─ components/
 │     │  ├─ forms/Form9.tsx                        # 별지 9호 양식 (8쪽 분할)
@@ -641,8 +641,8 @@ fire-safety/                                       # repo root
 > **v2 MCP 부활 시**: `apps/web/lib/domain/*.ts` 함수들을 그대로 import하는 `apps/mcp/`를 추가하면 됨.
 > v1 함수 시그니처를 MCP tool schema와 1:1 매핑되도록 설계하는 것이 사전 작업.
 
-> **v2 bkend 마이그레이션 시**: `data/projects/{projectId}/*.json` ↔ bkend 테이블 1:1 매핑.
-> `attachments/` ↔ bkend Storage(4 가시성 레벨 중 private/shared). `lib/storage/localFileStore.ts`만 교체.
+> **운영 Supabase 전환 시**: `data/projects/{projectId}/*.json` ↔ Supabase Postgres 테이블 1:1 매핑.
+> `attachments/` ↔ Supabase Storage. `lib/storage/localFileStore.ts`만 교체.
 
 ## 5. API · 인터페이스 (v0.2 확정)
 
@@ -915,7 +915,7 @@ v0.2에서 협업 락·충돌 감지 필드를 정식 entity에 통합. 별도 p
 | `InspectionSection.lastEditedBy` / `lastEditedAt` / `lockHolder` (§3.1) | string? | v2 충돌 감지 + 락 점유자. v1은 채워두기만. |
 | `Form4Item.lastEditedBy` / `lastEditedAt` / `lockHolder` (§3.2.4) | string? | 점검항목 단위 락(더 세밀한 입도 옵션). v2에서 어느 입도(섹션 vs 항목)로 갈지 결정. |
 
-→ v2에서 bkend 테이블로 옮길 때 컬럼 추가 없이 데이터 그대로 이전 가능.
+→ 운영 DB 또는 협업 v2로 확장할 때 컬럼 추가 없이 데이터 그대로 이전 가능.
 
 ## 8. 비기능 요구사항
 
@@ -928,11 +928,12 @@ v0.2에서 협업 락·충돌 감지 필드를 정식 entity에 통합. 별도 p
 | 변경 로그 보존 | append-only, 삭제 불가. JSONL로 v1 충분 |
 | 점검 데이터 보존 | 2년 (법정) → 운영 단계 과제 |
 
-## 9. 구현 순서 (Do 단계 가이드 후보 · v0.2.3 재정렬)
+## 9. 구현 순서 (Do 단계 가이드 후보 · v0.2.5 재정렬)
 
 > v0.2 변경: OCR 검수와 설비 추천 검수를 작업지시 동결 앞에 명시. 비용 문서를 별도 단계로 분리. 권한 모델을 인프라 단계에 명시.
 > v0.2.2 변경: **step 2 디자인 시스템 토큰 이식**을 부트스트랩 직후로 삽입. UI 화면(step 8+)이 토큰 위에 작성되도록 강제. 이후 단계 번호 +1.
 > v0.2.3 변경: **step 3 데이터 저장소/테이블 설계**를 `packages/types` 전에 삽입. 운영 DB는 PostgreSQL 호환 RDB 기준, v1 로컬 JSON과 1:1 매핑.
+> v0.2.5 변경: 운영 기준을 Vercel + Supabase Seoul로 고정하고, 법령 수집은 고객 BYOK 세션에서 스냅샷을 생성하는 흐름으로 정리. 런타임은 저장된 스냅샷만 조회한다.
 
 1. **monorepo 부트스트랩**: pnpm workspaces, apps/web (Next.js init), packages 4개(types, fire-data, law-client, ocr-client) 골격
 2. **디자인 시스템 토큰 이식 (v0.2.2 신설)**: §6A 토큰을 `apps/web/styles/tokens.css` + `globals.css` + `print.css`로 코드화. Inter + JetBrains Mono 폰트 로드(`@fontsource/inter`, `@fontsource/jetbrains-mono`). 시안 검증: `docs/design-preview/supabase-tone.html`의 색상 값과 1:1 일치.
@@ -969,7 +970,7 @@ v0.2에서 협업 락·충돌 감지 필드를 정식 entity에 통합. 별도 p
   - Upstage Document AI (한글 특화, 비용 ↑)
   - Naver Clova OCR (한글 최강, 폐쇄적)
   - → v1 출시 전 1주 PoC로 건축물대장 10건 테스트 후 결정. 결정 전까지 `manual` provider로 진행.
-- [ ] **첨부 저장소 운영 정책**: v1 로컬 파일시스템(`data/projects/.../attachments/`)으로 시작 확정. v1 운영 단계에서 디스크 사용량·백업 정책 별도 정의 필요. v2 bkend Storage 마이그레이션 시점은 협업 기능 도입과 함께.
+- [ ] **첨부 저장소 운영 정책**: v1 개발은 로컬 파일시스템(`data/projects/.../attachments/`)으로 시작. 운영 전환 시 Supabase Storage 버킷 구조와 접근 정책을 확정해야 한다.
 - [ ] **v1 권한 모델 범위 확정**: `admin` / `field` 2역할로 충분한지 파트너 검증. 한 회사 내 admin 1명이 모든 프로젝트 접근 가능한 단순 모델인지, project-scope 권한이 필요한지.
 - [ ] **OCR 검수 필수 필드 최소셋**: PRD §7.1에 14개 후보. 설비 추천 룰 입력에 실제로 필요한 최소셋 식별 필요(룰 엔진 코드 작성하면서 확정).
 - [ ] **음성 파일 v1 처리**: 저장만 하고 재생 UI는 v1 포함? STT는 v1.5 명확. 재생기는 v1에 넣을지 결정 필요.

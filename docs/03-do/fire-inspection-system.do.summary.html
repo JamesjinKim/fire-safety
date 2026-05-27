@@ -1,0 +1,928 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Do 단계 요약 · 소방안전점검 시스템</title>
+  <meta name="description" content="fire-inspection-system Do 단계 구현 가이드의 시각 요약">
+  <style>
+    :root {
+      --primary: #2f9e44;
+      --primary-deep: #237a35;
+      --primary-soft: #e6f3e7;
+      --ink: #171717;
+      --ink-2: #2b2b2b;
+      --muted: #707070;
+      --faint: #9a9a9a;
+      --canvas: #ffffff;
+      --canvas-soft: #fafafa;
+      --night: #202322;
+      --line: #dfdfdf;
+      --line-soft: #ededed;
+      --warn: #b7791f;
+      --warn-soft: #fff4dc;
+      --blue: #2563eb;
+      --blue-soft: #eaf1ff;
+      --shadow: 0 16px 42px rgba(23, 23, 23, 0.08);
+      --radius: 8px;
+      --max: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--canvas-soft);
+      color: var(--ink);
+      font-family: Inter, "Apple SD Gothic Neo", "Malgun Gothic", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.55;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid rgba(223, 223, 223, 0.88);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(14px);
+    }
+
+    .topbar-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      font-weight: 700;
+    }
+
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: var(--ink);
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      left: 7px;
+      top: 5px;
+      width: 8px;
+      height: 18px;
+      border-radius: 2px;
+      background: var(--primary);
+    }
+
+    .brand span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .nav a {
+      padding: 7px 10px;
+      border-radius: 6px;
+    }
+
+    .nav a:hover {
+      background: var(--primary-soft);
+      color: var(--primary-deep);
+    }
+
+    .hero {
+      background: var(--night);
+      color: #fff;
+      border-bottom: 1px solid #343837;
+    }
+
+    .hero-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 64px 22px 34px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 42px;
+      align-items: end;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 999px;
+      color: #d8dadb;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--primary);
+    }
+
+    h1 {
+      max-width: 760px;
+      margin: 22px 0 14px;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.12;
+      font-weight: 650;
+      letter-spacing: 0;
+    }
+
+    .hero-copy {
+      max-width: 760px;
+      margin: 0;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 18px;
+    }
+
+    .hero-panel {
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 22px;
+    }
+
+    .panel-title {
+      margin: 0 0 14px;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .progress-track {
+      height: 12px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .progress-fill {
+      width: 11.8%;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--primary);
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      margin-top: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 13px;
+    }
+
+    .progress-meta strong {
+      display: block;
+      color: #fff;
+      font-size: 24px;
+      line-height: 1.15;
+    }
+
+    main {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 42px 22px 80px;
+    }
+
+    section + section {
+      margin-top: 54px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 18px;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .section-label::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--primary);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.22;
+      font-weight: 650;
+      letter-spacing: 0;
+    }
+
+    .section-copy {
+      max-width: 440px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .metric {
+      min-height: 132px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--canvas);
+      padding: 18px;
+      box-shadow: 0 1px 2px rgba(23, 23, 23, 0.03);
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 650;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric span {
+      display: block;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .metric small {
+      display: block;
+      margin-top: 12px;
+      color: var(--faint);
+      font-size: 12px;
+    }
+
+    .status-board {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .summary-card,
+    .decision-card,
+    .next-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--canvas);
+      box-shadow: var(--shadow);
+    }
+
+    .summary-card {
+      padding: 22px;
+    }
+
+    .summary-card h3,
+    .decision-card h3,
+    .next-card h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      font-weight: 650;
+    }
+
+    .summary-card p {
+      margin: 0 0 18px;
+      color: var(--muted);
+    }
+
+    .checklist {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .checklist li {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 10px;
+      align-items: start;
+      color: var(--ink-2);
+      font-size: 14px;
+    }
+
+    .check,
+    .wait,
+    .soon {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      display: inline-grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .check {
+      background: var(--primary-soft);
+      color: var(--primary-deep);
+    }
+
+    .wait {
+      background: var(--warn-soft);
+      color: var(--warn);
+    }
+
+    .soon {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .roadmap {
+      display: grid;
+      gap: 10px;
+    }
+
+    .phase {
+      display: grid;
+      grid-template-columns: 52px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--canvas);
+      padding: 14px;
+    }
+
+    .phase-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: var(--canvas-soft);
+      color: var(--muted);
+      font-weight: 750;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .phase.done .phase-num {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .phase.next .phase-num {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .phase h3 {
+      margin: 0 0 3px;
+      font-size: 15px;
+      font-weight: 650;
+    }
+
+    .phase p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 58px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .pill.done {
+      background: var(--primary-soft);
+      color: var(--primary-deep);
+    }
+
+    .pill.next {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .pill.wait {
+      background: var(--warn-soft);
+      color: var(--warn);
+    }
+
+    .decision-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .decision-card {
+      padding: 18px;
+      box-shadow: none;
+    }
+
+    .decision-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .decision-card .tag {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--warn-soft);
+      color: var(--warn);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .flow-step {
+      position: relative;
+      min-height: 138px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--canvas);
+      padding: 16px;
+      overflow: hidden;
+    }
+
+    .flow-step::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 4px;
+      background: var(--line-soft);
+    }
+
+    .flow-step.active::before {
+      background: var(--primary);
+    }
+
+    .flow-step strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 15px;
+    }
+
+    .flow-step span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .next-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .next-card {
+      padding: 20px;
+      box-shadow: none;
+    }
+
+    .next-card ol,
+    .next-card ul {
+      margin: 12px 0 0;
+      padding-left: 20px;
+      color: var(--ink-2);
+    }
+
+    .next-card li + li {
+      margin-top: 8px;
+    }
+
+    .source {
+      margin-top: 54px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .source code {
+      padding: 2px 5px;
+      border-radius: 5px;
+      background: var(--canvas);
+      border: 1px solid var(--line-soft);
+      color: var(--ink);
+    }
+
+    @media (max-width: 920px) {
+      .hero-inner,
+      .status-board,
+      .next-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-grid,
+      .decision-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .flow {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .topbar-inner,
+      .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .hero-inner {
+        padding-top: 42px;
+      }
+
+      .metric-grid,
+      .decision-grid,
+      .flow {
+        grid-template-columns: 1fr;
+      }
+
+      .phase {
+        grid-template-columns: 44px 1fr;
+      }
+
+      .phase .pill {
+        grid-column: 2;
+        justify-self: start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../02-design/features/fire-inspection-system.design.md">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>fire-inspection-system · Do 요약</span>
+      </a>
+      <nav class="nav" aria-label="문서 섹션">
+        <a href="#status">진행 현황</a>
+        <a href="#roadmap">17단계</a>
+        <a href="#decisions">결정 사항</a>
+        <a href="#law">법령 스냅샷</a>
+        <a href="#next">다음 액션</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <span class="eyebrow">PDCA Do · 2026-05-26 진입</span>
+        <h1>기획과 디자인을 코드 구현 단계로 넘기는 실행 지도</h1>
+        <p class="hero-copy">
+          Do 문서는 monorepo 부트스트랩부터 인쇄 검증까지 17개 Phase를 순차 실행하기 위한 기준이다.
+          현재 Phase 1, 2는 완료됐고, Phase 3의 데이터 저장소 기준선은 문서화됐다. 다음 관문은 Phase 4에서 orgId, status, 권한, BYOK 스냅샷 UX를 코드화 가능한 정책으로 고정하는 것이다.
+        </p>
+      </div>
+      <aside class="hero-panel" aria-label="전체 진행률">
+        <p class="panel-title">전체 구현 진행률</p>
+        <div class="progress-track" aria-hidden="true">
+          <div class="progress-fill"></div>
+        </div>
+        <div class="progress-meta">
+          <span><strong>2 / 17</strong>Phase 완료</span>
+          <span><strong>11.8%</strong>Design §9 기준</span>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <main>
+    <section id="status" aria-labelledby="status-title">
+      <div class="section-head">
+        <div>
+          <span class="section-label">Current State</span>
+          <h2 id="status-title">Do 단계 진입 조건은 충족, 구현은 초반부</h2>
+        </div>
+        <p class="section-copy">
+          체크리스트 기준으로 Do 진입 준비와 초반 기반 작업은 끝났다. Phase 3은 운영 DB/Storage 기준선과 v1 JSON 매핑을 문서화했고, 남은 판단은 Phase 4 타입 작성에서 고정한다.
+        </p>
+      </div>
+
+      <div class="metric-grid">
+        <article class="metric">
+          <strong>7 / 8</strong>
+          <span>진입 체크리스트 완료</span>
+          <small>Plan, PRD, Design, validator, 시안, Node/pnpm 확인</small>
+        </article>
+        <article class="metric">
+          <strong>2</strong>
+          <span>완료된 Phase</span>
+          <small>monorepo 부트스트랩, 디자인 토큰 이식</small>
+        </article>
+        <article class="metric">
+          <strong>4</strong>
+          <span>Phase 4 전 결정 갭</span>
+          <small>orgId, status, 권한, BYOK 스냅샷 UX</small>
+        </article>
+        <article class="metric">
+          <strong>4</strong>
+          <span>workspace package 골격</span>
+          <small>types, fire-data, law-client, ocr-client</small>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="done-title">
+      <div class="status-board">
+        <article class="summary-card">
+          <span class="section-label">Done</span>
+          <h2 id="done-title">이미 끝난 기반 작업</h2>
+          <p>Do 문서상 완료 처리된 내용은 앱 구현 전제 조건을 만든 부분이다.</p>
+          <ul class="checklist">
+            <li><span class="check">✓</span><span>Plan v1, PRD v0.1, Design v0.2.5 확정</span></li>
+            <li><span class="check">✓</span><span>design-validator CONDITIONAL PASS와 블로커 3개 해소</span></li>
+            <li><span class="check">✓</span><span>Pine Green <strong>#2F9E44</strong> 기반 디자인 시안 승인</span></li>
+            <li><span class="check">✓</span><span>Node 22 + pnpm 11 환경 확인</span></li>
+            <li><span class="check">✓</span><span>Next 앱과 4개 workspace package 골격 생성</span></li>
+            <li><span class="check">✓</span><span>토큰, 전역 스타일, 인쇄 스타일, design-check 페이지 생성</span></li>
+          </ul>
+        </article>
+
+        <article class="summary-card">
+          <span class="section-label">Risk Focus</span>
+          <h2>다음 구현을 막는 판단 지점</h2>
+          <p>Phase 3에서 저장소와 테이블 경계의 기준선은 잡혔다. Phase 4는 그 기준선 위에서 타입과 권한을 코드화하는 단계다.</p>
+          <ul class="checklist">
+            <li><span class="soon">1</span><span><strong>운영 DB</strong>는 PostgreSQL 호환 RDB를 기준으로 잡는다.</span></li>
+            <li><span class="soon">2</span><span><strong>orgId 정책</strong>은 모든 업무 테이블과 entity 보유안이 권장된다.</span></li>
+            <li><span class="soon">3</span><span><strong>InspectionProject.status</strong> 전이표를 코드와 DB enum 기준으로 고정해야 한다.</span></li>
+            <li><span class="soon">4</span><span><strong>법령 스냅샷</strong>은 고객 BYOK 수집과 우리 룰 엔진 추천으로 분리한다.</span></li>
+            <li><span class="wait">!</span><span>OCR 실제 엔진은 Phase 7 이후 별도 PoC로 비교해야 한다.</span></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="roadmap" aria-labelledby="roadmap-title">
+      <div class="section-head">
+        <div>
+          <span class="section-label">Roadmap</span>
+          <h2 id="roadmap-title">17단계 구현 순서</h2>
+        </div>
+        <p class="section-copy">
+          초반 2개 Phase는 완료됐고 Phase 3 기준선도 문서화됐다. 다음은 shared type, 정적 데이터, mock client를 쌓고 UI와 인쇄물로 확장한다.
+        </p>
+      </div>
+
+      <div class="roadmap">
+        <article class="phase done">
+          <span class="phase-num">01</span>
+          <div><h3>monorepo 부트스트랩</h3><p>Next 앱과 packages 골격, workspace 설정</p></div>
+          <span class="pill done">완료</span>
+        </article>
+        <article class="phase done">
+          <span class="phase-num">02</span>
+          <div><h3>디자인 시스템 토큰 이식</h3><p>tokens, globals, print 스타일과 design-check 페이지</p></div>
+          <span class="pill done">완료</span>
+        </article>
+        <article class="phase next">
+          <span class="phase-num">03</span>
+          <div><h3>데이터 저장소/테이블 설계</h3><p>PostgreSQL 호환 RDB 기준, v1 JSON과 운영 테이블 매핑</p></div>
+          <span class="pill next">진행</span>
+        </article>
+        <article class="phase">
+          <span class="phase-num">04</span>
+          <div><h3>packages/types</h3><p>도메인 타입, auth guard, orgId와 status 정책 코드화</p></div>
+          <span class="pill wait">대기</span>
+        </article>
+        <article class="phase">
+          <span class="phase-num">05</span>
+          <div><h3>packages/fire-data</h3><p>master loader와 PoC 7종 inspection-checklist 데이터</p></div>
+          <span class="pill wait">대기</span>
+        </article>
+        <article class="phase">
+          <span class="phase-num">06</span>
+          <div><h3>packages/law-client</h3><p>저장된 스냅샷 조회와 고객 BYOK 법제처 API 수집, 초기 구현은 mock</p></div>
+          <span class="pill wait">대기</span>
+        </article>
+        <article class="phase">
+          <span class="phase-num">07</span>
+          <div><h3>packages/ocr-client</h3><p>manual provider만 먼저 제공하고 실제 OCR은 Open Q 이후</p></div>
+          <span class="pill wait">대기</span>
+        </article>
+        <article class="phase">
+          <span class="phase-num">08</span>
+          <div><h3>lib/domain 6함수</h3><p>건축물대장 추출, 법령 조회, 설비 추천, 검증 함수</p></div>
+          <span class="pill wait">대기</span>
+        </article>
+        <article class="phase">
+          <span class="phase-num">09</span>
+          <div><h3>A 단계 UI</h3><p>로그인, 고객사, 건물, 프로젝트 생성부터 작업지시 동결까지</p></div>
+          <span class="pill wait">대기</span>
+        </article>
+        <article class="phase">
+          <span class="phase-num">13</span>
+          <div><h3>법정 서식 HTML</h3><p>별지 9호, 별지 4호, 비용 문서와 print route</p></div>
+          <span class="pill wait">대기</span>
+        </article>
+        <article class="phase">
+          <span class="phase-num">17</span>
+          <div><h3>인쇄 검증</h3><p>Chromium headless PDF 생성과 좌표 자동 비교</p></div>
+          <span class="pill wait">대기</span>
+        </article>
+      </div>
+    </section>
+
+    <section id="decisions" aria-labelledby="decisions-title">
+      <div class="section-head">
+        <div>
+          <span class="section-label">Decision Queue</span>
+          <h2 id="decisions-title">Phase 4 전에 고정할 정책</h2>
+        </div>
+        <p class="section-copy">
+          이 세 가지는 타입과 guard에 직접 반영되므로 뒤로 미루면 UI와 API 작업이 흔들린다.
+        </p>
+      </div>
+
+      <div class="decision-grid">
+        <article class="decision-card">
+          <span class="tag">권장안 있음</span>
+          <h3>DB는 PostgreSQL 호환 RDB</h3>
+          <p>핵심 관계는 정규화하고 OCR, 법령, 작업지시 동결본은 jsonb 스냅샷으로 보관한다.</p>
+        </article>
+        <article class="decision-card">
+          <span class="tag">권장안 있음</span>
+          <h3>orgId는 모든 entity와 테이블에 포함</h3>
+          <p>v1은 약간 장황하지만 v2 멀티테넌시와 데이터 접근 검증이 단순해진다.</p>
+        </article>
+        <article class="decision-card">
+          <span class="tag">코드화 필요</span>
+          <h3>status 전이표</h3>
+          <p><code>transitions.ts</code>로 허용 전이를 고정하고 API 핸들러가 같은 규칙을 쓰게 한다.</p>
+        </article>
+        <article class="decision-card">
+          <span class="tag">임시 결정</span>
+          <h3>v1 권한 모델</h3>
+          <p>admin은 자기 org 전체, field는 배정된 섹션만 접근하는 guard를 우선 적용한다.</p>
+        </article>
+        <article class="decision-card">
+          <span class="tag">확정 방향</span>
+          <h3>BYOK 법령 스냅샷</h3>
+          <p>고객 관리자는 자기 법제처 API 키로 스냅샷만 만들고, 설비 리스트는 우리 룰 엔진이 생성한다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="law" aria-labelledby="law-title">
+      <div class="section-head">
+        <div>
+          <span class="section-label">Law Snapshot</span>
+          <h2 id="law-title">법령 수집은 고객 키, 추천은 우리 룰 엔진</h2>
+        </div>
+        <p class="section-copy">
+          Vercel과 Supabase에는 법제처 API 키를 저장하지 않는다. 고객 관리자 세션에서 필요한 시행일 스냅샷만 생성하고, 작업지시에는 저장된 스냅샷과 룰 버전을 동결한다.
+        </p>
+      </div>
+
+      <div class="decision-grid">
+        <article class="decision-card">
+          <span class="tag">STEP 4 전</span>
+          <h3>스냅샷 필요 판정</h3>
+          <p>건축물대장 확정값으로 필요한 법령명, 시행일, 조문 후보를 산출한다. 없으면 추천을 보류한다.</p>
+        </article>
+        <article class="decision-card">
+          <span class="tag">BYOK</span>
+          <h3>고객 키 기반 수집</h3>
+          <p>고객 관리자가 입력한 법제처 API 키는 수집 세션에서만 사용하고 저장하지 않는다.</p>
+        </article>
+        <article class="decision-card">
+          <span class="tag">Snapshot</span>
+          <h3>Supabase 저장</h3>
+          <p>서버에는 스냅샷 JSON, 출처, 시행일, hash, 수집 시각 같은 근거 메타데이터만 저장한다.</p>
+        </article>
+        <article class="decision-card">
+          <span class="tag">Rule Engine</span>
+          <h3>설비 추천</h3>
+          <p>고객이 설비 리스트를 만들지 않는다. 우리 결정론적 룰 엔진이 적용 설비 섹션을 추천한다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="workflow-title">
+      <div class="section-head">
+        <div>
+          <span class="section-label">Product Flow</span>
+          <h2 id="workflow-title">구현이 완성해야 할 업무 흐름</h2>
+        </div>
+        <p class="section-copy">
+          사용자 경험은 건축물대장 입력에서 현장 점검과 출력물 생성까지 끊기지 않아야 한다.
+        </p>
+      </div>
+
+      <div class="flow">
+        <article class="flow-step active"><strong>A-1 생성</strong><span>고객사, 건물, 점검 프로젝트를 만든다.</span></article>
+        <article class="flow-step"><strong>A-2 OCR 검수</strong><span>건축물대장 원본과 추출 필드를 나란히 확인한다.</span></article>
+        <article class="flow-step"><strong>A-3 설비 검수</strong><span>추천 설비를 포함, 제외, 수정, 보류 상태로 정리한다.</span></article>
+        <article class="flow-step"><strong>A-4 작업지시</strong><span>hash로 동결된 작업 범위를 만든다.</span></article>
+        <article class="flow-step"><strong>B 현장 점검</strong><span>설비별 결과와 불일치 기록을 입력하고 법정 서식을 출력한다.</span></article>
+      </div>
+    </section>
+
+    <section id="next" aria-labelledby="next-title">
+      <div class="section-head">
+        <div>
+          <span class="section-label">Next Actions</span>
+          <h2 id="next-title">바로 이어갈 작업</h2>
+        </div>
+        <p class="section-copy">
+          Do 문서 기준으로는 Phase 4 타입 작성 전에 남은 정책을 고정하는 것이 가장 우선이고, 데이터 검증과 OCR PoC는 병행 과제로 분리된다.
+        </p>
+      </div>
+
+      <div class="next-grid">
+        <article class="next-card">
+          <h3>Phase 4 전 정리 순서</h3>
+          <ol>
+            <li>모든 업무 entity와 테이블의 <code>orgId</code> 포함 정책 확정</li>
+            <li><code>InspectionProject.status</code> 전이표를 타입과 DB enum 기준으로 정리</li>
+            <li>admin/field 권한 guard 범위를 Phase 4 코드에 반영</li>
+            <li><code>law_snapshots</code>와 고객 BYOK 수집 메타데이터 경계를 row 타입으로 고정</li>
+            <li>v1 JSON 파일과 Supabase 테이블의 매핑을 <code>packages/types</code>에 반영</li>
+          </ol>
+        </article>
+        <article class="next-card">
+          <h3>병행 과제</h3>
+          <ul>
+            <li><code>data/fire-duty-master.json</code>의 TODO 25개 검증</li>
+            <li>고객 키 기반 법령 스냅샷 생성/업로드 UX 확정</li>
+            <li>Google Vision, Upstage, Clova OCR 엔진 비교 PoC</li>
+            <li>Phase 12, 13에서 기존 <code>html/</code> 법정 서식 컴포넌트 이식</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <p class="source">
+      원본 문서: <code>docs/03-do/fire-inspection-system.do.md</code> · Design 원본:
+      <code>docs/02-design/features/fire-inspection-system.design.md</code> · DB 설계:
+      <code>docs/02-design/features/fire-inspection-system.database.md</code>
+    </p>
+  </main>
+</body>
+</html>
